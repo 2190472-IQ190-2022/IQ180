@@ -18,7 +18,7 @@ class Game:
         #Whether or not players have played their turn
         self.p1_played = False
         self.p2_played = False
-    def generate_question():
+    def generate_question(string_equation, answer):
         #generate each digits and answer
         pass
     def check(string_equation, answer):
