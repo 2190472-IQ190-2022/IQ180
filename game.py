@@ -7,23 +7,29 @@ class Game:
         self.p2_name = p2_name
         self.turn = 0 # 1 for player 1's turn and 2 for player 2's turn
         self.id = id
+        #for timer
         self.start_time = 0
+        #duration the player have spent to clear the question
         self.game_time_p1 = 0
         self.game_time_p2 = 0
+        #Whether or not players have cleared the question
         self.p1_cleared = False
         self.p2_cleared = False
+        #Whether or not players have played their turn
         self.p1_played = False
         self.p2_played = False
-    def generate_question():
+    def generate_question(string_equation, answer):
         #generate each digits and answer
-        pass
+        return eval(string_equation)==answer
     def check():
+        #Check the answer of the equation
         pass
     def reset():
+        #reset the game, scores and etc.
         pass
     def update_score():
         #Define the winner of current round by comparing boolean cleared and game_time, then update score and player's turn
         pass
     def game_started():
-        #Set player
+        #Random first player in the first game (And maybe other purpose)
         pass
