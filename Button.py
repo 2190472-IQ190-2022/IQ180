@@ -56,11 +56,20 @@ class Button:
         self.text = text
 
     def is_hovering(self, mouse_pos):
+        """
+            You can use this function to return the BOOLEAN that tells whether the mouse hover the button or not
+            :param mouse_pos: mouse position, recommend using pygame.mouse.get_pos()
+        """
         if self.pos[0] < mouse_pos[0] < self.pos[0]+self.size[0] and self.pos[1] < mouse_pos[1] < self.pos[1]+self.size[1] and not self.disabled:
             return True
         return False
 
     def draw(self, mouse):
+        """
+            call this function to draw THIS ONE BUTTON OBJECT ONLY, drawing multiple button is outside the capability of this function.
+            Recommend: you can implement function to loop over all button on your screen, then call this draw() on each button
+            :param mouse: mouse position, recommend using pygame.mouse.get_pos()
+        """
         color = self.enabled_color
         if self.is_hovering(mouse):
             color = self.hover_color
@@ -73,9 +82,16 @@ class Button:
         self.window.blit(self.text_rendered, (self.pos[0]+self.size[0]/2-self.text_rendered.get_width()/2,
                 self.pos[1]+self.size[1]/2-self.text_rendered.get_height()/2))
 
-    def press(self):
-        if not self.disabled:
-            self.operation()
+    def press(self, mouse):
+        """
+            This function should be called when mouse is pressed
+            recommened: use if event.type == MOUSEBUTTONDOWN then press this button
+            this function checks if mouse is hovering, if it is, call operation()
+            :param mouse: mouse position, recommend using pygame.mouse.get_pos()
+        """
+        if is_hovering(mouse):
+            if not self.disabled:
+                self.operation()
 
     def set_operation(self, operation):
         self.operation = operation
