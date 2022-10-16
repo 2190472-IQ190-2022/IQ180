@@ -34,22 +34,22 @@ class Game:
         p2_played=False
         game_time_p1=0
         game_time_p2=0
-    def update_score():
+    def update_score(self):
         #Define the winner of current round by comparing boolean cleared and game_time, then update score and player's turn
-        if p1_cleared and p2_cleared:
-            if game_time_p1 < game_time_p2:
-                p1_score+=1
-                turn=1
-            else if game_time_p1 > game_time_p2:
-                p2_score+=1
-                turn=2
-        else if p1_cleared:
-            p1_score+=1
-            turn=1
-        else if p2_cleared:
-            p2_score+=1
-            turn=2
-        new_round()
+        if self.p1_cleared and self.p2_cleared:
+            if self.game_time_p1 < self.game_time_p2:
+                self.p1_score+=1
+                self.turn=1
+            elif self.game_time_p1 > self.game_time_p2:
+                self.p2_score+=1
+                self.turn=2
+        elif self.p1_cleared:
+            self.p1_score+=1
+            self.turn=1
+        elif self.p2_cleared:
+            self.p2_score+=1
+            self.turn=2
+        self.new_round()
     def game_started():
         #Random first player in the first game (And maybe other purpose)
         pass
