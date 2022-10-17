@@ -4,18 +4,20 @@ import pickle
 from time import time
 from game import Game
 
-server = "10.202.134.107"
+server = "10.202.133.244"
 port = 5555
 
 def threaded_client(conn, player, gameId, games):
     global idCount
     conn.send(str.encode(str(player)))
-
+    if gameId in games:
+        game = games[gameId]
+    conn.sendall(pickle.dumps(game))
     reply = ""
     while True:
         try:
             data = conn.recv(4096).decode()
-
+            print("recieved")
             if gameId in games:
                 game = games[gameId] 
                 # Because this can have multiple games in the same time, so we need "gameId" to specify the game.
