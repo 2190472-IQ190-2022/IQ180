@@ -65,9 +65,9 @@ class Game:
         self.sum = sum
         return numbers_array, equation, sum
 
-    def check(self, string_equation, answer):
+    def check(self, string_equation):
         # Check the answer of the equation
-        return eval(string_equation) == answer
+        return eval(string_equation) == self.sum
 
     def reset(self):
         # reset the game, scores and etc.
