@@ -10,6 +10,9 @@ def main():
     game = net.recv()
     print("you are p"+str(net.player))
     while True:
+        game=net.recv()
+        if game.p1_played and game.p2_played:
+            game.update_score()
         if net.player == game.turn:
             print("your turn")
             print(game.numbers_array)
@@ -26,6 +29,6 @@ def main():
             net.send(game)
         else:
             print("waiting for your turn")
-            game=net.recv()
+            
 if __name__ == "__main__":
     main()
