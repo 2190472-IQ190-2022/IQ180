@@ -25,7 +25,7 @@ def main():
             else:
                 game.p2_played=True
                 game.p2_cleared=game.check(equation_str)
-            net.client.send(pickle.dumps(game))
+            net.send(game)
         else:
             print("waiting for your turn")
             
