@@ -1,7 +1,6 @@
 import pygame
 import threading
 from mock_network import Network
-from utils import *
 
 clientNumber = 0
 

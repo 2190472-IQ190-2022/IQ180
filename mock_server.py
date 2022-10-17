@@ -22,14 +22,14 @@ def threaded_client(conn, player, gameId, games):
 
                 if not data:
                     break
-                else:    
+                elif type(data) == str:    
                     if data == "reset":
                         game.resetWent()
                     elif data == "get_equation":
                         game.generate_question()
                     elif data != "get":
                         game.check(player, data)
-                    conn.sendall(pickle.dumps(game))
+                conn.sendall(pickle.dumps(game))
             else:
                 break
         except:
