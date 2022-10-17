@@ -51,7 +51,7 @@ class Button:
             self.status = 1
             self.operation = operation
         if disabled:
-            self.disabled = 0
+            self.status = 0
 
     def set_pos(self, pos):
         self.pos = pos
@@ -66,6 +66,7 @@ class Button:
         """
         # status = 0
         if self.status == 0:
+            self.draw()
             return None
         # status = 1 not press and not hover
         if not self.is_hovering() and not self.is_pressed():

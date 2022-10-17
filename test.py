@@ -4,7 +4,7 @@
 import pygame
 import Button
 
-WHITE = (0, 0, 0)
+WHITE = (255, 255, 255)
 
 # from game import Game
 #
@@ -24,7 +24,10 @@ pygame.font.init()
 WIN = pygame.display.set_mode((800, 600))
 BUTTON_FONT1 = pygame.font.SysFont('arial', 69)
 running = True
-b1 = Button.Button(WIN, BUTTON_FONT1, operation=test_func)
+b1 = Button.Button(WIN, BUTTON_FONT1, operation=test_func, pos=(300, 300), text="test")
+b2 = Button.Button(WIN, BUTTON_FONT1, operation=b1.disable_button, pos=(100, 300), text="dis")
+b3 = Button.Button(WIN, BUTTON_FONT1, operation=b1.enable_button, pos=(500, 300), text="ena")
+WIN.fill(WHITE)
 while running:
     WIN.fill(WHITE)
     mouse = pygame.mouse.get_pos()
@@ -32,6 +35,8 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     b1.update_button()
+    b2.update_button()
+    b3.update_button()
     # b1.draw(mouse)
     # print(mouse)
     # print(b1.is_hovering(mouse))
