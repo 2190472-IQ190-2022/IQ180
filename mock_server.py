@@ -65,7 +65,7 @@ if __name__ == "__main__":
         player = 1
         gameId = (idCount - 1)//2
         if idCount % 2 == 1:
-            games[gameId] = Game(gameId)
+            games[gameId] = Game(gameId, "MS Team", "Taiwan")
             print("Creating a new game...")
         else:
             games[gameId].ready = True

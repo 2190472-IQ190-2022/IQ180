@@ -1,4 +1,4 @@
-import pygame
+# import pygame
 import threading
 from mock_network import Network
 
@@ -6,7 +6,7 @@ clientNumber = 0
 
 def main():
     net = Network()
-    game = net.recv()
+    # game = net.recv()
     print("you are p"+str(net.player))
     while True:
         game=net.recv()
