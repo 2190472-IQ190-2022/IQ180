@@ -7,9 +7,9 @@ from game import Game
 server = "192.168.1.53"
 port = 5555
 
-def threaded_client(conn, p, gameId, games):
+def threaded_client(conn, player, gameId, games):
     global idCount
-    conn.send(str.encode(str(p)))
+    conn.send(str.encode(str(player)))
 
     reply = ""
     while True:
@@ -22,17 +22,13 @@ def threaded_client(conn, p, gameId, games):
 
                 if not data:
                     break
-                else:
-                    if game.ready:
-                        if game.p1Went == False:
-                            game.p1GameTime = 8 - (time() - game.startTime)
-                        if game.p2Went == False:
-                            game.p2GameTime = 8 - (time() - game.startTime)
-                        
+                else:    
                     if data == "reset":
                         game.resetWent()
+                    elif data == "get_equation":
+                        game.generate_question()
                     elif data != "get":
-                        game.play(p, data)
+                        game.play(player, data)
                     conn.sendall(pickle.dumps(game))
             else:
                 break
@@ -66,7 +62,7 @@ if __name__ == "__main__":
         print("Connected to:", addr)
 
         idCount += 1
-        p = 0
+        player = 1
         gameId = (idCount - 1)//2
         if idCount % 2 == 1:
             games[gameId] = Game(gameId)
@@ -74,7 +70,7 @@ if __name__ == "__main__":
         else:
             games[gameId].ready = True
             games[gameId].startTime = time()
-            p = 1
+            player = 2
 
 
-        start_new_thread(threaded_client, (conn, p, gameId, games))
+        start_new_thread(threaded_client, (conn, player, gameId, games))

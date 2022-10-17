@@ -22,6 +22,9 @@ class Game:
         # Whether or not players have played their turn
         self.p1_played = False
         self.p2_played = False
+        # number array and answer for the question
+        self.numbers_array = []
+        self.sum = -1
 
     def generate_question(self):
         # generate each digits and answer
@@ -59,7 +62,7 @@ class Game:
         # print(sum)
         # print(numbers_array)
         # End of Debugging section
-
+        self.sum = sum
         return numbers_array, equation, sum
 
     def check(self, string_equation, answer):
