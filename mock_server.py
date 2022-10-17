@@ -4,7 +4,7 @@ import pickle
 from time import time
 from game import Game
 
-server = "192.168.1.53"
+server = "10.202.134.107"
 port = 5555
 
 def threaded_client(conn, player, gameId, games):
@@ -22,14 +22,14 @@ def threaded_client(conn, player, gameId, games):
 
                 if not data:
                     break
-                else:    
-                    if data == "reset":
-                        game.resetWent()
-                    elif data == "get_equation":
+                elif type(data) == str:    
+                    # if data == "reset":
+                    #     game.resetWent()
+                    if data == "get_equation":
                         game.generate_question()
                     elif data != "get":
                         game.check(player, data)
-                    conn.sendall(pickle.dumps(game))
+                conn.sendall(pickle.dumps(game))
             else:
                 break
         except:
