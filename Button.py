@@ -1,6 +1,6 @@
 ############## MAYBE DONT USE THIS CLASS YET IT'S NOT FINISH AND I'M RETARDED #################
 # Note: all the image related things are not implemented yet
-# Note: don't use "operation" parameter yet
+# Note: Button should work now
 
 import pygame
 
@@ -44,6 +44,7 @@ class Button:
         self.pressed_color = pressed_color
         self.text = text
         self.clicked = False
+        self.op_args = op_args
         self.status = 0 # 0 is disbled 1 is enabled 2 is hovered 3 is pressed
         if operation is None:
             self.status = 0
@@ -77,7 +78,7 @@ class Button:
         # status = 3 press and hover
         if self.is_hovering() and self.is_pressed() and self.status != 3:
             self.status = 3
-            self.operation()
+            self.operation(** self.op_args)
         elif self.status == 3 and not self.is_hovering() and not self.is_pressed():
             self.status = 1
         elif self.status == 3 and self.is_hovering() and not self.is_pressed():
