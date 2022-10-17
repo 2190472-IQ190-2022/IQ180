@@ -23,8 +23,8 @@ class Game:
         self.p1_played = False
         self.p2_played = False
         # number array and answer for the question
-        self.numbers_array = []
-        self.sum = -1
+        self.numbers_array, _,self.sum = self.generate_question()
+        
 
     def generate_question(self):
         # generate each digits and answer
@@ -84,6 +84,8 @@ class Game:
         self.p2_played = False
         self.p1_game_time = 0
         self.p2_game_time = 0
+        self.numbers_array, _,self.sum = self.generate_question()
+        
 
     def update_score(self):
         # Define the winner of current round by comparing boolean cleared and game_time, then update score and player's turn
