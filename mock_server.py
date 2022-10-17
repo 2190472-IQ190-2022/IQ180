@@ -28,7 +28,7 @@ def threaded_client(conn, player, gameId, games):
                     elif data == "get_equation":
                         game.generate_question()
                     elif data != "get":
-                        game.play(player, data)
+                        game.check(player, data)
                     conn.sendall(pickle.dumps(game))
             else:
                 break
