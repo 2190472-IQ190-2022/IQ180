@@ -29,6 +29,7 @@ class Network:
         
     def recv(self):
         try:
-            return pickle.loads(self.client.recv(2048*5))
+            data=client.recv(2048*5)
+            return pickle.loads(data)
         except socket.error as e:
             print(e)
