@@ -7,9 +7,10 @@ class Game:
         self.p2_score = 0
         self.p1_name = p1_name
         self.p2_name = p2_name
-        self.turn = 0  # 1 for player 1's turn and 2 for player 2's turn
+        self.turn = random.getrandbits(1)+1  # 1 for player 1's turn and 2 for player 2's turn
         self.id = id
         # for timer
+        # Server initialize the start time by start_time = time.time()
         # to use in server, time.time()-start_time
         self.start_time = 0
         # duration the player have spent to clear the question
@@ -21,8 +22,6 @@ class Game:
         # Whether or not players have played their turn
         self.p1_played = False
         self.p2_played = False
-        # Save the winner of previous game
-        self.winner = random.getrandbits(1)+1
 
     def generate_question(self):
         # generate each digits and answer
@@ -71,7 +70,9 @@ class Game:
         # reset the game, scores and etc.
         self.p1_score = 0
         self.p2_score = 0
-        
+        self.turn = random.getrandbits(1)+1
+        self.new_round()
+
 
     def new_round(self):
         self.p1_cleared = False
@@ -99,5 +100,7 @@ class Game:
         self.new_round()
 
     def game_started(self):
-        # Random first player in the first game (And maybe other purpose)
-        return self.winner
+        # Choose the first player.
+        # The first game will random.
+        # The following game will be set by the server according to the winner of the previous round.
+        return self.turn
