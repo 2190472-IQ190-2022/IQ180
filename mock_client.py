@@ -1,4 +1,5 @@
 # import pygame
+import time
 import threading
 import pickle
 from mock_network import Network
@@ -31,6 +32,7 @@ def main():
             print("send")
         else:
             print("waiting for your turn")
+        time.sleep(1)
             
 if __name__ == "__main__":
     main()
