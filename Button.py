@@ -1,4 +1,3 @@
-############## MAYBE DONT USE THIS CLASS YET IT'S NOT FINISH AND I'M RETARDED #################
 # Note: all the image related things are not implemented yet
 # Note: Button should work now
 
@@ -15,7 +14,7 @@ class Button:
             size - button's size (tuple of two int e.g. (width, height))
             enabled_color - button's color when it's clickable (tuple of three int e.g. (R, G, B))
             hover_color - button's color when the mouse hover over the button (tuple of three int e.g. (R, G, B))
-        pressed_color - button's color when the mouse presses the button (tuple of three int e.g. (R, G, B))
+            pressed_color - button's color when the mouse presses the button (tuple of three int e.g. (R, G, B))
             disabled_color - button's color when the button's disabled (tuple of three int e.g. (R, G, B))
             text - text on the button (string)
             disabled - Whether the button is disabled, if button is disabled, you can't click and it will not do the assigned operation
@@ -43,7 +42,6 @@ class Button:
         self.disabled_color = disabled_color
         self.pressed_color = pressed_color
         self.text = text
-        self.clicked = False
         self.op_args = op_args
         self.status = 0 # 0 is disbled 1 is enabled 2 is hovered 3 is pressed
         if operation is None:
@@ -59,6 +57,25 @@ class Button:
 
     def set_text(self, text):
         self.text = text
+
+    def set_operation(self, operation):
+        self.operation = operation
+
+    def disable_button(self):
+        self.status = 0
+
+    def enable_button(self):
+        self.status = 1
+
+    def is_hovering(self):
+        if self.pos[0] < self.mouse.get_pos()[0] < self.pos[0]+self.size[0] and self.pos[1] < self.mouse.get_pos()[1] < self.pos[1]+self.size[1] and self.status != 0:
+            return True
+        return False
+
+    def is_pressed(self):
+        if self.mouse.get_pressed()[0]:
+            return True
+        return False
 
     def update_button(self):
         """
@@ -86,19 +103,6 @@ class Button:
 
         self.draw()
 
-    def is_hovering(self):
-        """
-            You can use this function to return the BOOLEAN that tells whether the mouse hover the button or not
-        """
-        if self.pos[0] < self.mouse.get_pos()[0] < self.pos[0]+self.size[0] and self.pos[1] < self.mouse.get_pos()[1] < self.pos[1]+self.size[1] and self.status != 0:
-            return True
-        return False
-
-    def is_pressed(self):
-        if self.mouse.get_pressed()[0]:
-            return True
-        return False
-
     def draw(self):
         """
             call this function to draw THIS ONE BUTTON OBJECT ONLY, drawing multiple button is outside the capability of this function.
@@ -111,7 +115,6 @@ class Button:
         if self.status == 0:
             color = self.disabled_color
 
-        # if the button is pressed, draw button
         if self.status == 3:
             color = self.pressed_color
 
@@ -120,11 +123,3 @@ class Button:
         self.window.blit(self.text_rendered, (self.pos[0]+self.size[0]/2-self.text_rendered.get_width()/2,
                 self.pos[1]+self.size[1]/2-self.text_rendered.get_height()/2))
 
-    def set_operation(self, operation):
-        self.operation = operation
-
-    def disable_button(self):
-        self.status = 0
-
-    def enable_button(self):
-        self.status = 1
