@@ -81,10 +81,13 @@ class Button:
             return True
         return False
 
-    def is_pressed(self):
+    def is_mouse_down(self):
         if self.mouse.get_pressed()[0]:
             return True
         return False
+
+    def is_pressed(self):
+        return is_hovering() and is_mouse_down()
 
     def update_button(self):
         """
@@ -96,20 +99,20 @@ class Button:
             self.draw()
             return None
         # status = 1 not press and not hover
-        if not self.is_hovering() and not self.is_pressed():
+        if not self.is_hovering() and not self.is_mouse_down():
             self.status = 1
         # status = 2 not press and hover
-        if self.is_hovering() and not self.is_pressed():
+        if self.is_hovering() and not self.is_mouse_down():
             self.status = 2
         # status = 3 press and hover
-        if self.is_hovering() and self.is_pressed() and self.status != 3:
+        if self.is_hovering() and self.is_mouse_down() and self.status != 3:
             self.status = 3
             self.operation(** self.op_args)
-        if self.status == 3 and not self.is_hovering() and not self.is_pressed():
+        if self.status == 3 and not self.is_hovering() and not self.is_mouse_down():
             self.status = 1
-        if self.status == 3 and self.is_hovering() and not self.is_pressed():
+        if self.status == 3 and self.is_hovering() and not self.is_mouse_down():
             self.status = 2
-        if self.status == 3 and not self.is_hovering() and self.is_pressed():
+        if self.status == 3 and not self.is_hovering() and self.is_mouse_down():
             self.status = 1
 
         self.draw()

@@ -28,6 +28,7 @@ pygame.display.set_caption("IQ1")
 menu_status = 1
 # menu status = 1 is mm1, = 2 is mm2, = 3 is game, = 4 is htp, = 5 is setting
 all_button = []
+game_input = ""
 
 def draw_everything(current_menu_status):
     WIN.fill(WHITE)
@@ -49,7 +50,6 @@ def draw_everything(current_menu_status):
 
 def change_game_status(new_status):
     global menu_status, all_button
-    # print(menu_status)
     menu_status = new_status
     all_button = []
     if new_status == 1:
@@ -66,10 +66,16 @@ def change_game_status(new_status):
         pass
     elif new_status == 5:
         pass
-    pygame.time.wait(200) # This function was there to prevent mouse double clicking button
+    pygame.time.wait(200) # This function was there to prevent mouse double clicking button / it does not work
 
-def test_func(text_test):
-    print(f"this is test func {text_test}")
+def user_game_input(button_input):
+    global game_input
+    if button_input in ALL_ALLOWS_MATH_OP:
+        print(f"{button_input}: operation")
+    else:
+        print(f"{button_input}: numbers")
+    game_input = game_input + button_input
+    print(f"total input: {game_input}")
 
 def test_reset_button():
     for button in all_button:
@@ -100,9 +106,9 @@ def create_game_button():
     button_size, position_x = calculate_button_position(len(numbers))
     # position_x = begining_position
     for i in range(len(numbers)):
-        button = Button(WIN, DEFAULT_FONT, text=str(numbers[i]), operation=test_func,
-                        text_test=str(numbers[i]), pos=(position_x[i], position_y),
-                        size=(button_size, button_size))
+        button = Button(WIN, DEFAULT_FONT, text=str(numbers[i]), operation=user_game_input,
+                        pos=(position_x[i], position_y), size=(button_size, button_size),
+                        button_input=str(numbers[i]))
         all_button.append(button)
         # position_x = position_x + button_size + GAME_BUTTON_INLINE_SPACING
 
@@ -111,9 +117,9 @@ def create_game_button():
     # position_x = begining_position
 
     for i in range(len(ALL_ALLOWS_MATH_OP)):
-        button = Button(WIN, DEFAULT_FONT, text=ALL_ALLOWS_MATH_OP[i], operation=test_func,
-                        text_test=ALL_ALLOWS_MATH_OP[i], pos=(position_x[i], position_y),
-                        size=(button_size, button_size))
+        button = Button(WIN, DEFAULT_FONT, text=ALL_ALLOWS_MATH_OP[i], operation=user_game_input,
+                        pos=(position_x[i], position_y), size=(button_size, button_size),
+                        button_input=ALL_ALLOWS_MATH_OP[i])
         all_button.append(button)
         # position_x = position_x + button_size + GAME_BUTTON_INLINE_SPACING
 
@@ -136,7 +142,6 @@ def main():
         draw_everything(menu_status)
         game_button_control()
         pygame.display.update()
-
 
 if __name__ == "__main__":
     main()
