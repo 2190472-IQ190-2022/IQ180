@@ -12,10 +12,12 @@ def main():
     # game = net.recv()
     print("you are p"+str(net.player))
     while True:
-        game = net.recv()
-        # if game.ready == False:
-        #     print("Waiting for another player")
-        #     continue
+        print("Wait")
+        game = net.send("get")
+        print(game.ready)
+        if game.ready == False:
+            print("Waiting for another player")
+            continue
         print(game.turn)
         if game.p1_played and game.p2_played:
             game.update_score()

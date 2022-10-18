@@ -4,8 +4,8 @@ import pickle
 from time import time
 from game import Game
 
-hostname=socket.gethostname()   
-server = socket.gethostbyname(hostname)
+# hostname=socket.gethostname()   
+server = "192.168.1.53"
 port = 5555
 
 def threaded_client(conn, player, gameId, games):
@@ -13,30 +13,33 @@ def threaded_client(conn, player, gameId, games):
     conn.send(str.encode(str(player)))
     if gameId in games:
         game = games[gameId]
-    conn.sendall(pickle.dumps(game))
+    # conn.sendall(pickle.dumps(game))
     reply = ""
     while True:
-        try:
-            data = pickle.load(conn.recv(2048*5))
-            print("recieved")
-            if gameId in games:
-                game = games[gameId] 
-                # Because this can have multiple games in the same time, so we need "gameId" to specify the game.
-
-                if not data:
-                    break
-                elif type(data) == str:    
-                    # if data == "reset":
-                    #     game.resetWent()
-                    if data == "get_equation":
-                        game.generate_question()
-                    elif data != "get":
-                        game.check(player, data)
-                conn.sendall(pickle.dumps(game))
-            else:
+        # try:
+        # rcv = conn.recv(2048*5)
+        # print(f"----> {type(rcv).__name__}")
+        # data = pickle.load(rcv)
+        data = conn.recv(2048).decode()
+        print("recieved")
+        if gameId in games:
+            game = games[gameId] 
+            # Because this can have multiple games in the same time, so we need "gameId" to specify the game.
+            if not data:
                 break
-        except:
+            elif type(data) == str:    
+                # if data == "reset":
+                #     game.resetWent()
+                if data == "get_equation":
+                    game.generate_question()
+                elif data != "get":
+                    game.check(player, data)
+            conn.sendall(pickle.dumps(game))
+        else:
             break
+        # except Exception as e:
+            # print(e)
+            # break
 
     print("Lost connection")
     try:
