@@ -1,5 +1,5 @@
 # Note: The button logic is still bugged, it creates like millions of button
-# Note: BUG - holding button will reclick it
+# Note: BUG - holding button will reclick something, even a different button
 
 from game import Game
 import pygame
@@ -11,14 +11,15 @@ import math
 # Constant
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-WIDTH = 1280
-HEIGHT = 720
+WIDTH = 1600
+HEIGHT = 900
 FPS = 60
-BUTTON_BORDER_FACTOR = 0.45 # how much button would take up the screen
+BUTTON_BORDER_FACTOR = 0.6 # how much button would take up the screen
 GAME_BUTTON_YPOS = 400
-GAME_BUTTON_INLINE_SPACING = 10
-GAME_BUTTON_TWOLINE_SPACING = 20
+GAME_BUTTON_INLINE_SPACING = 10 # how much space between two side-by-side buttons
+GAME_BUTTON_TWOLINE_SPACING = 10 # how much space between two buttons from different line
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+ALL_ALLOWS_MATH_OP = "+-x÷()"
 pygame.font.init()
 DEFAULT_FONT = pygame.font.SysFont('comicsans', 40)
 pygame.display.set_caption("IQ1")
@@ -70,42 +71,47 @@ def change_game_status(new_status):
 def test_func(text_test):
     print(f"this is test func {text_test}")
 
-def button_control():
-    """This function would take care of all the button"""
-    pass
+def game_button_control():
+    """function for button control and bug fixes (not yet implemented)"""
+    for button in all_button:
+        button.update_button()
 
 def randomize_five_number(array):
     length = len(array)
     for i in range(0, length, 1):
         array[i] = random.randint(0,9)
 
-def calculate_button_position(number_of_button):
-    space_used = BUTTON_BORDER_FACTOR * WIDTH
-    button_size = (space_used - ((number_of_button - 1) * GAME_BUTTON_INLINE_SPACING)) / number_of_button
+def calculate_button_position(number_of_button, border_factor=BUTTON_BORDER_FACTOR,
+                              inline_space=GAME_BUTTON_INLINE_SPACING, offset=0):
+    """This function is better used for set of multiple buttons, individual button just set position manually"""
+    space_used = border_factor * WIDTH
+    button_size = (space_used - ((number_of_button - 1) * inline_space)) / number_of_button
     begining_position = (WIDTH - space_used) / 2
-    return math.floor(button_size), math.floor(begining_position)
+    return button_size, [offset + begining_position + (x * (button_size + inline_space)) for x in range(number_of_button)]
 
 def create_game_button():
     numbers = [0, 0, 0, 0, 0]
     position_y = GAME_BUTTON_YPOS
     randomize_five_number(numbers)
-    button_size, begining_position = calculate_button_position(5)
-    position_x = begining_position
-    for i in numbers:
-        button = Button(WIN, DEFAULT_FONT, text=str(i), operation=test_func, text_test=str(i),
-                        pos=(position_x, position_y), size=(button_size, button_size))
+    button_size, position_x = calculate_button_position(len(numbers))
+    # position_x = begining_position
+    for i in range(len(numbers)):
+        button = Button(WIN, DEFAULT_FONT, text=str(numbers[i]), operation=test_func,
+                        text_test=str(numbers[i]), pos=(position_x[i], position_y),
+                        size=(button_size, button_size))
         all_button.append(button)
-        position_x = position_x + button_size + GAME_BUTTON_INLINE_SPACING
+        # position_x = position_x + button_size + GAME_BUTTON_INLINE_SPACING
 
-    position_y = position_y + button_size + 20
-    button_size, begining_position = calculate_button_position(6)
-    position_x = begining_position
+    position_y = position_y + button_size + GAME_BUTTON_TWOLINE_SPACING
+    button_size, position_x = calculate_button_position(len(ALL_ALLOWS_MATH_OP))
+    # position_x = begining_position
 
-    for char in "+-*/()":
-        button = Button(WIN, DEFAULT_FONT, text=char, operation=test_func, text_test=char,
-                        pos=(position_x, position_y), size=(button_size, button_size))
+    for i in range(len(ALL_ALLOWS_MATH_OP)):
+        button = Button(WIN, DEFAULT_FONT, text=ALL_ALLOWS_MATH_OP[i], operation=test_func,
+                        text_test=ALL_ALLOWS_MATH_OP[i], pos=(position_x[i], position_y),
+                        size=(button_size, button_size))
         all_button.append(button)
-        position_x = position_x + button_size + GAME_BUTTON_INLINE_SPACING
+        # position_x = position_x + button_size + GAME_BUTTON_INLINE_SPACING
 
 def main():
     clock = pygame.time.Clock()
@@ -122,8 +128,7 @@ def main():
 
         draw_everything(menu_status)
 
-        for button in all_button:
-            button.update_button()
+        game_button_control()
 
         pygame.display.update()
         # print(f"all_button len: {len(all_button)}")
