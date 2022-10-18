@@ -7,6 +7,9 @@ class Game:
         self.p2_score = 0
         self.p1_name = p1_name
         self.p2_name = p2_name
+        self.current_time = 0
+        self.ready = False
+        self.dummy = True
         self.turn = random.getrandbits(1)+1  # 1 for player 1's turn and 2 for player 2's turn
         self.id = id
         # for timer
@@ -23,8 +26,7 @@ class Game:
         self.p1_played = False
         self.p2_played = False
         # number array and answer for the question
-        self.numbers_array, _,self.sum = self.generate_question()
-        
+        self.numbers_array, self.equation, self.sum = self.generate_question()
 
     def generate_question(self):
         # generate each digits and answer
@@ -67,7 +69,10 @@ class Game:
 
     def check(self, string_equation):
         # Check the answer of the equation
-        return eval(string_equation) == self.sum
+        try:
+            return eval(string_equation) == self.sum
+        except:
+            return False
 
     def reset(self):
         # reset the game, scores and etc.
@@ -84,7 +89,7 @@ class Game:
         self.p2_played = False
         self.p1_game_time = 0
         self.p2_game_time = 0
-        self.numbers_array, _,self.sum = self.generate_question()
+        self.numbers_array, self.equation,self.sum = self.generate_question()
         
 
     def update_score(self):

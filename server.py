@@ -4,7 +4,8 @@ import pickle
 from time import time
 from game import Game
 
-server = "10.202.133.244"
+hostname=socket.gethostname()   
+server=socket.gethostbyname(hostname)
 port = 5555
 
 def threaded_client(conn, player, gameId, games):
@@ -12,30 +13,28 @@ def threaded_client(conn, player, gameId, games):
     conn.send(str.encode(str(player)))
     if gameId in games:
         game = games[gameId]
-    conn.sendall(pickle.dumps(game))
+    # conn.sendall(pickle.dumps(game))
     reply = ""
     while True:
-        try:
-            data = pickle.load(conn.recv(2048*5))
-            print("recieved")
-            if gameId in games:
-                game = games[gameId] 
-                # Because this can have multiple games in the same time, so we need "gameId" to specify the game.
-
-                if not data:
-                    break
-                elif type(data) == str:    
-                    # if data == "reset":
-                    #     game.resetWent()
-                    if data == "get_equation":
-                        game.generate_question()
-                    elif data != "get":
-                        game.check(player, data)
-                conn.sendall(pickle.dumps(game))
-            else:
+        rcv_game = pickle.loads(conn.recv(2048*5))
+        # print("received")
+        if gameId in games:
+            game = games[gameId] 
+            # Because this can have multiple games in the same time, so we need "gameId" to specify the game.
+            if not rcv_game:
                 break
-        except:
+            elif not rcv_game.dummy:
+                games.pop(gameId)
+                games[gameId] = rcv_game
+                print(rcv_game.turn)
+                print(games[gameId].turn)
+            else:
+                conn.sendall(pickle.dumps(game))
+        else:
             break
+        # except Exception as e:
+            # print(e)
+            # break
 
     print("Lost connection")
     try:
@@ -52,7 +51,7 @@ if __name__ == "__main__":
     try:
         s.bind((server, port))
     except socket.error as e:
-        str(e)
+        print(str(e))
 
     s.listen(2)
     print("Waiting for a connection, Server Started")
@@ -61,7 +60,7 @@ if __name__ == "__main__":
     idCount = 0
     while True:
         conn, addr = s.accept()
-        print("Connected to:", addr)
+        print("Connected to:", conn)
 
         idCount += 1
         player = 1
@@ -74,5 +73,5 @@ if __name__ == "__main__":
             games[gameId].startTime = time()
             player = 2
 
-
+        print(games)
         start_new_thread(threaded_client, (conn, player, gameId, games))
