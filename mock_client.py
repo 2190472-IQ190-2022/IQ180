@@ -2,7 +2,7 @@
 import time
 import threading
 import pickle
-from mock_network import Network
+from network import Network
 
 clientNumber = 0
 
