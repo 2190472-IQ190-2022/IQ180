@@ -5,7 +5,6 @@ import pygame_gui
 import os
 import random
 
- # hello editing to solve merge conflict
 pygame.init()
 
 WIDTH, HEIGHT = 800, 600

@@ -127,9 +127,7 @@ def main():
                 running = False
 
         draw_everything(menu_status)
-
         game_button_control()
-
         pygame.display.update()
         # print(f"all_button len: {len(all_button)}")
         # print(f"menu_status: {menu_status}")

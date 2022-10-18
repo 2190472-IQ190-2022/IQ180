@@ -91,10 +91,12 @@ class Button:
         if self.is_hovering() and self.is_pressed() and self.status != 3:
             self.status = 3
             self.operation(** self.op_args)
-        elif self.status == 3 and not self.is_hovering() and not self.is_pressed():
+        if self.status == 3 and not self.is_hovering() and not self.is_pressed():
             self.status = 1
-        elif self.status == 3 and self.is_hovering() and not self.is_pressed():
+        if self.status == 3 and self.is_hovering() and not self.is_pressed():
             self.status = 2
+        if self.status == 3 and not self.is_hovering() and self.is_pressed():
+            self.status = 1
 
         self.draw()
 
