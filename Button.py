@@ -1,5 +1,6 @@
 # Note: all the image related things are not implemented yet
 # Note: Button should work now
+# Note: you currently cannot change the button color, no need to implement if use image
 
 import pygame
 
@@ -39,6 +40,7 @@ class Button:
         self.text = text
         self.op_args = op_args
         self.status = 0  # 0 is disbled 1 is enabled 2 is hovered 3 is pressed
+        self.text_rendered = self.button_font.render(self.text, 1, (0, 0, 0))
         if operation is None:
             self.status = 0
         else:
@@ -49,9 +51,21 @@ class Button:
 
     def set_pos(self, pos):
         self.pos = pos
+        self.draw()
+
+    def get_pos(self):
+        return self.pos
 
     def set_text(self, text):
         self.text = text
+        self.text_rendered = self.button_font.render(self.text, 1, (0, 0, 0))
+        self.draw()
+
+    def get_text(self):
+        return self.text
+
+    def get_text_rendered(self):
+        return self.text_rendered
 
     def set_operation(self, operation):
         self.operation = operation
@@ -117,6 +131,5 @@ class Button:
 
         pygame.draw.rect(self.window, color, [
                          self.pos[0], self.pos[1], self.size[0], self.size[1]])
-        self.text_rendered = self.button_font.render(self.text, 1, (0, 0, 0))
         self.window.blit(self.text_rendered, (self.pos[0]+self.size[0]/2-self.text_rendered.get_width()/2,
                                               self.pos[1]+self.size[1]/2-self.text_rendered.get_height()/2))

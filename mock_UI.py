@@ -71,6 +71,10 @@ def change_game_status(new_status):
 def test_func(text_test):
     print(f"this is test func {text_test}")
 
+def test_reset_button():
+    for button in all_button:
+        pass
+
 def game_button_control():
     """function for button control and bug fixes (not yet implemented)"""
     for button in all_button:
@@ -113,6 +117,9 @@ def create_game_button():
         all_button.append(button)
         # position_x = position_x + button_size + GAME_BUTTON_INLINE_SPACING
 
+    reset_button = Button(WIN, DEFAULT_FONT, text="Reset", operation=test_reset_button)
+    all_button.append(reset_button)
+
 def main():
     clock = pygame.time.Clock()
     running = True
@@ -129,8 +136,6 @@ def main():
         draw_everything(menu_status)
         game_button_control()
         pygame.display.update()
-        # print(f"all_button len: {len(all_button)}")
-        # print(f"menu_status: {menu_status}")
 
 
 if __name__ == "__main__":
