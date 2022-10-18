@@ -1,6 +1,7 @@
 # Note: The button logic is still bugged, it creates like millions of button
 # Note: BUG - holding button will reclick it
 
+from game import Game
 import pygame
 from Button import Button
 import random
