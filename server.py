@@ -5,7 +5,7 @@ from time import time
 from game import Game
 
 hostname=socket.gethostname()   
-server=socket.gethostbyname(self.hostname)
+server=socket.gethostbyname(hostname)
 port = 5555
 
 def threaded_client(conn, player, gameId, games):
@@ -23,8 +23,11 @@ def threaded_client(conn, player, gameId, games):
             # Because this can have multiple games in the same time, so we need "gameId" to specify the game.
             if not rcv_game:
                 break
-            elif rcv_game.dummy == False:    
+            elif not rcv_game.dummy:    
+                games.pop(gameId)
                 games[gameId] = rcv_game
+                print(rcv_game.turn)
+                print(games[gameId].turn)
             else:
                 conn.sendall(pickle.dumps(game))
         else:
@@ -48,7 +51,7 @@ if __name__ == "__main__":
     try:
         s.bind((server, port))
     except socket.error as e:
-        str(e)
+        print(str(e))
 
     s.listen(2)
     print("Waiting for a connection, Server Started")
@@ -70,5 +73,5 @@ if __name__ == "__main__":
             games[gameId].startTime = time()
             player = 2
 
-
+        print(games)
         start_new_thread(threaded_client, (conn, player, gameId, games))

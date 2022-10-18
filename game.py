@@ -27,7 +27,6 @@ class Game:
         self.p2_played = False
         # number array and answer for the question
         self.numbers_array, self.equation, self.sum = self.generate_question()
-        
 
     def generate_question(self):
         # generate each digits and answer

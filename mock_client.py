@@ -33,11 +33,11 @@ def main():
             print(f"P1: {game.p1_score}")
             print(f"P2: {game.p2_score}")
             equation_str = input("")
-            if net.player == 1:
+            if net.player == '1':
                 game.p1_played = True
                 game.p1_cleared = game.check(equation_str)
                 game.turn = 2
-            elif net.player == 2:
+            elif net.player == '2':
                 game.p2_played = True
                 game.p2_cleared = game.check(equation_str)
                 game.turn = 1
