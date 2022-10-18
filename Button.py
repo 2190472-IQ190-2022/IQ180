@@ -13,17 +13,11 @@ class Button:
         param (optional):
             pos - button's position (tuple of two int e.g. (width, height))
             size - button's size (tuple of two int e.g. (width, height))
-            enabled_color - button's color when it's clickable (tuple of three int e.g. (R, G, B))
-            hover_color - button's color when the mouse hover over the button (tuple of three int e.g. (R, G, B))
-            pressed_color - button's color when the mouse presses the button (tuple of three int e.g. (R, G, B))
-            disabled_color - button's color when the button's disabled (tuple of three int e.g. (R, G, B))
+            XXX_color - color when the button is XXX (tuple of three int e.g. (R, G, B))
             text - text on the button (string)
             disabled - Whether the button is disabled, if button is disabled, you can't click and it will not do the assigned operation
                     (see "operarion" parameter below) (Boolean)
-            img - pygame image object that are used when the button is ENABLED (from pygame.image.load(<Image Path>))
-            img_hover - pygame image object that are used when the button is HOVERED (from pygame.image.load(<Image Path>))
-            img_pressed - pygame image object that are used when the button is PRESSED (from pygame.image.load(<Image Path>))
-            img_disabled - pygame image object that are used whent the button is DISABLED (from pygame.image.load(<Image Path>))
+            img_XXX - pygame image object that are used when the button is XXX (from pygame.image.load(<Image Path>))
             operation - name of function that you wants to be called when pressed
                     (just used name of the function with out the bracket, e.g. operation=test_func)
             any other parameter name that are not listed above can be enter to be used as "operation" function parameter
