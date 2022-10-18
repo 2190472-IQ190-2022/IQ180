@@ -1,5 +1,6 @@
 # Note: all the image related things are not implemented yet
 # Note: Button should work now
+# Note: you currently cannot change the button color, no need to implement if use image
 
 import pygame
 
@@ -39,6 +40,7 @@ class Button:
         self.text = text
         self.op_args = op_args
         self.status = 0  # 0 is disbled 1 is enabled 2 is hovered 3 is pressed
+        self.text_rendered = self.button_font.render(self.text, 1, (0, 0, 0))
         if operation is None:
             self.status = 0
         else:
@@ -49,9 +51,21 @@ class Button:
 
     def set_pos(self, pos):
         self.pos = pos
+        self.draw()
+
+    def get_pos(self):
+        return self.pos
 
     def set_text(self, text):
         self.text = text
+        self.text_rendered = self.button_font.render(self.text, 1, (0, 0, 0))
+        self.draw()
+
+    def get_text(self):
+        return self.text
+
+    def get_text_rendered(self):
+        return self.text_rendered
 
     def set_operation(self, operation):
         self.operation = operation
@@ -67,10 +81,13 @@ class Button:
             return True
         return False
 
-    def is_pressed(self):
+    def is_mouse_down(self):
         if self.mouse.get_pressed()[0]:
             return True
         return False
+
+    def is_pressed(self):
+        return is_hovering() and is_mouse_down()
 
     def update_button(self):
         """
@@ -82,19 +99,21 @@ class Button:
             self.draw()
             return None
         # status = 1 not press and not hover
-        if not self.is_hovering() and not self.is_pressed():
+        if not self.is_hovering() and not self.is_mouse_down():
             self.status = 1
         # status = 2 not press and hover
-        if self.is_hovering() and not self.is_pressed():
+        if self.is_hovering() and not self.is_mouse_down():
             self.status = 2
         # status = 3 press and hover
-        if self.is_hovering() and self.is_pressed() and self.status != 3:
+        if self.is_hovering() and self.is_mouse_down() and self.status != 3:
             self.status = 3
             self.operation(** self.op_args)
-        elif self.status == 3 and not self.is_hovering() and not self.is_pressed():
+        if self.status == 3 and not self.is_hovering() and not self.is_mouse_down():
             self.status = 1
-        elif self.status == 3 and self.is_hovering() and not self.is_pressed():
+        if self.status == 3 and self.is_hovering() and not self.is_mouse_down():
             self.status = 2
+        if self.status == 3 and not self.is_hovering() and self.is_mouse_down():
+            self.status = 1
 
         self.draw()
 
@@ -115,6 +134,5 @@ class Button:
 
         pygame.draw.rect(self.window, color, [
                          self.pos[0], self.pos[1], self.size[0], self.size[1]])
-        self.text_rendered = self.button_font.render(self.text, 1, (0, 0, 0))
         self.window.blit(self.text_rendered, (self.pos[0]+self.size[0]/2-self.text_rendered.get_width()/2,
                                               self.pos[1]+self.size[1]/2-self.text_rendered.get_height()/2))
