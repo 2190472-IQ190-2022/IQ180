@@ -3,6 +3,7 @@ from _thread import *
 import pickle
 from game import Game
 
+#preserve for merge
 server = socket.gethostbyname(socket.gethostname())
 port = 5555
 

@@ -1,7 +1,7 @@
 import socket
 import pickle
 
-
+# preserve for merge
 class Network:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -22,7 +22,7 @@ class Network:
 
     def send(self, data):
         try:
-            self.client.send(str.encode(data)) 
+            self.client.send(str.encode(data))
             return pickle.loads(self.client.recv(2048*2))
         except socket.error as e:
             print(e)
