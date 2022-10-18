@@ -23,7 +23,16 @@ def threaded_client(conn, player, gameId, games):
             # Because this can have multiple games in the same time, so we need "gameId" to specify the game.
             if not rcv_game:
                 break
-            elif not rcv_game.dummy:    
+            elif not rcv_game.dummy:
+                if rcv_game.p1_played and rcv_game.p2_played:
+                    if rcv_game.p1_cleared == False:
+                        rcv_game.p2_score += 1
+                        rcv_game.turn = 2
+                    elif rcv_game.p2_cleared == False:
+                        rcv_game.p1_score += 1
+                        rcv_game.turn = 1
+                    # rcv_game.turn = 1 if rcv_game.p1_score > rcv_game.p2_score else 2
+                    rcv_game.new_round()
                 games.pop(gameId)
                 games[gameId] = rcv_game
                 print(rcv_game.turn)
