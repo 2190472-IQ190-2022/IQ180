@@ -8,6 +8,7 @@ class Game:
         self.p1_name = p1_name
         self.p2_name = p2_name
         self.current_time = 0
+        self.ready = False
         self.turn = random.getrandbits(1)+1  # 1 for player 1's turn and 2 for player 2's turn
         self.id = id
         # for timer
@@ -24,7 +25,7 @@ class Game:
         self.p1_played = False
         self.p2_played = False
         # number array and answer for the question
-        self.numbers_array, _,self.sum = self.generate_question()
+        self.numbers_array, self.equation, self.sum = self.generate_question()
         
 
     def generate_question(self):

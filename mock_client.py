@@ -13,6 +13,9 @@ def main():
     print("you are p"+str(net.player))
     while True:
         game = net.recv()
+        # if game.ready == False:
+        #     print("Waiting for another player")
+        #     continue
         print(game.turn)
         if game.p1_played and game.p2_played:
             game.update_score()
@@ -20,13 +23,14 @@ def main():
             print("your turn")
             print(game.numbers_array)
             print(game.sum)
-            print(game.p1_score)
-            print(game.p2_score)
+            print(game.equation)
+            print(f"P1: {game.p1_score}")
+            print(f"P2: {game.p2_score}")
             equation_str = input("")
             if net.player == 1:
                 game.p1_played = True
                 game.p1_cleared = game.check(equation_str)
-            else:
+            elif net.player == 2:
                 game.p2_played = True
                 game.p2_cleared = game.check(equation_str)
             net.client.send(pickle.dumps(game))
