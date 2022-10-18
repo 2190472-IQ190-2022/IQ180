@@ -62,7 +62,7 @@ if __name__ == "__main__":
     idCount = 0
     while True:
         conn, addr = s.accept()
-        print("Connected to:", addr)
+        print("Connected to:", conn)
 
         idCount += 1
         player = 1
