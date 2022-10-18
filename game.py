@@ -89,7 +89,7 @@ class Game:
         self.p2_played = False
         self.p1_game_time = 0
         self.p2_game_time = 0
-        self.numbers_array, _,self.sum = self.generate_question()
+        self.numbers_array, self.equation,self.sum = self.generate_question()
         
 
     def update_score(self):
