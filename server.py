@@ -4,7 +4,8 @@ import pickle
 from time import time
 from game import Game
 
-server = "10.202.133.244"
+hostname=socket.gethostname()   
+server = socket.gethostbyname(hostname)
 port = 5555
 
 def threaded_client(conn, player, gameId, games):
