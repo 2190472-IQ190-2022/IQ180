@@ -1,4 +1,5 @@
 # Note: The button logic is still bugged, it creates like millions of button
+# Note: BUG - holding button will reclick it
 
 import pygame
 from Button import Button
@@ -22,14 +23,18 @@ all_button = []
 
 def draw_main_menu_1():
     WIN.fill(WHITE)
-    this_text = DEFAULT_FONT.render("IQ1", 1, BLACK)
+    this_text = DEFAULT_FONT.render("MM1", 1, BLACK)
     WIN.blit(this_text, (WIDTH/2-this_text.get_width()/2, HEIGHT/2-this_text.get_height()/2))
 
 def draw_main_menu_2():
     WIN.fill(WHITE)
+    this_text = DEFAULT_FONT.render("MM2", 1, BLACK)
+    WIN.blit(this_text, (WIDTH/2-this_text.get_width()/2, HEIGHT/2-this_text.get_height()/2))
 
 def draw_setting():
     WIN.fill(WHITE)
+    this_text = DEFAULT_FONT.render("Setting", 1, BLACK)
+    WIN.blit(this_text, (WIDTH/2-this_text.get_width()/2, HEIGHT/2-this_text.get_height()/2))
 
 def draw_how_to_play():
     WIN.fill(WHITE)
@@ -38,14 +43,30 @@ def draw_how_to_play():
 
 def draw_game_window():
     WIN.fill(WHITE)
+    this_text = DEFAULT_FONT.render("Game", 1, BLACK)
+    WIN.blit(this_text, (WIDTH/2-this_text.get_width()/2, HEIGHT/2-this_text.get_height()/2))
 
 def change_game_status(new_status):
     global menu_status, all_button
     # print(menu_status)
     menu_status = new_status
     all_button = []
-    if new_status == 2 or new_status == 3:
-        pygame.time.wait(4)
+    if new_status == 1:
+        to_mm2_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Play",
+                               operation=change_game_status, new_status=2)
+        all_button.append(to_mm2_button)
+    elif new_status == 2:
+        to_game_button = Button(window=WIN, button_font=DEFAULT_FONT, text="To game",
+                                operation=change_game_status, new_status=3)
+        all_button.append(to_game_button)
+    elif new_status == 3:
+        numbers = randomize_five_number([0, 0, 0, 0, 0]) # simulate number array from game object
+        create_operation_button()
+    elif new_status == 4:
+        pass
+    elif new_status == 5:
+        pass
+    pygame.time.wait(300) # This function was there to prevent mouse double clicking button
 
 def test_func(text_test):
     print(f"this is test func {text_test}")
@@ -68,25 +89,21 @@ def update_operation_button():
 def main():
     clock = pygame.time.Clock()
     running = True
+    to_mm2_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Play",
+                           operation=change_game_status, new_status=2)
+    all_button.append(to_mm2_button)
     while running:
         clock.tick(FPS)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
         if menu_status == 1:
-            to_mm2_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Play",
-                                   operation=change_game_status, new_status=2)
-            all_button.append(to_mm2_button)
             draw_main_menu_1()
         elif menu_status == 2:
-            to_game_button = Button(window=WIN, button_font=DEFAULT_FONT, text="To game",
-                                    operation=change_game_status, new_status=3)
-            all_button.append(to_game_button)
             draw_main_menu_2()
         elif menu_status == 3:
-            numbers = randomize_five_number([0, 0, 0, 0, 0]) # simulate number array from game object
-            create_operation_button()
             draw_game_window()
         elif menu_status == 4:
             draw_how_to_play()
@@ -97,7 +114,9 @@ def main():
             button.update_button()
 
         pygame.display.update()
-        # print(len(all_button))
+        print(f"all_button len: {len(all_button)}")
+        print(f"menu_status: {menu_status}")
+
 
 if __name__ == "__main__":
     main()
