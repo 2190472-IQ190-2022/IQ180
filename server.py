@@ -16,25 +16,17 @@ def threaded_client(conn, player, gameId, games):
     # conn.sendall(pickle.dumps(game))
     reply = ""
     while True:
-        # try:
-        # rcv = conn.recv(2048*5)
-        # print(f"----> {type(rcv).__name__}")
-        # data = pickle.load(rcv)
-        data = conn.recv(2048).decode()
-        print("recieved")
+        rcv_game = pickle.loads(conn.recv(2048*5))
+        # print("received")
         if gameId in games:
             game = games[gameId] 
             # Because this can have multiple games in the same time, so we need "gameId" to specify the game.
-            if not data:
+            if not rcv_game:
                 break
-            elif type(data) == str:    
-                # if data == "reset":
-                #     game.resetWent()
-                if data == "get_equation":
-                    game.generate_question()
-                elif data != "get":
-                    game.check(player, data)
-            conn.sendall(pickle.dumps(game))
+            elif rcv_game.dummy == False:    
+                games[gameId] = rcv_game
+            else:
+                conn.sendall(pickle.dumps(game))
         else:
             break
         # except Exception as e:

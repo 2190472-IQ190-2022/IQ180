@@ -9,6 +9,7 @@ class Game:
         self.p2_name = p2_name
         self.current_time = 0
         self.ready = False
+        self.dummy = True
         self.turn = random.getrandbits(1)+1  # 1 for player 1's turn and 2 for player 2's turn
         self.id = id
         # for timer
