@@ -141,7 +141,8 @@ def user_game_input(button_input):
     print(f"total input: {game_input}")
 
 def test_reset_button():
-    global 
+    global game_input
+    game_input = ""
 
 def test_submit_button():
     global player_submit
