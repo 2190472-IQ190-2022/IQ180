@@ -1,5 +1,6 @@
 # Note: The button logic is still bugged, it creates like millions of button
 # Note: BUG - holding button will reclick it
+from turtle import color
 from game import Game
 import pygame
 from Button import Button
@@ -70,7 +71,7 @@ def change_game_status(new_status):
     pygame.time.wait(300) # This function was there to prevent mouse double clicking button
 
 def test_func(text_test):
-    print(f"this is test func {text_test}")
+    pass
 
 def randomize_five_number(array):
     length = len(array)
@@ -80,17 +81,17 @@ def randomize_five_number(array):
 
 number_set = randomize_five_number([0, 0, 0, 0, 0])
 def display_five_number():
-    transition_x = 0
-    for i in range(5):
-        number_text = pygame.font.SysFont("arial", 70).render(f"{number_set[i]}", True, "black")
-        number_text_rect = number_text.get_rect(center=(150+transition_x, 100))
-        WIN.blit(number_text, number_text_rect)
-        transition_x += 125
+    transition_x = 100
+    for number in number_set:        
+        button = Button(WIN, pygame.font.SysFont('arial', 70), enabled_color=(255, 255, 255), pressed_color=(128, 128, 128), 
+                        text=str(number), operation=test_func, text_test=number, pos=(transition_x, 100))
+        all_button.append(button)
+        transition_x = transition_x + 125
 
 def create_operation_button():
     position_x = 100
     for char in "+-*/()":
-        button = Button(WIN, DEFAULT_FONT, text=char, operation=test_func, text_test=char, pos=(position_x, 200))
+        button = Button(WIN, DEFAULT_FONT, text=char, operation=test_func, text_test=char, pos=(position_x, 300))
         all_button.append(button)
         position_x = position_x + 100
 
