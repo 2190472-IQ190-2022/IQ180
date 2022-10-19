@@ -46,6 +46,7 @@ def draw_game_window():
     WIN.fill(WHITE)
     this_text = DEFAULT_FONT.render("Game", 1, BLACK)
     WIN.blit(this_text, (WIDTH/2-this_text.get_width()/2, HEIGHT/2-this_text.get_height()/2))
+    display_five_number()
 
 def change_game_status(new_status):
     global menu_status, all_button
@@ -76,6 +77,16 @@ def randomize_five_number(array):
     length = len(array)
     for i in range(0, length, 1):
         array[i] = random.randint(0,9)
+    return array
+
+number_set = randomize_five_number([0, 0, 0, 0, 0])
+def display_five_number():
+    transition_x = 0
+    for i in range(5):
+        number_text = pygame.font.SysFont("arial", 70).render(f"{number_set[i]}", True, "black")
+        number_text_rect = number_text.get_rect(center=(150+transition_x, 100))
+        WIN.blit(number_text, number_text_rect)
+        transition_x += 125
 
 def create_operation_button():
     position_x = 100
@@ -115,9 +126,6 @@ def main():
             button.update_button()
 
         pygame.display.update()
-        print(f"all_button len: {len(all_button)}")
-        print(f"menu_status: {menu_status}")
-
 
 if __name__ == "__main__":
     main()
