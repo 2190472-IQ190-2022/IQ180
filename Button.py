@@ -87,7 +87,7 @@ class Button:
         return False
 
     def is_pressed(self):
-        return is_hovering() and is_mouse_down()
+        return self.is_hovering() and self.is_mouse_down()
 
     def update_button(self):
         """
