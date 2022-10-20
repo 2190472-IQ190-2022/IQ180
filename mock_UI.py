@@ -35,7 +35,8 @@ all_button = []
 game_input = ""
 player_submit = False
 
-def draw_everything(current_menu_status):
+def draw_everything(current_menu_status, game_state=[]):
+    # game state is in [("text", (x, y))] format
     WIN.fill(WHITE)
     text_print = ""
     if current_menu_status == 1:
@@ -52,9 +53,18 @@ def draw_everything(current_menu_status):
         text_print = "What"
     this_text = DEFAULT_FONT.render(text_print, 1, BLACK)
     WIN.blit(this_text, (WIDTH/2-this_text.get_width()/2, HEIGHT/2-this_text.get_height()/2))
+    for status in game_state:
+        test = DEFAULT_FONT.render(status[0], 1, BLACK)
+        WIN.blit(test, status[1])
 
 def change_game_status(new_status):
     global menu_status, all_button
+    while True:
+        if pygame.mouse.get_pressed()[0]:
+            keep_the_game_running()
+            continue
+        else:
+            break
     menu_status = new_status
     all_button = []
     if new_status == 1:
@@ -76,14 +86,14 @@ def change_game_status(new_status):
         all_button.append(return_to_mm1_button)
     elif new_status == 5:
         pass
-    pygame.time.wait(500) # This function was there to prevent mouse double clicking button / it does not work
+    pygame.time.wait(100) # This function was there to prevent mouse double clicking button / it does not work
 
-def keep_the_game_running():
+def keep_the_game_running(things_to_draw=[]):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
 
-    draw_everything(menu_status)
+    draw_everything(menu_status, things_to_draw)
     game_button_control()
     pygame.display.update()
 
@@ -94,21 +104,20 @@ def init_game():
     print("you are p"+str(net.player))
     dummy = Game(-1,"dm","dm")
     while True:
-        print("hello")
-        #print("Wait")
-        net.client.send(pickle.dumps(dummy))
+        clock = pygame.time.Clock()
+        clock.tick(FPS)
+        net.client.send(pickle.dumps(dummy)) # add try except here to prevent server crash
         game = net.recv()
         game.dummy = False
-        #print(game.ready)
         if game.ready == False:
             print("Waiting for another player")
             keep_the_game_running()
             continue
-        # print(game.turn)
         if game.p1_played and game.p2_played:
             game.update_score()
         if str(net.player) == str(game.turn):
             player_submit = False
+            game_input = ""
             print("your turn")
             print(game.numbers_array)
             print(game.sum)
@@ -117,8 +126,14 @@ def init_game():
             print(f"P2: {game.p2_score}")
             create_game_button(game.numbers_array)
             while not player_submit:
-               keep_the_game_running()
-            equation_str = game_input
+                clock.tick(FPS)
+                to_draw = [(f"player 1: {game.p1_score}", (200, 200)),
+                           (f"player 2: {game.p2_score}", (500, 200)),
+                           (f"time: {game.current_time}", (800, 200)),
+                           (f"input: {game_input}", (1100, 200))]
+                keep_the_game_running(things_to_draw=to_draw)
+
+            equation_str = game_input.replace("x", "*").replace("÷", "/")
             print(equation_str)
             if net.player == '1':
                 game.p1_played = True
@@ -133,8 +148,8 @@ def init_game():
         else:
             print("waiting for your turn")
             all_button = []
+            clock.tick(FPS)
             keep_the_game_running()
-        # time.sleep(1)
 
 def user_game_input(button_input):
     global game_input
@@ -143,17 +158,15 @@ def user_game_input(button_input):
     else:
         print(f"{button_input}: numbers")
     game_input = game_input + button_input
-    WIN.blit(DEFAULT_FONT.render(button_input, 1, "Black"), (200, 400)) 
-    
-    # I don't know what will display because the game shutdown after I click 'to game' button
-    
+    # WIN.blit(DEFAULT_FONT.render(button_input, 1, "Black"), (200, 400))
+
     print(f"total input: {game_input}")
 
-def test_reset_button():
+def reset_button_operation():
     global game_input
     game_input = ""
 
-def test_submit_button():
+def submit_button_operation():
     global player_submit
     player_submit = True
 
@@ -193,9 +206,9 @@ def create_game_button(numbers):
         all_button.append(button)
 
     button_size_x, position_x = calculate_button_position(2)
-    reset_button = Button(WIN, DEFAULT_FONT, text="Reset", operation=test_reset_button,
+    reset_button = Button(WIN, DEFAULT_FONT, text="Reset", operation=reset_button_operation,
                           pos=(position_x[0], position_y[2]), size=(button_size_x, button_size_y))
-    submit_button = Button(WIN, DEFAULT_FONT, text="Submit", operation=test_submit_button,
+    submit_button = Button(WIN, DEFAULT_FONT, text="Submit", operation=submit_button_operation,
                            pos=(position_x[1], position_y[2]), size=(button_size_x, button_size_y))
     all_button.append(reset_button)
     all_button.append(submit_button)
