@@ -116,6 +116,7 @@ def init_game():
             print(f"P1: {game.p1_score}")
             print(f"P2: {game.p2_score}")
             create_game_button(game.numbers_array)
+            show_sum(game.sum)
             while not player_submit:
                keep_the_game_running()
             equation_str = game_input
@@ -166,6 +167,14 @@ def randomize_five_number(array):
     length = len(array)
     for i in range(0, length, 1):
         array[i] = random.randint(0,9)
+
+def show_sum(sum):    
+    sum_font = pygame.font.SysFont('comicsans', 200)
+    sum_text = sum_font.render(str(sum), 1, (0, 0, 0))
+    WIN.blit(sum_text, (100, 100))
+    button = Button(WIN, sum_font, text=str(sum), operation=None, pos=(WIDTH/2, 150), size=(0, 0),
+                    disabled_color=(255, 255, 255))
+    all_button.append(button)
 
 def calculate_button_position(number_of_button, border_factor=BUTTON_BORDER_FACTOR,
                               inline_space=GAME_BUTTON_INLINE_SPACING, offset=0, axis=WIDTH):
