@@ -136,3 +136,5 @@ class Button:
                          self.pos[0], self.pos[1], self.size[0], self.size[1]])
         self.window.blit(self.text_rendered, (self.pos[0]+self.size[0]/2-self.text_rendered.get_width()/2,
                                               self.pos[1]+self.size[1]/2-self.text_rendered.get_height()/2))
+
+    

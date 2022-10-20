@@ -65,10 +65,15 @@ def change_game_status(new_status):
         to_game_button = Button(window=WIN, button_font=DEFAULT_FONT, text="To game",
                                 operation=change_game_status, new_status=3)
         all_button.append(to_game_button)
+        return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(1400,750),size= (100,100), text="back",
+                           operation=change_game_status, new_status=1)
+        all_button.append(return_to_mm1_button)
     elif new_status == 3:
         init_game()
     elif new_status == 4:
-        pass
+        return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(1400,750),size= (100,100), text="back",
+                           operation=change_game_status, new_status=1)
+        all_button.append(return_to_mm1_button)
     elif new_status == 5:
         pass
     pygame.time.wait(200) # This function was there to prevent mouse double clicking button / it does not work
@@ -86,15 +91,15 @@ def init_game():
     # do other thing like mock_client can be done here as well
     global player_submit, game_input, all_button
     net = Network()
-    # game = net.recv()
+    game = net.recv()
     print("you are p"+str(net.player))
     dummy = Game(-1,"dm","dm")
     while True:
-        # print("Wait")
+        #print("Wait")
         net.client.send(pickle.dumps(dummy))
         game = net.recv()
         game.dummy = False
-        # print(game.ready)
+        #print(game.ready)
         if game.ready == False:
             print("Waiting for another player")
             keep_the_game_running()
@@ -200,7 +205,6 @@ def main():
     all_button.append(to_mm2_button)
     while running:
         clock.tick(FPS)
-
         keep_the_game_running()
 
 if __name__ == "__main__":
