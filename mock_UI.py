@@ -187,6 +187,8 @@ def user_game_input(button_input):
     if button_input in ALL_ALLOWS_MATH_OP:
         print(f"{button_input}: operation")
     else:
+        if game_input[len(game_input)-1:].isdigit(): # if last char is number, prevent them to input number
+            return
         print(f"{button_input}: numbers")
     game_input = game_input + button_input
 
@@ -199,6 +201,7 @@ def submit_button_operation():
     """This function is called when the submit button in the game is pressed"""
     global player_submit
     player_submit = True
+    game_input = ""
 
 def game_button_control():
     """function for button control and bug fixes (not yet implemented)"""
@@ -214,8 +217,6 @@ def randomize_five_number(array):
 def show_sum(sum):
     """Show the expected value from the user's equation"""
     sum_font = pygame.font.SysFont('comicsans', 200)
-    sum_text = sum_font.render(str(sum), 1, (0, 0, 0))
-    WIN.blit(sum_text, (100, 100))
     button = Button(WIN, sum_font, text=str(sum), operation=None, pos=(WIDTH/2, 150), size=(0, 0),
                     disabled_color=(255, 255, 255))
     all_button.append(button)
@@ -281,3 +282,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+print(all_button)
