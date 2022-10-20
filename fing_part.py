@@ -70,8 +70,11 @@ def change_game_status(new_status):
         pass
     pygame.time.wait(300) # This function was there to prevent mouse double clicking button
 
+default_equation = ''
 def test_func(text_test):
-    pass
+    default_equation = text_test
+    WIN.blit(DEFAULT_FONT.render(default_equation, 1, "Black"), (125, 200))
+     
 
 def randomize_five_number(array):
     length = len(array)
@@ -84,14 +87,14 @@ def display_five_number():
     transition_x = 100
     for number in number_set:        
         button = Button(WIN, pygame.font.SysFont('arial', 70), enabled_color=(255, 255, 255), pressed_color=(128, 128, 128), 
-                        text=str(number), operation=test_func, text_test=number, pos=(transition_x, 100))
+                        text=str(number), operation=test_func, text_test=str(number), pos=(transition_x, 100))
         all_button.append(button)
         transition_x = transition_x + 125
 
 def create_operation_button():
     position_x = 100
     for char in "+-*/()":
-        button = Button(WIN, DEFAULT_FONT, text=char, operation=test_func, text_test=char, pos=(position_x, 300))
+        button = Button(WIN, DEFAULT_FONT, text=char, operation=test_func, text_test=char, pos=(position_x, 350))
         all_button.append(button)
         position_x = position_x + 100
 
