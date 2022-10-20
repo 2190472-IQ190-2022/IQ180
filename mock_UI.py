@@ -162,8 +162,6 @@ def user_game_input(button_input):
 
 def reset_button_operation():
     global game_input
-    if game_input != "":
-        all_button.pop(len(all_button)-1)
     game_input = ""
 
 def submit_button_operation():
