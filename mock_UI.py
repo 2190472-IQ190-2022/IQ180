@@ -144,19 +144,23 @@ def user_game_input(button_input):
     else:
         print(f"{button_input}: numbers")
     game_input = game_input + button_input
-    WIN.blit(DEFAULT_FONT.render(game_input, 1, "Black"), (200, 200)) 
-    
-    # I don't know what will display because the game shutdown after I click 'to game' button
-    
+    button = Button(WIN, DEFAULT_FONT, text=game_input, operation=None, pos=(WIDTH/2, 350), size=(0, 0),
+                    disabled_color=(255, 255, 255))
+    if len(game_input) > 1:
+        all_button.pop(len(all_button)-1)
+    all_button.append(button)
     print(f"total input: {game_input}")
 
 def test_reset_button():
     global game_input
+    if game_input != "":
+        all_button.pop(len(all_button)-1)
     game_input = ""
 
 def test_submit_button():
-    global player_submit
+    global player_submit, game_input
     player_submit = True
+    game_input = ""
 
 def game_button_control():
     """function for button control and bug fixes (not yet implemented)"""
@@ -170,8 +174,6 @@ def randomize_five_number(array):
 
 def show_sum(sum):    
     sum_font = pygame.font.SysFont('comicsans', 200)
-    sum_text = sum_font.render(str(sum), 1, (0, 0, 0))
-    WIN.blit(sum_text, (100, 100))
     button = Button(WIN, sum_font, text=str(sum), operation=None, pos=(WIDTH/2, 150), size=(0, 0),
                     disabled_color=(255, 255, 255))
     all_button.append(button)
@@ -222,3 +224,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+print(all_button)
