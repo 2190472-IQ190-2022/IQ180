@@ -143,6 +143,10 @@ def user_game_input(button_input):
     else:
         print(f"{button_input}: numbers")
     game_input = game_input + button_input
+    WIN.blit(DEFAULT_FONT.render(button_input, 1, "Black"), (200, 400)) 
+    
+    # I don't know what will display because the game shutdown after I click 'to game' button
+    
     print(f"total input: {game_input}")
 
 def test_reset_button():
