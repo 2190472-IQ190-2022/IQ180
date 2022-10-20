@@ -76,7 +76,7 @@ def change_game_status(new_status):
         all_button.append(return_to_mm1_button)
     elif new_status == 5:
         pass
-    pygame.time.wait(200) # This function was there to prevent mouse double clicking button / it does not work
+    pygame.time.wait(500) # This function was there to prevent mouse double clicking button / it does not work
 
 def keep_the_game_running():
     for event in pygame.event.get():
@@ -91,10 +91,10 @@ def init_game():
     # do other thing like mock_client can be done here as well
     global player_submit, game_input, all_button
     net = Network()
-    game = net.recv()
     print("you are p"+str(net.player))
     dummy = Game(-1,"dm","dm")
     while True:
+        print("hello")
         #print("Wait")
         net.client.send(pickle.dumps(dummy))
         game = net.recv()
