@@ -157,7 +157,9 @@ def user_game_input(button_input):
     if button_input in ALL_ALLOWS_MATH_OP:
         print(f"{button_input}: operation")
     else:
-        print(f"{button_input}: numbers")
+        if game_input[len(game_input)-1:].isdigit(): # if last char is number, prevent them to input number
+            print(f"{button_input}: numbers")
+            return
     game_input = game_input + button_input
 
 def reset_button_operation():
