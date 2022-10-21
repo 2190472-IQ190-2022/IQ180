@@ -30,7 +30,7 @@ pygame.display.set_caption("IQ1")
 # Global Variable
 menu_status = 1
 # menu status = 1 is mm1, = 2 is mm2, = 3 is game, = 4 is htp, = 5 is setting
-
+disabled_game_button_index = []
 all_button = []
 game_input = ""
 player_submit = False
@@ -134,10 +134,12 @@ def init_game():
     while True:
         clock = pygame.time.Clock()
         clock.tick(FPS)
-
-        net.client.send(pickle.dumps(dummy))
-        game = net.recv() # add try except here to prevent server crash
-        
+        try:
+            net.client.send(pickle.dumps(dummy))
+            game = net.recv() # add try except here to prevent server crash
+        except:
+            change_game_status(new_status=2)
+            break
         game.dummy = False
         if game.ready == False:
             print("Waiting for another player")
@@ -183,16 +185,18 @@ def init_game():
             keep_the_game_running()
     game_state = []
 
-def user_game_input(button_input):
+def user_game_input(button_input, button_index):
     """This the function that is called when user press the button in game session (numbers and operator)"""
-    global game_input
+    global game_input, disabled_game_button_index
     if button_input in ALL_ALLOWS_MATH_OP:
         print(f"{button_input}: operation")
     else:
         if game_input[len(game_input)-1:].isdigit(): # if last char is number, prevent them to input number
             return
+        all_button[button_index].disable_button()
         print(f"{button_input}: numbers")
     game_input = game_input + button_input
+
 
 def reset_button_operation():
     """This function is called when reset button in the game is pressed"""
@@ -241,7 +245,7 @@ def create_game_button(numbers):
     for i in range(len(numbers)):
         button = Button(WIN, DEFAULT_FONT, text=str(numbers[i]), operation=user_game_input,
                         pos=(position_x[i], position_y[0]), size=(button_size_x, button_size_y),
-                        button_input=str(numbers[i]))
+                        button_input=str(numbers[i]), button_index=i)
         all_button.append(button)
 
     button_size_x, position_x = calculate_button_position(len(ALL_ALLOWS_MATH_OP))
@@ -249,7 +253,7 @@ def create_game_button(numbers):
     for i in range(len(ALL_ALLOWS_MATH_OP)):
         button = Button(WIN, DEFAULT_FONT, text=ALL_ALLOWS_MATH_OP[i], operation=user_game_input,
                         pos=(position_x[i], position_y[1]), size=(button_size_x, button_size_y),
-                        button_input=ALL_ALLOWS_MATH_OP[i])
+                        button_input=ALL_ALLOWS_MATH_OP[i], button_index=i)
         all_button.append(button)
 
     button_size_x, position_x = calculate_button_position(2)
