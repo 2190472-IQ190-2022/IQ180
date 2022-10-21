@@ -1,11 +1,13 @@
+import math
 import socket
 from _thread import *
 import pickle
 from time import time
 from game import Game
 
-hostname=socket.gethostname()   
+hostname=socket.gethostname()
 server=socket.gethostbyname(hostname)
+# server = "10.201.142.11"
 port = 5555
 
 def threaded_client(conn, player, gameId, games):
@@ -16,25 +18,40 @@ def threaded_client(conn, player, gameId, games):
     # conn.sendall(pickle.dumps(game))
     reply = ""
     while True:
-        rcv_game = pickle.loads(conn.recv(2048*5))
-        # print("received")
-        if gameId in games:
-            game = games[gameId] 
-            # Because this can have multiple games in the same time, so we need "gameId" to specify the game.
-            if not rcv_game:
-                break
-            elif not rcv_game.dummy:
-                games.pop(gameId)
-                games[gameId] = rcv_game
-                print(rcv_game.turn)
-                print(games[gameId].turn)
+        try:
+            rcv_game = pickle.loads(conn.recv(2048*5))
+            # print("received")
+            if gameId in games:
+                game = games[gameId]
+                # Because this can have multiple games in the same time, so we need "gameId" to specify the game.
+                if not rcv_game:
+                    break
+                elif not rcv_game.dummy:
+                    if rcv_game.ready:
+                        if rcv_game.turn == 2: # turn is already updated before sending to server
+                            print("PASS 1")
+                            rcv_game.p1_game_time = math.ceil(60 - (time() - rcv_game.startTime))
+                            rcv_game.startTime = time()
+                            # rcv_game.turn = 2
+                        elif rcv_game.turn == 1: # turn is already updated before sending to server
+                            print("PASS 2")
+                            rcv_game.p2_game_time = math.ceil(60 - (time() - rcv_game.startTime))
+                            rcv_game.startTime = time()
+                            # rcv_game.turn = 1
+                    games.pop(gameId)
+                    games[gameId] = rcv_game
+                    print(f"P1 spends {rcv_game.p1_game_time}")
+                    print(f"P2 spends {rcv_game.p2_game_time}")
+                    print("--------------------------------")
+                    # print(rcv_game.turn)
+                    # print(games[gameId].turn)
+                else:
+                    conn.sendall(pickle.dumps(game))
             else:
-                conn.sendall(pickle.dumps(game))
-        else:
+                break
+        except Exception as e:
+            print(e)
             break
-        # except Exception as e:
-            # print(e)
-            # break
 
     print("Lost connection")
     try:
@@ -43,6 +60,7 @@ def threaded_client(conn, player, gameId, games):
     except:
         pass
     idCount -= 1
+    print(f"The number of players: {idCount}")
     conn.close()
 
 if __name__ == "__main__":
@@ -73,5 +91,5 @@ if __name__ == "__main__":
             games[gameId].startTime = time()
             player = 2
 
-        print(games)
+        print(f"The number of players: {idCount}")
         start_new_thread(threaded_client, (conn, player, gameId, games))

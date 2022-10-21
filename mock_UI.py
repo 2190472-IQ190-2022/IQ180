@@ -158,7 +158,7 @@ def init_game():
                 clock.tick(FPS)
                 to_draw = [(f"player 1: {game.p1_score}", (300, 300)),
                            (f"player 2: {game.p2_score}", (600, 300)),
-                           (f"time: {game.current_time}", (900, 300)),
+                           (f"time: {math.ceil(60 - (time.time() - game.startTime))}", (900, 300)),
                            (f"input: {game_input}", (1200, 300))]
                 keep_the_game_running(things_to_draw=to_draw)
 
@@ -224,8 +224,8 @@ def show_sum(sum):
 def calculate_button_position(number_of_button, border_factor=BUTTON_BORDER_FACTOR,
                               inline_space=GAME_BUTTON_INLINE_SPACING, offset=0, axis=WIDTH):
     """
-        This function is used to calculate the position and the size of the button in ONE AXIS (WIDTH or HEIGHT)
-        This function is better used for set of multiple buttons, individual button just set position manually
+    This function is used to calculate the position and the size of the button in ONE AXIS (WIDTH or HEIGHT)
+    This function is better used for set of multiple buttons, individual button just set position manually
     """
     space_used = border_factor * axis
     button_size = (space_used - ((number_of_button - 1) * inline_space)) / number_of_button
