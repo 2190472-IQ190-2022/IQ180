@@ -179,7 +179,6 @@ def init_game():
             net.client.send(pickle.dumps(game))
             print("send " + equation_str)
         else:
-            print("waiting for your turn")
             all_button = []
             clock.tick(FPS)
             keep_the_game_running()
