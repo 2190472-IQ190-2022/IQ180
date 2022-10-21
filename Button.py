@@ -26,7 +26,7 @@ class Button:
     """
 
     def __init__(self, window, button_font, pos=(300, 300), size=(100, 100), enabled_color=(100, 100, 100),
-                 hover_color=(170, 170, 170), pressed_color=(20, 20, 20), disabled_color=(50, 50, 50), text="text",
+                 hover_color=(170, 170, 170), pressed_color=(20, 20, 20), disabled_color=(50, 50, 50), text="text", show_text=True,
                  disabled=False, img=None, img_hover=None, img_pressed=None, img_disabled=None, operation=None, ** op_args):
         self.window = window
         self.button_font = button_font
@@ -38,6 +38,7 @@ class Button:
         self.disabled_color = disabled_color
         self.pressed_color = pressed_color
         self.text = text
+        self.show_text = show_text
         self.op_args = op_args
         self.status = 0  # 0 is disbled 1 is enabled 2 is hovered 3 is pressed
         self.text_rendered = self.button_font.render(self.text, 1, (0, 0, 0))
@@ -134,6 +135,7 @@ class Button:
 
         pygame.draw.rect(self.window, color, [
                          self.pos[0], self.pos[1], self.size[0], self.size[1]])
-        self.window.blit(self.text_rendered, (self.pos[0]+self.size[0]/2-self.text_rendered.get_width()/2,
-                                              self.pos[1]+self.size[1]/2-self.text_rendered.get_height()/2))
+        if self.show_text:
+            self.window.blit(self.text_rendered, (self.pos[0]+self.size[0]/2-self.text_rendered.get_width()/2,
+                                                self.pos[1]+self.size[1]/2-self.text_rendered.get_height()/2))
 

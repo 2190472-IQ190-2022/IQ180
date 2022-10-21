@@ -134,8 +134,10 @@ def init_game():
     while True:
         clock = pygame.time.Clock()
         clock.tick(FPS)
+
         net.client.send(pickle.dumps(dummy))
         game = net.recv() # add try except here to prevent server crash
+        
         game.dummy = False
         if game.ready == False:
             print("Waiting for another player")
