@@ -30,7 +30,7 @@ pygame.display.set_caption("IQ1")
 # Global Variable
 menu_status = 1
 # menu status = 1 is mm1, = 2 is mm2, = 3 is game, = 4 is htp, = 5 is setting
-disabled_game_button_index = []
+# disabled_game_button_index = []
 all_button = []
 game_input = ""
 player_submit = False
