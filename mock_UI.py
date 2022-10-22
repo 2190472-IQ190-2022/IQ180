@@ -179,7 +179,6 @@ def init_game():
             net.client.send(pickle.dumps(game))
             print("send " + equation_str)
         else:
-            print("waiting for your turn")
             all_button = []
             clock.tick(FPS)
             keep_the_game_running()
@@ -201,6 +200,8 @@ def user_game_input(button_input, button_index):
 def reset_button_operation():
     """This function is called when reset button in the game is pressed"""
     global game_input
+    for button in all_button:
+        button.enable_button()
     game_input = ""
 
 def submit_button_operation():
