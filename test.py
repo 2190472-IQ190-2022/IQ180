@@ -16,34 +16,41 @@ print("AMOGUS")
 # print(g1.check(equation, sum+2))
 
 
-### Button Test ###
+## Button Test ###
 
-# import pygame
-# import Button
-#
-# WHITE = (255, 255, 255)
-#
+import pygame
+import Button
+import Popup
+
+WHITE = (255, 255, 255)
+
 # def test_func(name, number, idk_variable_name_i_guess="bruh"):
 #     print(f"hello func {name}, number {number} says \"{idk_variable_name_i_guess}\"")
-#
-# pygame.font.init()
-# WIN = pygame.display.set_mode((800, 600))
-# BUTTON_FONT1 = pygame.font.SysFont('arial', 69)
-# running = True
+
+pygame.font.init()
+WIN = pygame.display.set_mode((1280, 720))
+popup_font = pygame.font.SysFont('arial', 40)
+popup_font_2 = pygame.font.SysFont('arial', 100)
+running = True
+text_1 = popup_font.render("hello fuck u i fuck u all ten times", 1, (0, 0, 0))
+text_2 = popup_font_2.render("hi", 1, (0, 0, 0))
+p = Popup.Popup(WIN, text_object=[text_1, text_2])
+print(p.calculate_pop_up_box_size())
 # b1 = Button.Button(WIN, BUTTON_FONT1, operation=test_func, pos=(300, 300), text="test", name="tawan", number="28")
 # b2 = Button.Button(WIN, BUTTON_FONT1, operation=b1.disable_button, pos=(100, 300), text="dis")
 # b3 = Button.Button(WIN, BUTTON_FONT1, operation=b1.enable_button, pos=(500, 300), text="ena")
-# WIN.fill(WHITE)
-# while running:
-#     WIN.fill(WHITE)
-#     mouse = pygame.mouse.get_pos()
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             running = False
-#     b1.update_button()
-#     b2.update_button()
-#     b3.update_button()
-#     # b1.draw(mouse)
-#     # print(mouse)
-#     # print(b1.is_hovering(mouse))
-#     pygame.display.update()
+WIN.fill(WHITE)
+while running:
+    WIN.fill(WHITE)
+    mouse = pygame.mouse.get_pos()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+    # b1.update_button()
+    # b2.update_button()
+    # b3.update_button()
+    # b1.draw(mouse)
+    # print(mouse)
+    # print(b1.is_hovering(mouse))
+    p.draw()
+    pygame.display.update()
