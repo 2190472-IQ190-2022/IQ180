@@ -46,6 +46,8 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
     text_print = ""
     if current_menu_status == 1:
         text_print = "Main menu 1"
+        if (user_name,(700,300)) in to_be_drawn:
+            to_be_drawn.remove((user_name,(700,300)))
     elif current_menu_status == 2:
         text_print = "Main menu 2"
         rect = pygame.Rect(700,300,200,50)
@@ -104,6 +106,9 @@ def change_game_status(new_status):
         return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(1400,750),size= (100,100), text="back",
                                         operation=change_game_status, new_status=1)
         all_button.append(return_to_mm1_button)
+        enter_name_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(350,300),size= (300,50), text="Enter name",
+                                        operation=get_user_name)
+        all_button.append(enter_name_button)
     elif new_status == 3:
         init_game()
     elif new_status == 4:
@@ -124,28 +129,34 @@ def keep_the_game_running(things_to_draw=[]):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
-    if menu_status == 2:
-        get_user_name()
-        return
         
     draw_everything(menu_status, things_to_draw)
     game_button_control()
     pygame.display.update()
     
-def get_user_name(things_to_draw=[]):#try working with user name, does not work TT
+def get_user_name(): #get input from user and store in user_name
     global user_name
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            exit()
-        if event.type == pygame.KEYDOWN & menu_status == 2:
-            if event.key == pygame.K_BACKSPACE:
-                user_name = user_name[0:-1]
-            else:
-                user_name += event.unicode
-    things_to_draw.append(('name',(700,300)))
-    draw_everything(menu_status, things_to_draw)
-    game_button_control()
-    pygame.display.update()
+    typing = True
+    while typing:
+        things_to_draw = []
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    user_name = user_name[0:-1]
+                elif event.key == pygame.K_RETURN:
+                    typing = False
+                    change_game_status(3)
+                else:
+                    user_name += event.unicode
+            things_to_draw.append((user_name,(700,300)))
+            draw_everything(menu_status, things_to_draw)
+            game_button_control()
+            pygame.display.update()
+    keep_the_game_running()
+                
+    
     
 
 def init_game():
