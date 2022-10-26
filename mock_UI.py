@@ -27,6 +27,7 @@ pygame.font.init()
 DEFAULT_FONT = pygame.font.SysFont('comicsans', 40)
 pygame.display.set_caption("IQ1")
 
+
 # Global Variable
 menu_status = 1
 # menu status = 1 is mm1, = 2 is mm2, = 3 is game, = 4 is htp, = 5 is setting
@@ -34,6 +35,7 @@ menu_status = 1
 all_button = []
 game_input = ""
 player_submit = False
+user_name = ""
 
 def draw_everything(current_menu_status, to_be_drawn=[]):
     # TO_BE_DRAWN is in [("text", (x, y))] format
@@ -46,6 +48,9 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         text_print = "Main menu 1"
     elif current_menu_status == 2:
         text_print = "Main menu 2"
+        rect = pygame.Rect(700,300,200,50)
+        color = pygame.Color('lightskyblue1')
+        pygame.draw.rect(WIN,color,rect,2)
     elif current_menu_status == 3:
         text_print = "Game"
     elif current_menu_status == 4:
@@ -116,14 +121,32 @@ def keep_the_game_running(things_to_draw=[]):
         This function keep pygame updating and stop it from not responding
         you can also pass something to be drawn in draw_everything function here
     """
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
-
+    if menu_status == 2:
+        get_user_name()
+        return
+        
     draw_everything(menu_status, things_to_draw)
     game_button_control()
     pygame.display.update()
+    
+def get_user_name(things_to_draw=[]):#try working with user name, does not work TT
+    global user_name
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            exit()
+        if event.type == pygame.KEYDOWN & menu_status == 2:
+            if event.key == pygame.K_BACKSPACE:
+                user_name = user_name[0:-1]
+            else:
+                user_name += event.unicode
+    things_to_draw.append(('name',(700,300)))
+    draw_everything(menu_status, things_to_draw)
+    game_button_control()
+    pygame.display.update()
+    
 
 def init_game():
     """this is the game"""
@@ -267,6 +290,7 @@ def create_game_button(numbers):
 
 def main():
     """This is the main function"""
+    global user_name
     clock = pygame.time.Clock()
     running = True
     button_size_x, position_one_button_x = calculate_button_position(1, border_factor=0.3)
@@ -283,9 +307,10 @@ def main():
                                  operation=change_game_status, new_status=4)
     all_button.append(to_setting_button)
     all_button.append(to_howtoplay_button)
+    
     while running:
         clock.tick(FPS)
-        keep_the_game_running()
+        keep_the_game_running() 
 
 if __name__ == "__main__":
     main()
