@@ -72,6 +72,13 @@ class Game:
 
     def check(self, string_equation):
         # Check the answer of the equation
+        numbers=0
+        for e in string_equation:
+            testCharacter=""+ e
+            if testCharacter.isnumeric():
+                numbers+=1
+        if numbers!=5:
+            return False
         try:
             return eval(string_equation) == self.sum
         except:
