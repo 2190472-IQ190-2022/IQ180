@@ -191,7 +191,6 @@ def init_game():
         except:
             change_game_status(new_status=2)
             break
-        game.dummy = False
         if game.ready == False:
             #print("Waiting for another player")
             keep_the_game_running()

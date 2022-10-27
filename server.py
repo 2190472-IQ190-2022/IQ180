@@ -27,6 +27,7 @@ def threaded_client(conn, player, gameId, games):
                 if not rcv_game:
                     break
                 elif not rcv_game.dummy:
+                    print("received")
                     if rcv_game.ready:
                         if rcv_game.turn == 2: # turn is already updated before sending to server
                             print("PASS 1")
@@ -84,6 +85,7 @@ if __name__ == "__main__":
         gameId = (idCount - 1)//2
         if idCount % 2 == 1:
             games[gameId] = Game(gameId, "Player1", "Player2")
+            games[gameId].dummy = False
             print("Creating a new game...")
         else:
             games[gameId].ready = True
