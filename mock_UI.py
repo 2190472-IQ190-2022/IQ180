@@ -194,6 +194,8 @@ def init_game():
             show_sum(game.sum)
             while not player_submit:
                 clock.tick(FPS)
+                if math.ceil(60 - (time.time() - game.startTime)) < 0:
+                    break
                 to_draw = [(f"player 1: {game.p1_score}", (300, 300)),
                            (f"player 2: {game.p2_score}", (600, 300)),
                            (f"time: {math.ceil(60 - (time.time() - game.startTime))}", (900, 300)),
