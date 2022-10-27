@@ -47,17 +47,18 @@ class Game:
                 if i != number_of_digits-1:
                     equation += random.choice(operation)
             sum = eval(equation)
+            if have_divide == 1:
+                for i in range(9,0,-1):
+                    if sum%i == 0:
+                        sum /= i
+                        sum = int(sum)
+                        numbers_array.append(i)
+                        equation = f"({equation})/{str(i)}"
+                        break
             if sum >= 10:
                 break
 
-        if have_divide == 1:
-            for i in range(9,0,-1):
-                if sum%i == 0:
-                    sum /= i
-                    sum = int(sum)
-                    numbers_array.append(i)
-                    equation = f"({equation})/{str(i)}"
-                    break
+
         # For Debugging Purpose. May remove when submitting to ajarn
         # print(equation)
         # print(eval(equation))
@@ -65,6 +66,8 @@ class Game:
         # print(numbers_array)
         # End of Debugging section
         self.sum = sum
+        random.shuffle(numbers_array)
+        self.numbers_array=numbers_array
         return numbers_array, equation, sum
 
     def check(self, string_equation):
