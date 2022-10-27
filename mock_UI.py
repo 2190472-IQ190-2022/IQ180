@@ -176,7 +176,7 @@ def init_game():
             break
         game.dummy = False
         if game.ready == False:
-            print("Waiting for another player")
+            #print("Waiting for another player")
             keep_the_game_running()
             continue
         if game.p1_played and game.p2_played:
@@ -240,9 +240,16 @@ def reset_button_operation():
 
 def submit_button_operation():
     """This function is called when the submit button in the game is pressed"""
+    print("submited")
     global player_submit
     player_submit = True
     game_input = ""
+    while True:
+        if pygame.mouse.get_pressed()[0]:
+            keep_the_game_running()
+            continue
+        else:
+            break
 
 def game_button_control():
     """function for button control and bug fixes (not yet implemented)"""

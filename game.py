@@ -95,10 +95,10 @@ class Game:
     def update_score(self):
         # Define the winner of current round by comparing boolean cleared and game_time, then update score and player's turn
         if self.p1_cleared and self.p2_cleared:
-            if self.p1_game_time < self.p2_game_time:
+            if self.p1_game_time > self.p2_game_time:
                 self.p1_score += 1
                 self.turn = 1
-            elif self.p1_game_time > self.p2_game_time:
+            elif self.p1_game_time < self.p2_game_time:
                 self.p2_score += 1
                 self.turn = 2
         elif self.p1_cleared:
