@@ -131,3 +131,6 @@ dmypy.json
 
 # other files
 generator.py
+
+#Test files
+testfile.py
