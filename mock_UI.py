@@ -196,6 +196,7 @@ def init_game():
                 clock.tick(FPS)
                 if math.ceil(60 - (time.time() - game.startTime)) < 0:
                     player_submit = True
+                    game_input = ""
                     break
                 to_draw = [(f"player 1: {game.p1_score}", (300, 300)),
                            (f"player 2: {game.p2_score}", (600, 300)),
