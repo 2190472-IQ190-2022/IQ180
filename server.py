@@ -38,7 +38,6 @@ def threaded_client(conn, player, gameId, games):
                             rcv_game.p2_game_time = math.ceil(60 - (time() - rcv_game.startTime))
                             rcv_game.startTime = time()
                             # rcv_game.turn = 1
-                    games.pop(gameId)
                     games[gameId] = rcv_game
                     print(f"P1 spends {rcv_game.p1_game_time}")
                     print(f"P2 spends {rcv_game.p2_game_time}")
@@ -84,7 +83,7 @@ if __name__ == "__main__":
         player = 1
         gameId = (idCount - 1)//2
         if idCount % 2 == 1:
-            games[gameId] = Game(gameId, "MS Team", "Taiwan")
+            games[gameId] = Game(gameId, "Player1", "Player2")
             print("Creating a new game...")
         else:
             games[gameId].ready = True
