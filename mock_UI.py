@@ -136,6 +136,7 @@ def keep_the_game_running(things_to_draw=[]):
     
 def get_user_name(): #get input from user and store in user_name
     global user_name
+    user_name = ""
     typing = True
     while typing:
         things_to_draw = []
@@ -161,10 +162,20 @@ def get_user_name(): #get input from user and store in user_name
 
 def init_game():
     """this is the game"""
-    global player_submit, game_input, all_button
+    global player_submit, game_input, all_button, user_name
     net = Network()
     print("you are p"+str(net.player))
     dummy = Game(-1,"dm","dm")
+    net.client.send(pickle.dumps(dummy))
+    game = net.recv()
+    #Spacebar is not allowed for the sake simplicity (In the process of checking empty username)
+    user_name.replace(" ","")
+    #Name "Player1" is not allowed for player 2, likewise "Player2" is not allowed for player 1
+    game.set_name(net.player,user_name)
+    #print(game.p1_name)
+    #print(game.p2_name)
+    net.client.send(pickle.dumps(game))
+    
     while True:
         clock = pygame.time.Clock()
         clock.tick(FPS)
@@ -174,7 +185,6 @@ def init_game():
         except:
             change_game_status(new_status=2)
             break
-        game.dummy = False
         if game.ready == False:
             #print("Waiting for another player")
             keep_the_game_running()
