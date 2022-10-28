@@ -194,8 +194,8 @@ def init_game():
             show_sum(game.sum)
             while not player_submit:
                 clock.tick(FPS)
-                to_draw = [(f"player 1: {game.p1_score}", (300, 300)),
-                           (f"player 2: {game.p2_score}", (600, 300)),
+                to_draw = [(f"{game.p1_name}: {game.p1_score}", (300, 300)),
+                           (f"{game.p2_name}: {game.p2_score}", (600, 300)),
                            (f"time: {math.ceil(60 - (time.time() - game.startTime))}", (900, 300)),
                            (f"input: {game_input}", (1200, 300))]
                 keep_the_game_running(things_to_draw=to_draw)
