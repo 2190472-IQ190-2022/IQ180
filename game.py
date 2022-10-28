@@ -29,6 +29,12 @@ class Game:
         self.numbers_array, self.equation, self.sum = self.generate_question()
 
     def set_name(self, player, name):
+        if str(player) == '1' and name == "Player2":
+            name=""
+        elif str(player) == '2' and name == "Player1":
+            name=""
+        if len(name) == 0:
+            name += "Player" + str(player)
         if str(player) == '1':
             self.p1_name = name
         elif str(player) == '2':

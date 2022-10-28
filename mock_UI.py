@@ -171,15 +171,9 @@ def init_game():
     #Spacebar is not allowed for the sake simplicity (In the process of checking empty username)
     user_name.replace(" ","")
     #Name "Player1" is not allowed for player 2, likewise "Player2" is not allowed for player 1
-    if str(net.player) == '1' and user_name == "Player2":
-        user_name=""
-    if str(net.player) == '2' and user_name == "Player1":
-        user_name=""
-    if len(user_name) == 0:
-        user_name += "Player" + str(net.player)
     game.set_name(net.player,user_name)
-    print(game.p1_name)
-    print(game.p2_name)
+    #print(game.p1_name)
+    #print(game.p2_name)
     net.client.send(pickle.dumps(game))
     
     while True:
