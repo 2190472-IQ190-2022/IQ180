@@ -2,12 +2,14 @@
 # popup can now should position themselves on the middle as well provide appropriate box size
 
 import pygame
+import time
 
 class Popup:
     
-    def __init__(self, window, text_object=[], bg_color=(200, 200, 200), 
+    def __init__(self, window, duration=2, text_object=[], bg_color=(200, 200, 200), 
                 two_line_padding=10, side_padding=10, box_pos=(0, 0)):
         self.window = window
+        self.duration = duration
         self.text_object = text_object
         self.bg_color = bg_color
         self.two_line_padding = two_line_padding # space between two text line
@@ -16,6 +18,8 @@ class Popup:
         self.box_size = self.calculate_pop_up_box_size() # cal box size
         self.box_pos = self.calculate_pop_up_position()
         self.text_position = self.calculate_text_position()
+        self.start_time = time.time()
+        self.finish = False
 
     def calculate_pop_up_box_size(self):
         size_y = self.two_line_padding
@@ -44,8 +48,14 @@ class Popup:
 
     def draw(self):
         """draw all the text in text object"""
-        pygame.draw.rect(self.window, self.bg_color, 
-                        [self.box_pos[0], self.box_pos[1], self.box_size[0], self.box_size[1]])
+        if time.time()-self.start_time <= self.duration:
+            pygame.draw.rect(self.window, self.bg_color, 
+                            [self.box_pos[0], self.box_pos[1], self.box_size[0], self.box_size[1]])
 
-        for i in range(len(self.text_object)):
-            self.window.blit(self.text_object[i], self.text_position[i])
+            for i in range(len(self.text_object)):
+                self.window.blit(self.text_object[i], self.text_position[i])
+        else:
+            self.finish = True
+
+    def get_finish(self):
+        return self.finish

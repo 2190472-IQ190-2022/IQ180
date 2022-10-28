@@ -11,6 +11,7 @@ from network import Network
 import pickle
 import time
 import threading
+import Popup
 
 # Constant
 WHITE = (255, 255, 255)
@@ -33,6 +34,7 @@ menu_status = 1
 # menu status = 1 is mm1, = 2 is mm2, = 3 is game, = 4 is htp, = 5 is setting
 # disabled_game_button_index = []
 all_button = []
+all_popup = []
 game_input = ""
 player_submit = False
 user_name = ""
@@ -132,6 +134,7 @@ def keep_the_game_running(things_to_draw=[]):
         
     draw_everything(menu_status, things_to_draw)
     game_button_control()
+    game_popup_control()
     pygame.display.update()
     
 def get_user_name(): #get input from user and store in user_name
@@ -152,11 +155,11 @@ def get_user_name(): #get input from user and store in user_name
                 else:
                     user_name += event.unicode
             things_to_draw.append((user_name,(700,300)))
-            draw_everything(menu_status, things_to_draw)
-            game_button_control()
-            pygame.display.update()
-    keep_the_game_running()
-                
+            # draw_everything(menu_status, things_to_draw)
+            # game_button_control()
+            # pygame.display.update()
+            keep_the_game_running(things_to_draw=things_to_draw) # these 3 lines can be converted to this
+            
     
     
 
@@ -202,9 +205,9 @@ def init_game():
             while not player_submit:
                 clock.tick(FPS)
                 if math.ceil(60 - (time.time() - game.startTime)) < 0:
-                    player_submit = True
+                    # player_submit = True
                     game_input = ""
-                    break
+                    break # I think break alone actually work
                 to_draw = [(f"{game.p1_name}: {game.p1_score}", (300, 300)),
                            (f"{game.p2_name}: {game.p2_score}", (600, 300)),
                            (f"time: {math.ceil(60 - (time.time() - game.startTime))}", (900, 300)),
@@ -236,6 +239,9 @@ def user_game_input(button_input, button_index):
         print(f"{button_input}: operation")
     else:
         if game_input[len(game_input)-1:].isdigit(): # if last char is number, prevent them to input number
+            print("pls choose op")
+            all_popup.append(Popup.Popup(WIN, text_object=[DEFAULT_FONT.render("pls choose op", 1, BLACK)]))
+            print(all_popup)
             return
         all_button[button_index].disable_button()
         print(f"{button_input}: numbers")
@@ -254,13 +260,20 @@ def submit_button_operation():
     print("submited")
     global player_submit
     player_submit = True
-    game_input = ""
+    game_input = "" 
     while True:
         if pygame.mouse.get_pressed()[0]:
             keep_the_game_running()
             continue
         else:
             break
+
+def game_popup_control():
+    for popup in all_popup:
+        if popup.get_finish():
+            all_popup.remove(popup)
+            continue
+        popup.draw()
 
 def game_button_control():
     """function for button control and bug fixes (not yet implemented)"""
