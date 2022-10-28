@@ -168,9 +168,6 @@ def init_game():
     dummy = Game(-1,"dm","dm")
     net.client.send(pickle.dumps(dummy))
     game = net.recv()
-    #Spacebar is not allowed for the sake simplicity (In the process of checking empty username)
-    user_name.replace(" ","")
-    #Name "Player1" is not allowed for player 2, likewise "Player2" is not allowed for player 1
     game.set_name(net.player,user_name)
     #print(game.p1_name)
     #print(game.p2_name)
@@ -204,6 +201,10 @@ def init_game():
             show_sum(game.sum)
             while not player_submit:
                 clock.tick(FPS)
+                if math.ceil(60 - (time.time() - game.startTime)) < 0:
+                    player_submit = True
+                    game_input = ""
+                    break
                 to_draw = [(f"{game.p1_name}: {game.p1_score}", (300, 300)),
                            (f"{game.p2_name}: {game.p2_score}", (600, 300)),
                            (f"time: {math.ceil(60 - (time.time() - game.startTime))}", (900, 300)),
