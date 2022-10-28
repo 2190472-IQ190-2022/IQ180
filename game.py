@@ -28,6 +28,22 @@ class Game:
         # number array and answer for the question
         self.numbers_array, self.equation, self.sum = self.generate_question()
 
+    def set_name(self, player, name):
+        if str(player) == '1' and name == "Player2":
+            name=""
+        elif str(player) == '2' and name == "Player1":
+            name=""
+        if len(name) == 0:
+            name += "Player" + str(player)
+        if str(player) == '1':
+            self.p1_name = name
+        elif str(player) == '2':
+            self.p2_name = name
+        #Handle duplicate name
+        if self.p1_name == self.p2_name:
+            self.p1_name+='(1)'
+            self.p2_name+='(2)'
+
     def generate_question(self):
         # generate each digits and answer
         operation = ["+","-","*"] # add, minus, time(multiply)
