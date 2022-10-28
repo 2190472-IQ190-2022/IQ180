@@ -1,5 +1,7 @@
-# Note: The button logic is still bugged, it creates like millions of button
-# Note: BUG - holding button will reclick something, even a different button
+# Note: BUG - holding button will make some text just fuck off into deep space and never to be seen again
+# NOTE: Popup is really easy to use (although it's not tested that much need more testing)
+# to use popup just create popup object and append to all_popup
+# BUG in welcome screen, no default name just yet if player does not enter any name
 
 from game import Game
 import pygame
@@ -11,7 +13,7 @@ from network import Network
 import pickle
 import time
 import threading
-import Popup
+from Popup import Popup
 
 # Constant
 WHITE = (255, 255, 255)
@@ -56,7 +58,7 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         color = pygame.Color('lightskyblue1')
         pygame.draw.rect(WIN,color,rect,2)
     elif current_menu_status == 3:
-        text_print = "Game"
+        text_print = "Waiting for player"
     elif current_menu_status == 4:
         text_print = "How to play"
         to_be_drawn_internal.append(("this game's trash don't play it", (500, 550)))
@@ -112,6 +114,7 @@ def change_game_status(new_status):
                                         operation=get_user_name)
         all_button.append(enter_name_button)
     elif new_status == 3:
+        all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"welcome, {user_name}", 1, BLACK)]))
         init_game()
     elif new_status == 4:
         return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(1400,750),size= (100,100), text="back",
@@ -159,9 +162,6 @@ def get_user_name(): #get input from user and store in user_name
             # game_button_control()
             # pygame.display.update()
             keep_the_game_running(things_to_draw=things_to_draw) # these 3 lines can be converted to this
-            
-    
-    
 
 def init_game():
     """this is the game"""
@@ -240,8 +240,7 @@ def user_game_input(button_input, button_index):
     else:
         if game_input[len(game_input)-1:].isdigit(): # if last char is number, prevent them to input number
             print("pls choose op")
-            all_popup.append(Popup.Popup(WIN, text_object=[DEFAULT_FONT.render("pls choose op", 1, BLACK)]))
-            print(all_popup)
+            all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("pls choose op", 1, BLACK)]))
             return
         all_button[button_index].disable_button()
         print(f"{button_input}: numbers")
@@ -269,6 +268,7 @@ def submit_button_operation():
             break
 
 def game_popup_control():
+    """function for popup control and removal when the popup duration is over"""
     for popup in all_popup:
         if popup.get_finish():
             all_popup.remove(popup)
@@ -335,20 +335,21 @@ def main():
     global user_name
     clock = pygame.time.Clock()
     running = True
-    button_size_x, position_one_button_x = calculate_button_position(1, border_factor=0.3)
-    button_size_y, position_one_button_y = calculate_button_position(1, border_factor=0.1, offset=100, axis=HEIGHT)
-    # Create game initial status
-    to_mm2_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Play",
-                           operation=change_game_status, new_status=2,
-                           pos=(position_one_button_x[0], position_one_button_y[0]),
-                           size=(button_size_x, button_size_y))
-    all_button.append(to_mm2_button)
-    to_setting_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(1400,150),size= (100,100), text="SET",
-                               operation=change_game_status, new_status=5)
-    to_howtoplay_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(1250,150),size= (100,100), text="HTP",
-                                 operation=change_game_status, new_status=4)
-    all_button.append(to_setting_button)
-    all_button.append(to_howtoplay_button)
+    change_game_status(1)
+    # button_size_x, position_one_button_x = calculate_button_position(1, border_factor=0.3)
+    # button_size_y, position_one_button_y = calculate_button_position(1, border_factor=0.1, offset=100, axis=HEIGHT)
+    # # Create game initial status
+    # to_mm2_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Play",
+    #                        operation=change_game_status, new_status=2,
+    #                        pos=(position_one_button_x[0], position_one_button_y[0]),
+    #                        size=(button_size_x, button_size_y))
+    # all_button.append(to_mm2_button)
+    # to_setting_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(1400,150),size= (100,100), text="SET",
+    #                            operation=change_game_status, new_status=5)
+    # to_howtoplay_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(1250,150),size= (100,100), text="HTP",
+    #                              operation=change_game_status, new_status=4)
+    # all_button.append(to_setting_button)
+    # all_button.append(to_howtoplay_button)
     
     while running:
         clock.tick(FPS)

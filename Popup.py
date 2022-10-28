@@ -1,5 +1,5 @@
-# NOTE : not finish dont use this
-# popup can now should position themselves on the middle as well provide appropriate box size
+# NOTE : usable now but still needs a lot of testing
+# You cant really set tht position outside being in the middle yet, that's what all the calculate function really do atm
 
 import pygame
 import time
@@ -20,6 +20,7 @@ class Popup:
         self.text_position = self.calculate_text_position()
         self.start_time = time.time()
         self.finish = False
+        self.clicked = False
 
     def calculate_pop_up_box_size(self):
         size_y = self.two_line_padding
@@ -48,7 +49,11 @@ class Popup:
 
     def draw(self):
         """draw all the text in text object"""
-        if time.time()-self.start_time <= self.duration:
+        if not self.clicked and not pygame.mouse.get_pressed()[0]:
+            self.clicked = True
+        if self.clicked and pygame.mouse.get_pressed()[0]:
+            self.finish = True
+        if time.time()-self.start_time <= self.duration and not self.finish:
             pygame.draw.rect(self.window, self.bg_color, 
                             [self.box_pos[0], self.box_pos[1], self.box_size[0], self.box_size[1]])
 
