@@ -246,6 +246,10 @@ def init_game():
             all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
             change_game_status(new_status=2)
             break
+        if game is None:
+            all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
+            change_game_status(new_status=2)
+            break
         if game.ready == False:
             #print("Waiting for another player")
             keep_the_game_running()
@@ -265,6 +269,17 @@ def init_game():
             show_sum(game.sum)
             while not player_submit:
                 clock.tick(FPS)
+                try:
+                    net.client.send(pickle.dumps(dummy))
+                    game = net.recv() # add try except here to prevent server crash
+                except:
+                    all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
+                    change_game_status(new_status=2)
+                    break
+                if game is None:
+                    all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
+                    change_game_status(new_status=2)
+                    break
                 if math.ceil(60 - (time.time() - game.startTime)) < 0:
                     # player_submit = True
                     game_input = ""
@@ -285,7 +300,12 @@ def init_game():
                 game.p2_played = True
                 game.p2_cleared = game.check(equation_str)
                 game.turn = 1
-            net.client.send(pickle.dumps(game))
+            try:
+                net.client.send(pickle.dumps(game))
+            except:
+                all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
+                change_game_status(new_status=2)
+                break
             print("send " + equation_str)
         else:
             all_button = []
