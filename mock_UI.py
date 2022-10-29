@@ -2,7 +2,9 @@
 # NOTE: Popup is really easy to use (although it's not tested that much need more testing)
 # to use popup just create popup object and append to all_popup
 # BUG in welcome screen, no default name just yet if player does not enter any name
+# bro calc button position is hard to used af
 
+from cgitb import small
 from game import Game
 import pygame
 from Button import Button
@@ -14,14 +16,17 @@ import pickle
 import time
 import threading
 from Popup import Popup
+import subprocess
 
 # Constant
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-WIDTH = 1600
-HEIGHT = 900
+WIDTH = 1280
+HEIGHT = 720
 FPS = 60
 BUTTON_BORDER_FACTOR = 0.6 # how much button would take up the screen
+SMALL_BUTTON_BORDER_FACTOR = 0.07 # how much small button would take up the screen
+HUD_BORDER_FACTOR = 0.05 # how much of area around the screen anything cannot enter
 GAME_BUTTON_INLINE_SPACING = 10 # how much space between two side-by-side buttons
 GAME_BUTTON_TWOLINE_SPACING = 10 # how much space between two buttons from different line
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -64,10 +69,10 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         #     pass
     elif current_menu_status == 4:
         text_print = "How to play"
-        to_be_drawn_internal.append(("this game's trash don't play it", (500, 550)))
+        # to_be_drawn_internal.append(("this game's trash don't play it", (500, 550)))
     elif current_menu_status == 5:
         text_print = "Setting"
-        to_be_drawn_internal.append(("you can change audio, game resolution here (hopefully)", (300, 550)))
+        # to_be_drawn_internal.append(("you can change audio, game resolution here (hopefully)", (300, 550)))
     else:
         text_print = "What"
     this_text = DEFAULT_FONT.render(text_print, 1, BLACK)
@@ -95,43 +100,87 @@ def change_game_status(new_status):
             break
     menu_status = new_status
     all_button = []
-    button_size_x, position_one_button_x = calculate_button_position(1, border_factor=0.3)
-    button_size_y, position_one_button_y = calculate_button_position(1, border_factor=0.1, offset=100, axis=HEIGHT)
+    # big button (play game)
+    button_size_x, position_one_button_x = calculate_button_position(1, border_factor=0.3, axis=WIDTH)
+    button_size_y, position_one_button_y = calculate_button_position(1, border_factor=0.1, offset=0.05*WIDTH, axis=HEIGHT)
+    # small button (exit, back, htp, setting)
+    small_bsize, _ = calculate_button_position(1, border_factor=SMALL_BUTTON_BORDER_FACTOR, axis=WIDTH)
+    _, y_border = calculate_button_position(1, edge_start=True, left_or_top_edge=True)
+    y_border = y_border[0]
     if new_status == 1:
+        _, three_bpos_x = calculate_button_position(3, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         to_mm2_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Play",
                                operation=change_game_status, new_status=2,
                                pos=(position_one_button_x[0], position_one_button_y[0]),
                                size=(button_size_x, button_size_y))
         all_button.append(to_mm2_button)
-        to_setting_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(1400,150),size= (100,100), text="SET",
-                                   operation=change_game_status, new_status=5)
-        to_howtoplay_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(1250,150),size= (100,100), text="HTP",
-                                     operation=change_game_status, new_status=4)
+        to_setting_button = Button(window=WIN, button_font=DEFAULT_FONT,
+                                    pos=(three_bpos_x[0],y_border),size=(small_bsize, small_bsize), text="SET",
+                                    operation=change_game_status, new_status=5)
+        to_howtoplay_button = Button(window=WIN, button_font=DEFAULT_FONT,
+                                    pos=(three_bpos_x[1],y_border),size=(small_bsize, small_bsize), text="HTP",
+                                    operation=change_game_status, new_status=4)
+        exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
+                                    pos=(three_bpos_x[2],y_border),size=(small_bsize, small_bsize), text="GTFO",
+                                    operation=exit)
         all_button.append(to_setting_button)
         all_button.append(to_howtoplay_button)
+        all_button.append(exit_button)
     elif new_status == 2:
+        _, two_bpos_x = calculate_button_position(2, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         to_game_button = Button(window=WIN, button_font=DEFAULT_FONT, text="To game",
                                 operation=change_game_status, new_status=3,
                                 pos=(position_one_button_x[0], position_one_button_y[0]),
                                 size=(button_size_x, button_size_y))
         all_button.append(to_game_button)
-        return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(1400,750),size= (100,100), text="back",
-                                        operation=change_game_status, new_status=1)
+        return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT,
+                                    pos=(two_bpos_x[0], y_border),
+                                    size= (small_bsize, small_bsize), text="back",
+                                    operation=change_game_status, new_status=1)
         all_button.append(return_to_mm1_button)
-        enter_name_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(350,300),size= (300,50), text="Enter name",
+        enter_name_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(0.25*WIDTH,0.25*HEIGHT),size= (300,50), text="Enter name",
                                         operation=get_user_name)
         all_button.append(enter_name_button)
+        exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
+                                    pos=(two_bpos_x[1], y_border),
+                                    size=(small_bsize, small_bsize), text="GTFO",
+                                    operation=exit)
+        all_button.append(exit_button)
     elif new_status == 3:
         all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"welcome, {user_name}", 1, BLACK)]))
         init_game()
     elif new_status == 4:
-        return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(1400,750),size= (100,100), text="back",
-                                        operation=change_game_status, new_status=1)
+        _, one_bpos_x = calculate_button_position(1, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
+        return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT,
+                                    pos=(one_bpos_x[0], y_border),
+                                    size= (small_bsize, small_bsize), text="back",
+                                    operation=change_game_status, new_status=1)
         all_button.append(return_to_mm1_button)
     elif new_status == 5:
-        return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(1400,750),size= (100,100), text="back",
+        _, one_bpos_x = calculate_button_position(1, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
+        return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT,
+                                        pos=(one_bpos_x[0],y_border),
+                                        size= (small_bsize, small_bsize), text="back",
                                       operation=change_game_status, new_status=1)
         all_button.append(return_to_mm1_button)
+        res_buttons_size_x, res_buttons_pos_x = calculate_button_position(4, border_factor=0.8, axis=WIDTH)
+        res_buttons_size_y, res_buttons_pos_y = calculate_button_position(1, border_factor=0.1, offset=-0.2*HEIGHT, axis=HEIGHT)
+        res_19_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[0],res_buttons_pos_y[0]),
+                                size= (res_buttons_size_x,res_buttons_size_y), text="1920x1080",
+                                operation=set_resolution, new_res="19")
+        res_16_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[1],res_buttons_pos_y[0]),
+                                size= (res_buttons_size_x,res_buttons_size_y), text="1600x900",
+                                operation=set_resolution, new_res="16")
+        res_12_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[2],res_buttons_pos_y[0]),
+                                size= (res_buttons_size_x,res_buttons_size_y), text="1280x720",
+                                operation=set_resolution, new_res="12")
+        res_full_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[3],res_buttons_pos_y[0]),
+                                size= (res_buttons_size_x,res_buttons_size_y), text="full screen",
+                                operation=set_resolution, new_res="full")
+        all_button.append(res_19_button)
+        all_button.append(res_12_button)
+        all_button.append(res_16_button)
+        all_button.append(res_full_button)
     pygame.time.wait(100) # This function was there to prevent mouse double clicking button / it does not work
 
 def keep_the_game_running(things_to_draw=[]):
@@ -174,15 +223,20 @@ def get_user_name(): #get input from user and store in user_name
 def init_game():
     """this is the game"""
     global player_submit, game_input, all_button, user_name
-    net = Network()
-    print("you are p"+str(net.player))
-    dummy = Game(-1,"dm","dm")
-    net.client.send(pickle.dumps(dummy))
-    game = net.recv()
-    game.set_name(net.player,user_name)
-    #print(game.p1_name)
-    #print(game.p2_name)
-    net.client.send(pickle.dumps(game))
+    try:
+        net = Network()
+        print("you are p"+str(net.player))
+        dummy = Game(-1,"dm","dm")
+        net.client.send(pickle.dumps(dummy))
+        game = net.recv()
+        game.set_name(net.player,user_name)
+        #print(game.p1_name)
+        #print(game.p2_name)
+        net.client.send(pickle.dumps(game))
+    except:
+        all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("server error, disconnected", 1, BLACK)]))
+        change_game_status(new_status=2)
+        return
     
     while True:
         clock = pygame.time.Clock()
@@ -191,6 +245,7 @@ def init_game():
             net.client.send(pickle.dumps(dummy))
             game = net.recv() # add try except here to prevent server crash
         except:
+            all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
             change_game_status(new_status=2)
             break
         if game.ready == False:
@@ -216,8 +271,8 @@ def init_game():
                     # player_submit = True
                     game_input = ""
                     break # I think break alone actually work
-                to_draw = [(f"{game.p1_name}: {game.p1_score}", (300, 300)),
-                           (f"{game.p2_name}: {game.p2_score}", (600, 300)),
+                to_draw = [(f"{game.p1_name}: {game.p1_score}", (GAME_BUTTON_INLINE_SPACING, GAME_BUTTON_TWOLINE_SPACING)),
+                           (f"{game.p2_name}: {game.p2_score}", (WIDTH-GAME_BUTTON_INLINE_SPACING, HEIGHT)),
                            (f"time: {math.ceil(60 - (time.time() - game.startTime))}", (900, 300)),
                            (f"input: {game_input}", (1200, 300))]
                 keep_the_game_running(things_to_draw=to_draw)
@@ -267,7 +322,6 @@ def submit_button_operation():
     print("submited")
     global player_submit
     player_submit = True
-    game_input = "" 
     while True:
         if pygame.mouse.get_pressed()[0]:
             keep_the_game_running()
@@ -302,15 +356,31 @@ def show_sum(sum):
     all_button.append(button)
 
 def calculate_button_position(number_of_button, border_factor=BUTTON_BORDER_FACTOR,
-                              inline_space=GAME_BUTTON_INLINE_SPACING, offset=0, axis=WIDTH):
+                              inline_space=GAME_BUTTON_INLINE_SPACING, offset=0, axis=WIDTH, 
+                              size=-1, edge_start=False, left_or_top_edge=True):
     """
     This function is used to calculate the position and the size of the button in ONE AXIS (WIDTH or HEIGHT)
     This function is better used for set of multiple buttons, individual button just set position manually
     """
-    space_used = border_factor * axis
+    space_used = 0
+    if size == -1:
+        space_used = border_factor * axis
+    else:
+        space_used = (number_of_button * size) + (inline_space * (number_of_button-1))
+        
+    begining_position = 0
+    if not edge_start:
+        begining_position = (axis - space_used) / 2
+    else:
+        if left_or_top_edge:
+            begining_position = HUD_BORDER_FACTOR * axis
+        else:
+            begining_position = begining_position = axis - (HUD_BORDER_FACTOR * axis + space_used)
     button_size = (space_used - ((number_of_button - 1) * inline_space)) / number_of_button
-    begining_position = (axis - space_used) / 2
-    return button_size, [offset + begining_position + (x * (button_size + inline_space)) for x in range(number_of_button)]
+    if size == -1:
+        return button_size, [offset + begining_position + (x * (button_size + inline_space)) for x in range(number_of_button)]
+    else:
+        return size, [offset + begining_position + (x * (button_size + inline_space)) for x in range(number_of_button)]
 
 def create_game_button(numbers):
     """This function create game button including numbers and operation"""
@@ -337,6 +407,34 @@ def create_game_button(numbers):
                            pos=(position_x[1], position_y[2]), size=(button_size_x, button_size_y))
     all_button.append(reset_button)
     all_button.append(submit_button)
+
+def set_resolution(new_res):
+    global WIDTH, HEIGHT
+    if new_res == "19":
+        WIDTH = 1920
+        HEIGHT = 1080
+    elif new_res == "16":
+        WIDTH = 1600
+        HEIGHT = 900
+    elif new_res == "12":
+        WIDTH = 1280
+        HEIGHT = 720
+    elif new_res == "full":
+        # WIDTH, HEIGHT = pyautogui.size()
+        all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Not ready", 1, BLACK)]))
+    else:
+        pass
+    
+    # print("------------")
+    # print(f"w: {WIDTH}, h: {HEIGHT}")
+    # for b in all_button:
+    #     print(f"{b.get_text()}: {b.get_pos()}")
+    # print("-------------")
+    pygame.display.set_mode((WIDTH, HEIGHT))
+    change_game_status(5)
+
+def run_pip_install():
+    pass
 
 def main():
     """This is the main function"""
