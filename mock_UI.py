@@ -270,10 +270,10 @@ def init_game():
                     # player_submit = True
                     game_input = ""
                     break # I think break alone actually work
-                to_draw = [(f"{game.p1_name}: {game.p1_score}", (GAME_BUTTON_INLINE_SPACING, GAME_BUTTON_TWOLINE_SPACING)),
-                           (f"{game.p2_name}: {game.p2_score}", (WIDTH-GAME_BUTTON_INLINE_SPACING, HEIGHT)),
-                           (f"time: {math.ceil(60 - (time.time() - game.startTime))}", (900, 300)),
-                           (f"input: {game_input}", (1200, 300))]
+                to_draw = [(f"{game.p1_name}: {game.p1_score}", (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT)),
+                           (f"{game.p2_name}: {game.p2_score}", (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT+50)),
+                           (f"time: {math.ceil(60 - (time.time() - game.startTime))}", (WIDTH//2-200, 300)),
+                           (f"input: {game_input}", (WIDTH//2+200, 300))]
                 keep_the_game_running(things_to_draw=to_draw)
 
             equation_str = game_input.replace("x", "*").replace("÷", "/")
