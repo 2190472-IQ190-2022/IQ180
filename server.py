@@ -4,23 +4,38 @@ from _thread import *
 import pickle
 from time import time
 from game import Game
+import pygame
+from Button import Button
+from Popup import Popup
 
 hostname=socket.gethostname()
 server=socket.gethostbyname(hostname)
 # server = "10.201.142.11"
 port = 5555
 resetID = 0
+
+# UI part
+user_input = ""
+width, height = 800, 600
+button_size = 100
+# end of UI Part
+
 def reset_game(game_ID):
     if game_ID == "":
-        reset_game()
+        reset_games() # ไอสัสมึงลืม s ไปตัวนึงกูนั่ง debug อยู่ตั้งนาน
+        print("reset all game")
     else:
         try:
             games[game_ID].reset()
+            print(f"reset game #{game_ID}")
         except:
             print("Error, most likely index out of bound")
 def reset_games():
     for e in games:
         reset_game(e)
+
+def test_func(name):
+    print(f"hello {name}")
     
 def threaded_client(conn, player, gameId, games):
     global idCount
@@ -75,6 +90,45 @@ def threaded_client(conn, player, gameId, games):
     print(f"The number of players: {idCount}")
     conn.close()
 
+
+def UI():
+    global user_input
+    WIN = pygame.display.set_mode((width, height))
+    pygame.font.init()
+    server_font = pygame.font.SysFont('comicsans', 40)
+    
+    running = True
+    
+    reset_all_button = Button(WIN, button_font=server_font, pos=(0.25*width-0.5*button_size, 0.5*height-0.5*button_size), 
+                        text="reset all", enabled_color=(255, 0, 0), operation=reset_game, game_ID="")
+    
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+        typing = True
+        while typing:
+            reset_button = Button(WIN, button_font=server_font, pos=(0.75*width-0.5*button_size, 0.5*height-0.5*button_size), 
+                        text="reset", enabled_color=(255, 0, 0), operation=reset_game, game_ID=user_input)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_BACKSPACE:
+                        user_input = user_input[0:-1]
+                    elif event.key == pygame.K_RETURN:
+                        typing = False
+                        reset_game(user_input)
+                    else:
+                        user_input += event.unicode
+                print_text = server_font.render(f"type game id: {user_input}", 1, (0, 0, 0))
+                WIN.fill((255, 255, 255))
+                pos_x, pos_y = width/2-(print_text.get_width()/2), height/4-(print_text.get_height()/2)
+                WIN.blit(print_text, (pos_x, pos_y, 200, 200))
+                reset_all_button.update_button()
+                reset_button.update_button()
+                pygame.display.update()
+
 if __name__ == "__main__":
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -86,6 +140,7 @@ if __name__ == "__main__":
     s.listen(2)
     print("Waiting for a connection, Server Started")
 
+    start_new_thread(UI, ())
     games = {}
     idCount = 0
     while True:
