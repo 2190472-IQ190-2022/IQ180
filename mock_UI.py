@@ -58,7 +58,10 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         color = pygame.Color('lightskyblue1')
         pygame.draw.rect(WIN,color,rect,2)
     elif current_menu_status == 3:
-        text_print = "Waiting for player"
+        if len(all_button) == 0:
+            text_print = "Waiting for player"
+        # else:
+        #     pass
     elif current_menu_status == 4:
         text_print = "How to play"
         to_be_drawn_internal.append(("this game's trash don't play it", (500, 550)))
@@ -78,7 +81,12 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
 
 def change_game_status(new_status):
     """This function is called when the menu button is pressed (changing user to each menu, mm1, mm2, game, htp, setting)"""
-    global menu_status, all_button
+    global menu_status, all_button, user_name
+    if new_status == 3:
+        if len(user_name) >= 20:
+            all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("name len should be < 20", 1, BLACK)]))
+            user_name = ""
+            return
     while True:
         if pygame.mouse.get_pressed()[0]:
             keep_the_game_running()
