@@ -3,7 +3,6 @@
 # to use popup just create popup object and append to all_popup
 # bro calc button position is hard to used af
 
-from cgitb import small
 from game import Game
 import pygame
 from Button import Button

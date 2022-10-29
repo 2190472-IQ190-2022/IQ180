@@ -50,6 +50,9 @@ class Button:
         if disabled:
             self.status = 0
 
+    def set_args(self, ** op_args):
+        self.op_args = op_args
+
     def set_pos(self, pos):
         self.pos = pos
         self.draw()
