@@ -9,7 +9,19 @@ hostname=socket.gethostname()
 server=socket.gethostbyname(hostname)
 # server = "10.201.142.11"
 port = 5555
-
+resetID = 0
+def reset_game(game_ID):
+    if game_ID == "":
+        reset_game()
+    else:
+        try:
+            games[game_ID].reset()
+        except:
+            print("Error, most likely index out of bound")
+def reset_games():
+    for e in games:
+        reset_game(e)
+    
 def threaded_client(conn, player, gameId, games):
     global idCount
     conn.send(str.encode(str(player)))

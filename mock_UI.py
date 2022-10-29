@@ -1,7 +1,6 @@
 # Note: BUG - holding button will make some text just fuck off into deep space and never to be seen again
 # NOTE: Popup is really easy to use (although it's not tested that much need more testing)
 # to use popup just create popup object and append to all_popup
-# BUG in welcome screen, no default name just yet if player does not enter any name
 # bro calc button position is hard to used af
 
 from cgitb import small
