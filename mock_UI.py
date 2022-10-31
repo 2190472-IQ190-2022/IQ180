@@ -48,16 +48,20 @@ player_submit = False
 user_name = ""
 
 def draw_everything(current_menu_status, to_be_drawn=[]):
-    # TO_BE_DRAWN is in [("text", (x, y))] format
-    # DONT APPEND THINGS TO BE DRAWN ONTO TO_BE_DRAWN DIRECTLY
-    # APPEND THEM ON TO_BE_DRAWN_INTERNAL
+    """
+        This function can draw it, if you want to draw anything on the window pass it inside to_be_drawn
+        to_be_drawn accepts arg in form of [(surface1, (x_pos1, y_pos2)), (surface2, (x_pos2, y_pos2))], etc.
+        surface is anything that can be blit'ed, for example, rendered text: rendered_text = FONT.render("hello", 1, WHITE)
+        if you want to append draw something from INSIDE this function, append item to to_be_drawn_internal
+    """
+    
     to_be_drawn_internal = []
     WIN.fill(WHITE)
     text_print = ""
     if current_menu_status == 1:
         text_print = "Main menu 1"
-        if (user_name,(700,300)) in to_be_drawn:
-            to_be_drawn.remove((user_name,(700,300)))
+        # if (user_name,(700,300)) in to_be_drawn:
+        #     to_be_drawn.remove((user_name,(700,300)))
     elif current_menu_status == 2:
         text_print = "Main menu 2"
         rect = pygame.Rect(700,300,200,50)
@@ -79,11 +83,11 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
     this_text = DEFAULT_FONT.render(text_print, 1, BLACK)
     WIN.blit(this_text, (WIDTH/2-this_text.get_width()/2, HEIGHT/2-this_text.get_height()/2))
     for tbd in to_be_drawn:
-        test = DEFAULT_FONT.render(tbd[0], 1, BLACK)
-        WIN.blit(test, tbd[1])
+        # test = DEFAULT_FONT.render(tbd[0], 1, BLACK)
+        WIN.blit(tbd[0], tbd[1])
     for tbd in to_be_drawn_internal:
-        test = DEFAULT_FONT.render(tbd[0], 1, BLACK)
-        WIN.blit(test, tbd[1])
+        # test = DEFAULT_FONT.render(tbd[0], 1, BLACK)
+        WIN.blit(tbd[0], tbd[1])
 
 def change_game_status(new_status):
     """This function is called when the menu button is pressed (changing user to each menu, mm1, mm2, game, htp, setting)"""
@@ -208,12 +212,14 @@ def keep_the_game_running(things_to_draw=[]):
     
     pygame.display.update()
     
-def get_user_name(): #get input from user and store in user_name
+def get_user_name(): # get input from user and store in user_name
     global user_name
     user_name = ""
     typing = True
     while typing:
         things_to_draw = []
+        if not menu_status == 2:
+            typing = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
@@ -225,7 +231,8 @@ def get_user_name(): #get input from user and store in user_name
                     change_game_status(3)
                 else:
                     user_name += event.unicode
-            things_to_draw.append((user_name,(700,300)))
+            rendered_user_name = DEFAULT_FONT.render(user_name, 1, BLACK)
+            things_to_draw.append((rendered_user_name,(700,300)))
             # draw_everything(menu_status, things_to_draw)
             # game_button_control()
             # pygame.display.update()
@@ -294,13 +301,17 @@ def init_game():
                     change_game_status(new_status=2)
                     break
                 if math.ceil(60 - (time.time() - game.startTime)) < 0:
-                    # player_submit = True
                     game_input = ""
                     break # I think break alone actually work
-                to_draw = [(f"{game.p1_name}: {game.p1_score}", (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT)),
-                           (f"{game.p2_name}: {game.p2_score}", (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT+50)),
-                           (f"time: {math.ceil(60 - (time.time() - game.startTime))}", (WIDTH//2-200, 300)),
-                           (f"input: {game_input}", (WIDTH//2+200, 300))]
+                to_draw_string = [DEFAULT_FONT.render(f"{game.p1_name}: {game.p1_score}", 1, BLACK),
+                                DEFAULT_FONT.render(f"{game.p2_name}: {game.p2_score}", 1, BLACK),
+                                DEFAULT_FONT.render(f"time: {math.ceil(60 - (time.time() - game.startTime))}", 1, BLACK),
+                                DEFAULT_FONT.render(f"input: {game_input}", 1, BLACK)
+                                ]
+                to_draw = [(to_draw_string[0], (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT)),
+                           (to_draw_string[1], (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT+50)),
+                           (to_draw_string[2], (WIDTH//2-200, 300)),
+                           (to_draw_string[3], (WIDTH//2+200, 300))]
                 keep_the_game_running(things_to_draw=to_draw)
 
             equation_str = game_input.replace("x", "*").replace("÷", "/")
