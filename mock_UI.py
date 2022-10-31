@@ -228,6 +228,8 @@ def get_user_name(): # get input from user and store in user_name
                     user_name = user_name[0:-1]
                 elif event.key == pygame.K_RETURN:
                     typing = False
+                    if len(user_name) == 0:
+                        user_name = "Player"
                     change_game_status(3)
                 else:
                     user_name += event.unicode
