@@ -22,17 +22,20 @@ BLACK = (0, 0, 0)
 WIDTH = 1280
 HEIGHT = 720
 FPS = 60
-BUTTON_BORDER_FACTOR = 0.6 # how much button would take up the screen
-SMALL_BUTTON_BORDER_FACTOR = 0.07 # how much small button would take up the screen
-HUD_BORDER_FACTOR = 0.05 # how much of area around the screen anything cannot enter
-GAME_BUTTON_INLINE_SPACING = 10 # how much space between two side-by-side buttons
+BUTTON_BORDER_FACTOR = 0.6 # how much button(s) would take up the screen
+SMALL_BUTTON_BORDER_FACTOR = 0.07 # how much one small button would take up the screen
+HUD_BORDER_FACTOR = 0.05 # how much of area around the screen element should not enter (use in calculate button position)
+GAME_BUTTON_INLINE_SPACING = 10 # how much space between two side-by-side buttons 
 GAME_BUTTON_TWOLINE_SPACING = 10 # how much space between two buttons from different line
+
+# display
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 ALL_ALLOWS_MATH_OP = "+-x÷()"
+
+# fonts
 pygame.font.init()
 DEFAULT_FONT = pygame.font.SysFont('comicsans', 40)
 pygame.display.set_caption("IQ1")
-
 
 # Global Variable
 menu_status = 1
@@ -191,8 +194,18 @@ def keep_the_game_running(things_to_draw=[]):
             exit()
         
     draw_everything(menu_status, things_to_draw)
-    game_button_control()
-    game_popup_control()
+
+    # game_button_control()
+    for button in all_button:
+        button.update_button()
+
+    # game_popup_control()
+    for popup in all_popup:
+        if popup.get_finish():
+            all_popup.remove(popup)
+            continue
+        popup.draw()
+    
     pygame.display.update()
     
 def get_user_name(): #get input from user and store in user_name
@@ -346,25 +359,6 @@ def submit_button_operation():
             continue
         else:
             break
-
-def game_popup_control():
-    """function for popup control and removal when the popup duration is over"""
-    for popup in all_popup:
-        if popup.get_finish():
-            all_popup.remove(popup)
-            continue
-        popup.draw()
-
-def game_button_control():
-    """function for button control and bug fixes (not yet implemented)"""
-    for button in all_button:
-        button.update_button()
-
-def randomize_five_number(array):
-    """This function is not used"""
-    length = len(array)
-    for i in range(0, length, 1):
-        array[i] = random.randint(0,9)
 
 def show_sum(sum):
     """Show the expected value from the user's equation"""
