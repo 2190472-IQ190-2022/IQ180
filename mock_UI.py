@@ -64,7 +64,7 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         #     to_be_drawn.remove((user_name,(700,300)))
     elif current_menu_status == 2:
         text_print = "Main menu 2"
-        rect = pygame.Rect(700,300,200,50)
+        rect = pygame.Rect(0.25*WIDTH+310,0.75*HEIGHT,0.3*WIDTH,50)
         color = pygame.Color('lightskyblue1')
         pygame.draw.rect(WIN,color,rect,2)
     elif current_menu_status == 3:
@@ -143,7 +143,7 @@ def change_game_status(new_status):
                                     size= (small_bsize, small_bsize), text="back",
                                     operation=change_game_status, new_status=1)
         all_button.append(return_to_mm1_button)
-        enter_name_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(0.25*WIDTH,0.25*HEIGHT),size= (300,50), text="Enter name",
+        enter_name_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(0.25*WIDTH,0.75*HEIGHT),size= (300,50), text="Enter name",
                                         operation=get_user_name)
         all_button.append(enter_name_button)
         exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
@@ -152,6 +152,8 @@ def change_game_status(new_status):
                                     operation=exit)
         all_button.append(exit_button)
     elif new_status == 3:
+        if len(user_name) == 0:
+            user_name = "Player"
         all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"welcome, {user_name}", 1, BLACK)]))
         init_game()
     elif new_status == 4:
@@ -228,13 +230,11 @@ def get_user_name(): # get input from user and store in user_name
                     user_name = user_name[0:-1]
                 elif event.key == pygame.K_RETURN:
                     typing = False
-                    if len(user_name) == 0:
-                        user_name = "Player"
                     change_game_status(3)
                 else:
                     user_name += event.unicode
         rendered_user_name = DEFAULT_FONT.render(user_name, 1, BLACK)
-        things_to_draw.append((rendered_user_name,(700,300)))
+        things_to_draw.append((rendered_user_name,(0.25*WIDTH+310,0.75*HEIGHT)))
             # draw_everything(menu_status, things_to_draw)
             # game_button_control()
             # pygame.display.update()
@@ -264,14 +264,13 @@ def init_game():
         try:
             net.client.send(pickle.dumps(dummy))
             game = net.recv() # add try except here to prevent server crash
+            if game is None:
+                raise Exception
         except:
             all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
             change_game_status(new_status=2)
             break
-        if game is None:
-            all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
-            change_game_status(new_status=2)
-            break
+
         if game.ready == False:
             #print("Waiting for another player")
             keep_the_game_running()
@@ -294,14 +293,13 @@ def init_game():
                 try:
                     net.client.send(pickle.dumps(dummy))
                     game = net.recv() # add try except here to prevent server crash
+                    if game is None:
+                        raise Exception
                 except:
                     all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
                     change_game_status(new_status=2)
                     break
-                if game is None:
-                    all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
-                    change_game_status(new_status=2)
-                    break
+        
                 if math.ceil(60 - (time.time() - game.startTime)) < 0:
                     game_input = ""
                     break # I think break alone actually work
