@@ -97,12 +97,12 @@ def change_game_status(new_status):
             all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("name len should be < 20", 1, BLACK)]))
             user_name = ""
             return
-    while True:
-        if pygame.mouse.get_pressed()[0]:
-            keep_the_game_running()
-            continue
-        else:
-            break
+    # while True:
+    #     if pygame.mouse.get_pressed()[0]:
+    #         keep_the_game_running()
+    #         continue
+    #     else:
+    #         break
     menu_status = new_status
     all_button = []
     # big button (play game)
@@ -231,12 +231,12 @@ def get_user_name(): # get input from user and store in user_name
                     change_game_status(3)
                 else:
                     user_name += event.unicode
-            rendered_user_name = DEFAULT_FONT.render(user_name, 1, BLACK)
-            things_to_draw.append((rendered_user_name,(700,300)))
+        rendered_user_name = DEFAULT_FONT.render(user_name, 1, BLACK)
+        things_to_draw.append((rendered_user_name,(700,300)))
             # draw_everything(menu_status, things_to_draw)
             # game_button_control()
             # pygame.display.update()
-            keep_the_game_running(things_to_draw=things_to_draw) # these 3 lines can be converted to this
+        keep_the_game_running(things_to_draw=things_to_draw) # these 3 lines can be converted to this
 
 def init_game():
     """this is the game"""
@@ -361,15 +361,10 @@ def reset_button_operation():
 
 def submit_button_operation():
     """This function is called when the submit button in the game is pressed"""
-    print("submited")
     global player_submit
+    print("submited")
     player_submit = True
-    while True:
-        if pygame.mouse.get_pressed()[0]:
-            keep_the_game_running()
-            continue
-        else:
-            break
+    
 
 def show_sum(sum):
     """Show the expected value from the user's equation"""
@@ -448,11 +443,6 @@ def set_resolution(new_res):
     else:
         pass
     
-    # print("------------")
-    # print(f"w: {WIDTH}, h: {HEIGHT}")
-    # for b in all_button:
-    #     print(f"{b.get_text()}: {b.get_pos()}")
-    # print("-------------")
     pygame.display.set_mode((WIDTH, HEIGHT))
     change_game_status(5)
 
@@ -465,20 +455,6 @@ def main():
     clock = pygame.time.Clock()
     running = True
     change_game_status(1)
-    # button_size_x, position_one_button_x = calculate_button_position(1, border_factor=0.3)
-    # button_size_y, position_one_button_y = calculate_button_position(1, border_factor=0.1, offset=100, axis=HEIGHT)
-    # # Create game initial status
-    # to_mm2_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Play",
-    #                        operation=change_game_status, new_status=2,
-    #                        pos=(position_one_button_x[0], position_one_button_y[0]),
-    #                        size=(button_size_x, button_size_y))
-    # all_button.append(to_mm2_button)
-    # to_setting_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(1400,150),size= (100,100), text="SET",
-    #                            operation=change_game_status, new_status=5)
-    # to_howtoplay_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(1250,150),size= (100,100), text="HTP",
-    #                              operation=change_game_status, new_status=4)
-    # all_button.append(to_setting_button)
-    # all_button.append(to_howtoplay_button)
     
     while running:
         clock.tick(FPS)

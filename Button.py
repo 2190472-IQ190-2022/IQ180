@@ -98,27 +98,41 @@ class Button:
             This function control all the hover and press interaction of the EACH button
             Put this function on the MAIN LOOP, NOT EVENT LOOP
         """
+        # status = 3 (departure) - logic for leaving status 3 and executing operation
+        if self.status == 3:
+            if self.is_hovering():
+                if not self.is_mouse_down():
+                    self.status = 2
+                    self.operation(** self.op_args)
+                else:
+                    self.status = 1
+            else:
+                self.status = 1
+
+        # Old logic
+        # if self.status == 3 and not self.is_hovering() and not self.is_mouse_down():
+        #     self.status = 1
+        #     self.operation(** self.op_args)
+        # if self.status == 3 and self.is_hovering() and not self.is_mouse_down():
+        #     self.status = 2
+        #     self.operation(** self.op_args)
+        # if self.status == 3 and not self.is_hovering() and self.is_mouse_down():
+        #     self.status = 1
+
         # status = 0
         if self.status == 0:
             self.draw()
             return None
-        # status = 1 not press and not hover
+        # status = 1 not mouse down and not hover
         if not self.is_hovering() and not self.is_mouse_down():
             self.status = 1
-        # status = 2 not press and hover
+        # status = 2 not mouse down and hover
         if self.is_hovering() and not self.is_mouse_down():
             self.status = 2
-        # status = 3 press and hover
+        # status = 3 (arrival) - the button is pressed and ready to execute the operation
         if self.is_hovering() and self.is_mouse_down() and self.status != 3:
             self.status = 3
-            self.operation(** self.op_args)
-        if self.status == 3 and not self.is_hovering() and not self.is_mouse_down():
-            self.status = 1
-        if self.status == 3 and self.is_hovering() and not self.is_mouse_down():
-            self.status = 2
-        if self.status == 3 and not self.is_hovering() and self.is_mouse_down():
-            self.status = 1
-
+        
         self.draw()
 
     def draw(self):
