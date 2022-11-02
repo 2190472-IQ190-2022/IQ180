@@ -13,6 +13,7 @@ server=socket.gethostbyname(hostname)
 # server = "10.201.142.11"
 port = 5555
 resetID = 0
+idCount = 0
 
 # UI part
 all_popup_text = []
@@ -122,9 +123,11 @@ def UI():
                     user_input += event.unicode
         
         print_text = server_font.render(f"type game id: {user_input}", 1, (0, 0, 0))
+        active_use_text = server_font.render(f"total active player: {idCount}", 1, (0, 0, 0))
         WIN.fill((255, 255, 255))
         pos_x, pos_y = width/2-(print_text.get_width()/2), height/4-(print_text.get_height()/2)
         WIN.blit(print_text, (pos_x, pos_y, 200, 200))
+        WIN.blit(active_use_text, (pos_x, pos_y+100, 200, 200))
         reset_all_button.update_button()
         reset_button.set_args(game_ID=user_input)
         reset_button.update_button()
@@ -152,6 +155,7 @@ if __name__ == "__main__":
     start_new_thread(UI, ())
     games = {}
     idCount = 0
+    
     while True:
         conn, addr = s.accept()
         print("Connected to:", conn)
