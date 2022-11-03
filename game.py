@@ -107,6 +107,7 @@ class Game:
         # reset the game, scores and etc.
         self.p1_score = 0
         self.p2_score = 0
+        self.start_time=time()
         self.turn = random.getrandbits(1)+1
         self.new_round()
 
