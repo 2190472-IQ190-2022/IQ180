@@ -46,6 +46,7 @@ all_popup = []
 game_input = ""
 player_submit = False
 user_name = ""
+popup_enable = True
 
 def draw_everything(current_menu_status, to_be_drawn=[]):
     """
@@ -76,7 +77,12 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         text_print = "How to play"
         # to_be_drawn_internal.append(("this game's trash don't play it", (500, 550)))
     elif current_menu_status == 5:
+        _, res_buttons_pos_x = calculate_button_position(4, border_factor=0.8, axis=WIDTH)
+        _, res_buttons_pos_y = calculate_button_position(1, border_factor=0.1, offset=-0.2*HEIGHT, axis=HEIGHT)
         text_print = "Setting"
+        popup_text = "Enabled" if popup_enable else "Disabled"
+        popup_status_text = (DEFAULT_FONT.render(f"Popup: {popup_text}", 1, BLACK), (res_buttons_pos_x[0], res_buttons_pos_y[0]+0.15*HEIGHT))
+        to_be_drawn_internal.append(popup_status_text)
         # to_be_drawn_internal.append(("you can change audio, game resolution here (hopefully)", (300, 550)))
     else:
         text_print = "What"
@@ -188,6 +194,15 @@ def change_game_status(new_status):
         all_button.append(res_12_button)
         all_button.append(res_16_button)
         all_button.append(res_full_button)
+        popup_altering_text = "Disable" if popup_enable else "Enable"
+        popup_altering_text_reversed = "Enabled" if popup_enable else "Disabled"
+        text_width = DEFAULT_FONT.render(f"Popup: {popup_altering_text_reversed}", 1, BLACK).get_width()
+
+        popup_status_button = Button(window=WIN, button_font=DEFAULT_FONT, 
+                                    pos=(res_buttons_pos_x[0]+text_width+GAME_BUTTON_INLINE_SPACING, res_buttons_pos_y[0]+0.15*HEIGHT),
+                                    size=(res_buttons_size_x, res_buttons_size_y), text=popup_altering_text,
+                                    operation=change_popup_status)
+        all_button.append(popup_status_button)
     pygame.time.wait(100) # This function was there to prevent mouse double clicking button / it does not work
 
 def keep_the_game_running(things_to_draw=[]):
@@ -210,7 +225,9 @@ def keep_the_game_running(things_to_draw=[]):
         if popup.get_finish():
             all_popup.remove(popup)
             continue
-        popup.draw()
+        if popup_enable:
+            popup.draw()
+
     
     pygame.display.update()
     
@@ -233,7 +250,7 @@ def get_user_name(): # get input from user and store in user_name
                     change_game_status(3)
                 else:
                     user_name += event.unicode
-        rendered_user_name = DEFAULT_FONT.render(user_name, 1, BLACK)
+        rendered_user_name = DEFAULT_FONT.render((user_name + "|") if int(time.time()) % 2 == 0 else user_name, 1, BLACK)
         things_to_draw.append((rendered_user_name,(0.25*WIDTH+310,0.75*HEIGHT)))
             # draw_everything(menu_status, things_to_draw)
             # game_button_control()
@@ -478,8 +495,11 @@ def set_resolution(new_res):
     pygame.display.set_mode((WIDTH, HEIGHT))
     change_game_status(5)
 
-def run_pip_install():
-    pass
+def change_popup_status():
+    global popup_enable
+    popup_enable = not popup_enable
+    change_game_status(5) # refresh page
+    # print(popup_enable)
 
 def main():
     """This is the main function"""
