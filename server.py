@@ -93,7 +93,6 @@ def threaded_client(conn, player, gameId, games):
     print(f"The number of players: {idCount}")
     conn.close()
 
-
 def UI():
     user_input = ""
     WIN = pygame.display.set_mode((width, height))
@@ -122,7 +121,8 @@ def UI():
                 else:
                     user_input += event.unicode
         
-        print_text = server_font.render(f"type game id: {user_input}", 1, (0, 0, 0))
+        user_input_with_cursor = user_input + "|" if int(time()) % 2 == 0 else user_input
+        print_text = server_font.render(f"type game id: {user_input_with_cursor}", 1, (0, 0, 0))
         active_use_text = server_font.render(f"total active player: {idCount}", 1, (0, 0, 0))
         WIN.fill((255, 255, 255))
         pos_x, pos_y = width/2-(print_text.get_width()/2), height/4-(print_text.get_height()/2)
