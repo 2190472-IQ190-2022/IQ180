@@ -300,14 +300,12 @@ def init_game():
             current_array=game.numbers_array
             current_sum=game.sum
             create_game_button(game.numbers_array)
-            show_sum(game.sum)
             while not player_submit:
                 clock.tick(FPS)
                 if current_sum!=game.sum or current_array!=game.numbers_array:
                     current_array=game.numbers_array
                     current_sum=game.sum
                     create_game_button(game.numbers_array)
-                    show_sum(game.sum)
                 try:
                     net.client.send(pickle.dumps(dummy))
                     game = net.recv() # add try except here to prevent server crash
@@ -325,15 +323,19 @@ def init_game():
                 if math.ceil(60 - (time.time() - game.start_time)) < 0:
                     game_input = ""
                     break # I think break alone actually work
+                sum_font = pygame.font.SysFont('comicsans', 200).render(f"{game.sum}", 1, BLACK)
+
                 to_draw_string = [DEFAULT_FONT.render(f"{game.p1_name}: {game.p1_score}", 1, BLACK),
                                 DEFAULT_FONT.render(f"{game.p2_name}: {game.p2_score}", 1, BLACK),
                                 DEFAULT_FONT.render(f"time: {math.ceil(60 - (time.time() - game.start_time))}", 1, BLACK),
-                                DEFAULT_FONT.render(f"input: {game_input}", 1, BLACK)
+                                DEFAULT_FONT.render(f"input: {game_input}", 1, BLACK),
+                                sum_font                            
                                 ]
                 to_draw = [(to_draw_string[0], (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT)),
                            (to_draw_string[1], (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT+50)),
                            (to_draw_string[2], (WIDTH//2-200, 300)),
-                           (to_draw_string[3], (WIDTH//2+200, 300))]
+                           (to_draw_string[3], (WIDTH//2+200, 300)),
+                           (to_draw_string[4], (WIDTH//2-sum_font.get_width()//2, 0))]
                 keep_the_game_running(things_to_draw=to_draw)
 
             equation_str = game_input.replace("x", "*").replace("÷", "/")
