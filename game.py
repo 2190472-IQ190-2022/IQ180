@@ -29,6 +29,9 @@ class Game:
         self.numbers_array, self.equation, self.sum = self.generate_question()
 
     def set_name(self, player, name):
+        #Spacebar is not allowed for the sake simplicity (In the process of checking empty username)
+        name.replace(" ","")
+        #Name "Player1" is not allowed for player 2, likewise "Player2" is not allowed for player 1
         if str(player) == '1' and name == "Player2":
             name=""
         elif str(player) == '2' and name == "Player1":
@@ -104,6 +107,7 @@ class Game:
         # reset the game, scores and etc.
         self.p1_score = 0
         self.p2_score = 0
+        self.start_time=time()
         self.turn = random.getrandbits(1)+1
         self.new_round()
 
