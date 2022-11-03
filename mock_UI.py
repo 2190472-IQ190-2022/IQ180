@@ -258,6 +258,10 @@ def init_game():
         change_game_status(new_status=2)
         return
     
+    loop_status = 0
+    current_array=[]
+    current_sum=0
+
     while True:
         clock = pygame.time.Clock()
         clock.tick(FPS)
@@ -277,19 +281,33 @@ def init_game():
             continue
         if game.p1_played and game.p2_played:
             game.update_score()
+            try:
+                net.client.send(pickle.dumps(game))
+            except:
+                all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
+                change_game_status(new_status=2)
+                break
         if str(net.player) == str(game.turn):
             player_submit = False
             game_input = ""
             print("your turn")
+            print(game.start_time)
             print(game.numbers_array)
             print(game.sum)
             print(game.equation)
             print(f"P1: {game.p1_score}")
             print(f"P2: {game.p2_score}")
+            current_array=game.numbers_array
+            current_sum=game.sum
             create_game_button(game.numbers_array)
             show_sum(game.sum)
             while not player_submit:
                 clock.tick(FPS)
+                if current_sum!=game.sum or current_array!=game.numbers_array:
+                    current_array=game.numbers_array
+                    current_sum=game.sum
+                    create_game_button(game.numbers_array)
+                    show_sum(game.sum)
                 try:
                     net.client.send(pickle.dumps(dummy))
                     game = net.recv() # add try except here to prevent server crash
@@ -298,14 +316,18 @@ def init_game():
                 except:
                     all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
                     change_game_status(new_status=2)
+                    status=2
                     break
-        
-                if math.ceil(60 - (time.time() - game.startTime)) < 0:
+                
+                if str(net.player) != str(game.turn):
+                    loop_status=1
+                    break
+                if math.ceil(60 - (time.time() - game.start_time)) < 0:
                     game_input = ""
                     break # I think break alone actually work
                 to_draw_string = [DEFAULT_FONT.render(f"{game.p1_name}: {game.p1_score}", 1, BLACK),
                                 DEFAULT_FONT.render(f"{game.p2_name}: {game.p2_score}", 1, BLACK),
-                                DEFAULT_FONT.render(f"time: {math.ceil(60 - (time.time() - game.startTime))}", 1, BLACK),
+                                DEFAULT_FONT.render(f"time: {math.ceil(60 - (time.time() - game.start_time))}", 1, BLACK),
                                 DEFAULT_FONT.render(f"input: {game_input}", 1, BLACK)
                                 ]
                 to_draw = [(to_draw_string[0], (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT)),
@@ -316,6 +338,14 @@ def init_game():
 
             equation_str = game_input.replace("x", "*").replace("÷", "/")
             print(equation_str)
+
+            if loop_status == 1:
+                loop_status=0
+                continue
+            elif loop_status==2:
+                loop_status=0
+                break
+
             if net.player == '1':
                 game.p1_played = True
                 game.p1_cleared = game.check(equation_str)
