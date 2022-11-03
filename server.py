@@ -61,13 +61,13 @@ def threaded_client(conn, player, gameId, games):
                     if rcv_game.ready:
                         if rcv_game.turn == 2: # turn is already updated before sending to server
                             print("PASS 1")
-                            rcv_game.p1_game_time = math.ceil(60 - (time() - rcv_game.startTime))
-                            rcv_game.startTime = time()
+                            rcv_game.p1_game_time = math.ceil(60 - (time() - rcv_game.start_time))
+                            rcv_game.start_time = time()
                             # rcv_game.turn = 2
                         elif rcv_game.turn == 1: # turn is already updated before sending to server
                             print("PASS 2")
-                            rcv_game.p2_game_time = math.ceil(60 - (time() - rcv_game.startTime))
-                            rcv_game.startTime = time()
+                            rcv_game.p2_game_time = math.ceil(60 - (time() - rcv_game.start_time))
+                            rcv_game.start_time = time()
                             # rcv_game.turn = 1
                     games[gameId] = rcv_game
                     print(f"P1 spends {rcv_game.p1_game_time}")
@@ -169,7 +169,7 @@ if __name__ == "__main__":
             print("Creating a new game...")
         else:
             games[gameId].ready = True
-            games[gameId].startTime = time()
+            games[gameId].start_time = time()
             player = 2
 
         print(f"The number of players: {idCount}")
