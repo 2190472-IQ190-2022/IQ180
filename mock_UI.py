@@ -38,15 +38,17 @@ DEFAULT_FONT = pygame.font.SysFont('comicsans', 40)
 pygame.display.set_caption("IQ1")
 
 # Global Variable
-menu_status = 1
-# menu status = 1 is mm1, = 2 is mm2, = 3 is game, = 4 is htp, = 5 is setting
-# disabled_game_button_index = []
+menu_status = 1 # menu status = 1 is mm1, = 2 is mm2, = 3 is game, = 4 is htp, = 5 is setting
 all_button = []
 all_popup = []
 game_input = ""
 player_submit = False
 user_name = ""
 popup_enable = True
+
+# Images
+test_img = pygame.image.load("C:\\Users\\user\\OneDrive\\Desktop\\Susremaster.webp") # add .convert() to make game faster
+test_img = pygame.transform.scale(test_img, (WIDTH, HEIGHT))
 
 def draw_everything(current_menu_status, to_be_drawn=[]):
     """
@@ -58,6 +60,7 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
     
     to_be_drawn_internal = []
     WIN.fill(WHITE)
+    WIN.blit(test_img, (0,0))
     text_print = ""
     if current_menu_status == 1:
         text_print = "Main menu 1"
