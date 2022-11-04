@@ -37,9 +37,7 @@ def check_status(game_ID):
     if game_ID in games.keys():
         game = games[game_ID]
         all_popup_text.append(
-            f"""{game.p1_name}: {game.p1_score}-{game.p2_score}: {game.p2_name}
-                {game.equation} = {game.sum}
-                Player {game.turn}'s turn: {math.ceil(60 - (time() - game.start_time))}""")
+            f"{game.p1_name}: {game.p1_score}-{game.p2_score}: {game.p2_name} {game.equation} = {game.sum} Player {game.turn}'s turn: {math.ceil(60 - (time() - game.start_time))}")
         extended = True
     else:
         all_popup_text.append(f"error, index out of bound")
