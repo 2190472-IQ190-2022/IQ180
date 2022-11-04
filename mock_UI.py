@@ -47,8 +47,8 @@ user_name = ""
 popup_enable = True
 
 # Images
-test_img = pygame.image.load("C:\\Users\\user\\OneDrive\\Desktop\\Susremaster.webp") # add .convert() to make game faster
-test_img = pygame.transform.scale(test_img, (WIDTH, HEIGHT))
+#test_img = pygame.image.load("C:\\Users\\user\\OneDrive\\Desktop\\Susremaster.webp") # add .convert() to make game faster
+#test_img = pygame.transform.scale(test_img, (WIDTH, HEIGHT))
 
 def draw_everything(current_menu_status, to_be_drawn=[]):
     """
@@ -60,7 +60,7 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
     
     to_be_drawn_internal = []
     WIN.fill(WHITE)
-    WIN.blit(test_img, (0,0))
+    #WIN.blit(test_img, (0,0))
     text_print = ""
     if current_menu_status == 1:
         text_print = "Main menu 1"

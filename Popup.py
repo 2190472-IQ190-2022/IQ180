@@ -22,6 +22,9 @@ class Popup:
         self.finish = False
         self.clicked = False
 
+    def extend(self, duration):
+        self.duration = duration
+    
     def calculate_pop_up_box_size(self):
         size_y = self.two_line_padding
         size_x = 0

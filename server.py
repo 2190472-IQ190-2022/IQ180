@@ -12,7 +12,7 @@ hostname=socket.gethostname()
 server=socket.gethostbyname(hostname)
 # server = "10.201.142.11"
 port = 5555
-resetID = 0
+extended = False
 idCount = 0
 
 # UI part
@@ -21,19 +21,44 @@ width, height = 800, 600
 button_size = 100
 # end of UI Part
 
+def check_status(game_ID):
+    global extended
+    
+    if game_ID == "":
+        all_popup_text.append(f"error, check status require game ID")
+        return
+    
+    try: 
+            game_ID = int(game_ID)
+    except:
+        all_popup_text.append(f"error, not a number input")
+        return
+    
+    if game_ID in games.keys():
+        game = games[game_ID]
+        all_popup_text.append(
+            f"""{game.p1_name}: {game.p1_score}-{game.p2_score}: {game.p2_name}
+                {game.equation} = {game.sum}
+                Player {game.turn}'s turn: {math.ceil(60 - (time() - game.start_time))}""")
+        extended = True
+    else:
+        all_popup_text.append(f"error, index out of bound")
+
 def reset_game(game_ID):
     if game_ID == "":
         reset_games() 
         all_popup_text.append("reset all game successful")
-        print("reset all game")
     else:
+        try: 
+            game_ID = int(game_ID)
+        except:
+            all_popup_text.append(f"error, not a number input")
+            return
         try:
             games[game_ID].reset()
         except:
-            print("Error, most likely index out of bound")
             all_popup_text.append(f"error, index out of bound")
             return
-        print(f"reset game #{game_ID}")
         all_popup_text.append(f"reset game # {game_ID}")
 
 def reset_games():
@@ -45,8 +70,7 @@ def threaded_client(conn, player, gameId, games):
     conn.send(str.encode(str(player)))
     if gameId in games:
         game = games[gameId]
-    # conn.sendall(pickle.dumps(game))
-    reply = ""
+    
     while True:
         try:
             rcv_game = pickle.loads(conn.recv(2048*5))
@@ -94,6 +118,7 @@ def threaded_client(conn, player, gameId, games):
     conn.close()
 
 def UI():
+    global extended
     user_input = ""
     WIN = pygame.display.set_mode((width, height))
     pygame.font.init()
@@ -105,8 +130,10 @@ def UI():
     
     reset_all_button = Button(WIN, button_font=server_font, pos=(0.25*width-0.5*button_size, 0.75*height-0.5*button_size), 
                         text="reset all", enabled_color=(255, 0, 0), operation=reset_game, game_ID="")
-    reset_button = Button(WIN, button_font=server_font, pos=(0.75*width-0.5*button_size, 0.75*height-0.5*button_size), 
+    reset_button = Button(WIN, button_font=server_font, pos=(0.50*width-0.5*button_size, 0.75*height-0.5*button_size), 
                     text="reset", enabled_color=(255, 0, 0), operation=reset_game, game_ID=user_input)
+    check_button = Button(WIN, button_font=server_font, pos=(0.75*width-0.5*button_size, 0.75*height-0.5*button_size), 
+                    text="game status", enabled_color=(255, 0, 0), operation=check_status, game_ID=user_input)                    
     
     while running:
         clock.tick(60)
@@ -131,9 +158,14 @@ def UI():
         reset_all_button.update_button()
         reset_button.set_args(game_ID=user_input)
         reset_button.update_button()
+        check_button.set_args(game_ID=user_input)
+        check_button.update_button()
         for popup in all_popup_text:
             user_input = ""
             all_popup.append(Popup(WIN, text_object=[server_font.render(popup, 1, (0, 0, 0))]))
+            if extended:
+                extended = False
+                all_popup[-1].extend(5)
             all_popup_text.remove(popup)
         for popup in all_popup:
             popup.draw()
