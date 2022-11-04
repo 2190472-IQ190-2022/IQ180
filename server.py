@@ -37,7 +37,9 @@ def check_status(game_ID):
     if game_ID in games.keys():
         game = games[game_ID]
         all_popup_text.append(
-            f"{game.p1_name}: {game.p1_score}-{game.p2_score}: {game.p2_name} {game.equation} = {game.sum} Player {game.turn}'s turn: {math.ceil(60 - (time() - game.start_time))}")
+            f"""{game.p1_name}: {game.p1_score}-{game.p2_score}: {game.p2_name}
+{game.equation} = {game.sum}
+Player {game.turn}'s turn: {math.ceil(60 - (time() - game.start_time))}""")
         extended = True
     else:
         all_popup_text.append(f"error, index out of bound")
@@ -160,7 +162,13 @@ def UI():
         check_button.update_button()
         for popup in all_popup_text:
             user_input = ""
-            all_popup.append(Popup(WIN, text_object=[server_font.render(popup, 1, (0, 0, 0))]))
+            if extended:
+                popups = popup.split("\n")
+                all_popup.append(Popup(WIN, text_object=[server_font.render(popups[0], 1, (0, 0, 0)),
+                server_font.render(popups[1], 1, (0, 0, 0)),
+                server_font.render(popups[2], 1, (0, 0, 0))]))
+            else:
+                all_popup.append(Popup(WIN, text_object=[server_font.render(popup, 1, (0, 0, 0))]))
             if extended:
                 extended = False
                 all_popup[-1].extend(5)
