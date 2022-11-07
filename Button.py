@@ -23,11 +23,14 @@ class Button:
                     (just used name of the function with out the bracket, e.g. operation=test_func)
             any other parameter name that are not listed above can be enter to be used as "operation" function parameter
                     e.g. operation=test_func, word="hello" will call test_func(word="hello"), hopefully
+            img_mode - boolean that tells whether or not the button would use a picture instead of rect
+            img_xxx other than img_mode - image object that are rendered as button when the button is xxx
+                                            image object is pygame.image.load(<filepath>) # .convert() is optional
     """
 
     def __init__(self, window, button_font, pos=(300, 300), size=(100, 100), enabled_color=(100, 100, 100),
                  hover_color=(170, 170, 170), pressed_color=(20, 20, 20), disabled_color=(50, 50, 50), text="text", show_text=True,
-                 disabled=False, img=None, img_hover=None, img_pressed=None, img_disabled=None, operation=None, ** op_args):
+                 disabled=False, img_mode=False, img_enabled=None, img_hover=None, img_pressed=None, img_disabled=None, operation=None, ** op_args):
         self.window = window
         self.button_font = button_font
         self.pos = pos
@@ -42,6 +45,16 @@ class Button:
         self.op_args = op_args
         self.status = 0  # 0 is disbled 1 is enabled 2 is hovered 3 is pressed
         self.text_rendered = self.button_font.render(self.text, 1, (0, 0, 0))
+        self.img_mode = img_mode
+
+        if img_disabled is None or img_enabled is None or img_hover is None or img_pressed is None:
+            self.img_mode = False
+        if img_mode:
+            self.img_enabled = pygame.transform.scale(img_enabled, self.size)
+            self.img_hover = pygame.transform.scale(img_hover, self.size)
+            self.img_pressed = pygame.transform.scale(img_pressed, self.size)
+            self.img_disabled = pygame.transform.scale(img_disabled, self.size)
+
         if operation is None:
             self.status = 0
         else:
@@ -57,19 +70,22 @@ class Button:
         self.pos = pos
         self.draw()
 
-    def get_pos(self):
-        return self.pos
-
     def set_text(self, text):
         self.text = text
         self.text_rendered = self.button_font.render(self.text, 1, (0, 0, 0))
         self.draw()
+
+    def get_pos(self):
+        return self.pos
 
     def get_text(self):
         return self.text
 
     def get_text_rendered(self):
         return self.text_rendered
+
+    def get_size(self):
+        return self.size
 
     def set_operation(self, operation):
         self.operation = operation
@@ -139,20 +155,37 @@ class Button:
         """
             call this function to draw THIS ONE BUTTON OBJECT ONLY, drawing multiple button is outside the capability of this function.
         """
-        color = self.enabled_color
+        if not self.img_mode:
+            color = self.enabled_color
 
-        if self.status == 2:
-            color = self.hover_color
+            if self.status == 2:
+                color = self.hover_color
 
-        if self.status == 0:
-            color = self.disabled_color
+            if self.status == 0:
+                color = self.disabled_color
 
-        if self.status == 3:
-            color = self.pressed_color
+            if self.status == 3:
+                color = self.pressed_color
 
-        pygame.draw.rect(self.window, color, [
-                         self.pos[0], self.pos[1], self.size[0], self.size[1]])
+            pygame.draw.rect(self.window, color, [
+                            self.pos[0], self.pos[1], self.size[0], self.size[1]])
+
+        else:
+            image = self.img_enabled
+
+            if self.status == 2:
+                image = self.img_hover
+            
+            if self.status == 0:
+                image = self.img_disabled
+
+            if self.status == 3:
+                image = self.img_pressed
+
+            self.window.blit(image, self.pos)
+
         if self.show_text:
-            self.window.blit(self.text_rendered, (self.pos[0]+self.size[0]/2-self.text_rendered.get_width()/2,
-                                                self.pos[1]+self.size[1]/2-self.text_rendered.get_height()/2))
+                self.window.blit(self.text_rendered, (self.pos[0]+self.size[0]/2-self.text_rendered.get_width()/2,
+                                                    self.pos[1]+self.size[1]/2-self.text_rendered.get_height()/2))
+    
 
