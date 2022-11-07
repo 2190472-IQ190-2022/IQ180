@@ -360,6 +360,7 @@ def init_game():
 
             equation_str = game_input.replace("x", "*").replace("÷", "/")
             print(equation_str)
+            all_button = []
 
             if loop_status == 1:
                 loop_status=0
