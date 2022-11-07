@@ -325,6 +325,7 @@ def init_game():
                 if current_sum!=game.sum or current_array!=game.numbers_array:
                     current_array=game.numbers_array
                     current_sum=game.sum
+                    all_button = []
                     create_game_button(game.numbers_array)
                 try:
                     net.client.send(pickle.dumps(dummy))
