@@ -15,6 +15,7 @@ import time
 import threading
 from Popup import Popup
 import subprocess
+from pygame import mixer
 
 # Constant
 WHITE = (255, 255, 255)
@@ -32,10 +33,17 @@ GAME_BUTTON_TWOLINE_SPACING = 10 # how much space between two buttons from diffe
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 ALL_ALLOWS_MATH_OP = "+-x÷()"
 
+# BGM
+pygame.init()
+pygame.mixer.music.load("Sound\BGM.wav")
+music_on = False
+
 # fonts
 pygame.font.init()
 DEFAULT_FONT = pygame.font.SysFont('comicsans', 40)
 pygame.display.set_caption("IQ1")
+
+
 
 # Global Variable
 menu_status = 1 # menu status = 1 is mm1, = 2 is mm2, = 3 is game, = 4 is htp, = 5 is setting
@@ -122,21 +130,25 @@ def change_game_status(new_status):
     _, y_border = calculate_button_position(1, edge_start=True, left_or_top_edge=True)
     y_border = y_border[0]
     if new_status == 1:
-        _, three_bpos_x = calculate_button_position(3, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
+        _, three_bpos_x = calculate_button_position(4, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         to_mm2_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Play",
                                operation=change_game_status, new_status=2,
                                pos=(position_one_button_x[0], position_one_button_y[0]),
                                size=(button_size_x, button_size_y))
         all_button.append(to_mm2_button)
+        BGM_button = Button(window=WIN, button_font=DEFAULT_FONT,
+                                    pos=(three_bpos_x[0],y_border),size=(small_bsize, small_bsize), text="BGM",
+                                    operation=play_BGM)
         to_setting_button = Button(window=WIN, button_font=DEFAULT_FONT,
-                                    pos=(three_bpos_x[0],y_border),size=(small_bsize, small_bsize), text="SET",
+                                    pos=(three_bpos_x[1],y_border),size=(small_bsize, small_bsize), text="SET",
                                     operation=change_game_status, new_status=5)
         to_howtoplay_button = Button(window=WIN, button_font=DEFAULT_FONT,
-                                    pos=(three_bpos_x[1],y_border),size=(small_bsize, small_bsize), text="HTP",
+                                    pos=(three_bpos_x[2],y_border),size=(small_bsize, small_bsize), text="HTP",
                                     operation=change_game_status, new_status=4)
         exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
-                                    pos=(three_bpos_x[2],y_border),size=(small_bsize, small_bsize), text="GTFO",
+                                    pos=(three_bpos_x[3],y_border),size=(small_bsize, small_bsize), text="GTFO",
                                     operation=exit)
+        all_button.append(BGM_button)
         all_button.append(to_setting_button)
         all_button.append(to_howtoplay_button)
         all_button.append(exit_button)
@@ -259,6 +271,16 @@ def get_user_name(): # get input from user and store in user_name
             # game_button_control()
             # pygame.display.update()
         keep_the_game_running(things_to_draw=things_to_draw) # these 3 lines can be converted to this
+        
+def play_BGM():
+    global music_on
+    if(music_on == False):
+        pygame.mixer.music.play(-1)
+        music_on = True
+    else:
+        pygame.mixer.pause()
+        music_on = False
+
 
 def init_game():
     """this is the game"""
