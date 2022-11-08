@@ -202,13 +202,13 @@ def change_game_status(new_status):
         res_12_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[2],res_buttons_pos_y[0]),
                                 size= (res_buttons_size_x,res_buttons_size_y), text="1280x720",
                                 operation=set_resolution, new_res="12")
-        res_full_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[3],res_buttons_pos_y[0]),
-                                size= (res_buttons_size_x,res_buttons_size_y), text="full screen",
-                                operation=set_resolution, new_res="full")
+        res_8_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[3],res_buttons_pos_y[0]),
+                                size= (res_buttons_size_x,res_buttons_size_y), text="800x600",
+                                operation=set_resolution, new_res="8")
         all_button.append(res_19_button)
         all_button.append(res_12_button)
         all_button.append(res_16_button)
-        all_button.append(res_full_button)
+        all_button.append(res_8_button)
         popup_altering_text = "Disable" if popup_enable else "Enable"
         popup_altering_text_reversed = "Enabled" if popup_enable else "Disabled"
         text_width = DEFAULT_FONT.render(f"Popup: {popup_altering_text_reversed}", 1, BLACK).get_width()
@@ -347,7 +347,15 @@ def init_game():
                 if current_sum!=game.sum or current_array!=game.numbers_array:
                     current_array=game.numbers_array
                     current_sum=game.sum
+                    all_button = []
                     create_game_button(game.numbers_array)
+                    print("your turn")
+                    print(game.start_time)
+                    print(game.numbers_array)
+                    print(game.sum)
+                    print(game.equation)
+                    print(f"P1: {game.p1_score}")
+                    print(f"P2: {game.p2_score}")
                 try:
                     net.client.send(pickle.dumps(dummy))
                     game = net.recv() # add try except here to prevent server crash
@@ -382,6 +390,7 @@ def init_game():
 
             equation_str = game_input.replace("x", "*").replace("÷", "/")
             print(equation_str)
+            all_button = []
 
             if loop_status == 1:
                 loop_status=0
@@ -511,9 +520,11 @@ def set_resolution(new_res):
     elif new_res == "12":
         WIDTH = 1280
         HEIGHT = 720
-    elif new_res == "full":
+    elif new_res == "8":
+        WIDTH = 800
+        HEIGHT = 600
         # WIDTH, HEIGHT = pyautogui.size()
-        all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Not ready", 1, BLACK)]))
+        # all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Not ready", 1, BLACK)]))
     else:
         pass
     
