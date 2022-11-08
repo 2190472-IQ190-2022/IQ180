@@ -7,7 +7,8 @@ import time
 class Popup:
     
     def __init__(self, window, duration=2, text_object=[], bg_color=(200, 200, 200), 
-                two_line_padding=10, side_padding=10, box_pos=(0, 0)):
+                two_line_padding=10, side_padding=10, box_pos=(0, 0), show_text=True,
+                img_mode=False, img=None):
         self.window = window
         self.duration = duration
         self.text_object = text_object
@@ -21,6 +22,13 @@ class Popup:
         self.start_time = time.time()
         self.finish = False
         self.clicked = False
+        self.show_text = show_text
+        self.img = None
+        if img is None:
+            self.img_mode = False
+        else:
+            self.img_mode = img_mode
+            self.img = pygame.transform.scale(img, self.box_size)
 
     def extend(self, duration):
         self.duration = duration
@@ -57,13 +65,30 @@ class Popup:
         if self.clicked and pygame.mouse.get_pressed()[0]:
             self.finish = True
         if time.time()-self.start_time <= self.duration and not self.finish:
-            pygame.draw.rect(self.window, self.bg_color, 
+            if not self.img_mode:
+                pygame.draw.rect(self.window, self.bg_color, 
                             [self.box_pos[0], self.box_pos[1], self.box_size[0], self.box_size[1]])
+            else:
+                self.window.blit(self.img, self.box_pos)
 
-            for i in range(len(self.text_object)):
-                self.window.blit(self.text_object[i], self.text_position[i])
+            if self.show_text:
+                for i in range(len(self.text_object)):
+                    self.window.blit(self.text_object[i], self.text_position[i])
         else:
             self.finish = True
 
     def get_finish(self):
         return self.finish
+
+    def set_show_text(self, show_text):
+        self.show_text = show_text
+
+    def enable_image(self):
+        if self.img is None:
+            return False
+        self.img_mode = True
+        return True
+
+    def disable_image(self):
+        self.img_mode = False
+        

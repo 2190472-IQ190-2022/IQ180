@@ -49,6 +49,8 @@ popup_enable = True
 # Images
 # test_img = pygame.image.load("C:\\Users\\user\\OneDrive\\Desktop\\Susremaster.webp") # add .convert() to make game faster
 # test_img = pygame.transform.scale(test_img, (WIDTH, HEIGHT))
+# NOTE: when image is loaded, all of them must be tested. If there's an error, report and replace it with None
+# NOTE: I will create a function for testing images later
 
 def draw_everything(current_menu_status, to_be_drawn=[]):
     """

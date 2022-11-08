@@ -46,6 +46,10 @@ class Button:
         self.status = 0  # 0 is disbled 1 is enabled 2 is hovered 3 is pressed
         self.text_rendered = self.button_font.render(self.text, 1, (0, 0, 0))
         self.img_mode = img_mode
+        self.img_disabled = None
+        self.img_pressed = None
+        self.img_hover = None
+        self.img_enabled = None
 
         if img_disabled is None or img_enabled is None or img_hover is None or img_pressed is None:
             self.img_mode = False
@@ -74,6 +78,28 @@ class Button:
         self.text = text
         self.text_rendered = self.button_font.render(self.text, 1, (0, 0, 0))
         self.draw()
+
+    def set_img(self, img_mode, img_enabled, img_disabled,  img_hover, img_pressed):
+        self.img_enabled = img_enabled
+        self.img_disabled = img_disabled
+        self.img_hover = img_hover
+        self.img_pressed = img_pressed
+        if img_pressed is None or img_disabled is None or img_enabled is None or img_hover is None:
+            self.img_mode = False
+            return False
+        else:
+            self.img_mode = img_mode
+            return True
+
+    def enable_image(self):
+        """turn image mode on, if either of the image is none it would not turn on image mode and would return false"""
+        if self.img_disabled is None or self.img_enabled is None or self.img_hover is None or self.img_pressed:
+            self.img_mode = True
+            return True
+        return False
+
+    def disable_image(self):
+        self.img_mode = False
 
     def get_pos(self):
         return self.pos
