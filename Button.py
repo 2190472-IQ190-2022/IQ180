@@ -113,6 +113,9 @@ class Button:
     def get_size(self):
         return self.size
 
+    def get_status(self):
+        return self.status
+
     def set_operation(self, operation):
         self.operation = operation
 
