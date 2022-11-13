@@ -135,3 +135,6 @@ generator.py
 #Test files
 testfile.py
 test.py
+
+# folder with file for testing
+Test_Images
