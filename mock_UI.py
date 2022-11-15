@@ -37,7 +37,9 @@ ALL_ALLOWS_MATH_OP = "+-x÷()"
 pygame.init()
 pygame.mixer.music.load("Sound\BGM.wav")
 music_on = True
+BGM_volume = 0.5
 pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(BGM_volume)
 
 # fonts
 pygame.font.init()
@@ -223,8 +225,18 @@ def change_game_status(new_status):
                                     pos=(res_buttons_pos_x[0]+text_width_BGM+GAME_BUTTON_INLINE_SPACING, res_buttons_pos_y[0]+0.3*HEIGHT),
                                     size=(res_buttons_size_x, res_buttons_size_y), text=BGM_altering_text,
                                     operation=play_BGM)
+        increase_volume_button = Button(window=WIN, button_font=DEFAULT_FONT,
+                                    pos=(res_buttons_pos_x[0]+text_width_BGM+2*GAME_BUTTON_INLINE_SPACING+res_buttons_size_x, res_buttons_pos_y[0]+0.3*HEIGHT),
+                                    size=(small_bsize, res_buttons_size_y), text="+",
+                                    operation=increase_volume)
+        decrease_volume_button = Button(window=WIN, button_font=DEFAULT_FONT,
+                                    pos=(res_buttons_pos_x[0]+text_width_BGM+3*GAME_BUTTON_INLINE_SPACING+res_buttons_size_x+small_bsize, res_buttons_pos_y[0]+0.3*HEIGHT),
+                                    size=(small_bsize, res_buttons_size_y), text="-",
+                                    operation=decrease_volume)
         all_button.append(popup_status_button)
         all_button.append(BGM_button)
+        all_button.append(increase_volume_button)
+        all_button.append(decrease_volume_button)
     pygame.time.wait(100) # This function was there to prevent mouse double clicking button / it does not work
 
 def keep_the_game_running(things_to_draw=[]):
@@ -287,7 +299,20 @@ def play_BGM():
     else:
         pygame.mixer.music.unpause()
     change_game_status(5)
-        
+
+def increase_volume():
+    global BGM_volume
+    BGM_volume += 0.1
+    if(BGM_volume>= 1.0):
+        BGM_volume = 1.0
+    pygame.mixer.music.set_volume(BGM_volume)
+    
+def decrease_volume():
+    global BGM_volume
+    BGM_volume -= 0.1
+    if(BGM_volume<= 0.0):
+        BGM_volume = 0.0
+    pygame.mixer.music.set_volume(BGM_volume)
 
 
 def init_game():
