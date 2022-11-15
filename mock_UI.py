@@ -36,7 +36,8 @@ ALL_ALLOWS_MATH_OP = "+-x÷()"
 # BGM
 pygame.init()
 pygame.mixer.music.load("Sound\BGM.wav")
-music_on = False
+music_on = True
+pygame.mixer.music.play(-1)
 
 # fonts
 pygame.font.init()
@@ -93,7 +94,10 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         text_print = "Setting"
         popup_text = "Enabled" if popup_enable else "Disabled"
         popup_status_text = (DEFAULT_FONT.render(f"Popup: {popup_text}", 1, BLACK), (res_buttons_pos_x[0], res_buttons_pos_y[0]+0.15*HEIGHT))
+        BGM_text = "on" if music_on else "off"
+        BGM_status_text = (DEFAULT_FONT.render(f"BGM: {BGM_text}", 1, BLACK), (res_buttons_pos_x[0], res_buttons_pos_y[0]+0.3*HEIGHT))
         to_be_drawn_internal.append(popup_status_text)
+        to_be_drawn_internal.append(BGM_status_text)
         # to_be_drawn_internal.append(("you can change audio, game resolution here (hopefully)", (300, 550)))
     else:
         text_print = "What"
@@ -130,25 +134,21 @@ def change_game_status(new_status):
     _, y_border = calculate_button_position(1, edge_start=True, left_or_top_edge=True)
     y_border = y_border[0]
     if new_status == 1:
-        _, three_bpos_x = calculate_button_position(4, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
+        _, three_bpos_x = calculate_button_position(3, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         to_mm2_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Play",
                                operation=change_game_status, new_status=2,
                                pos=(position_one_button_x[0], position_one_button_y[0]),
                                size=(button_size_x, button_size_y))
         all_button.append(to_mm2_button)
-        BGM_button = Button(window=WIN, button_font=DEFAULT_FONT,
-                                    pos=(three_bpos_x[0],y_border),size=(small_bsize, small_bsize), text="BGM",
-                                    operation=play_BGM)
         to_setting_button = Button(window=WIN, button_font=DEFAULT_FONT,
-                                    pos=(three_bpos_x[1],y_border),size=(small_bsize, small_bsize), text="SET",
+                                    pos=(three_bpos_x[0],y_border),size=(small_bsize, small_bsize), text="SET",
                                     operation=change_game_status, new_status=5)
         to_howtoplay_button = Button(window=WIN, button_font=DEFAULT_FONT,
-                                    pos=(three_bpos_x[2],y_border),size=(small_bsize, small_bsize), text="HTP",
+                                    pos=(three_bpos_x[1],y_border),size=(small_bsize, small_bsize), text="HTP",
                                     operation=change_game_status, new_status=4)
         exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
-                                    pos=(three_bpos_x[3],y_border),size=(small_bsize, small_bsize), text="GTFO",
+                                    pos=(three_bpos_x[2],y_border),size=(small_bsize, small_bsize), text="GTFO",
                                     operation=exit)
-        all_button.append(BGM_button)
         all_button.append(to_setting_button)
         all_button.append(to_howtoplay_button)
         all_button.append(exit_button)
@@ -211,13 +211,20 @@ def change_game_status(new_status):
         all_button.append(res_8_button)
         popup_altering_text = "Disable" if popup_enable else "Enable"
         popup_altering_text_reversed = "Enabled" if popup_enable else "Disabled"
+        BGM_altering_text = "off" if music_on else "on"
+        BGM_altering_text_reversed = "on" if music_on else "off"
         text_width = DEFAULT_FONT.render(f"Popup: {popup_altering_text_reversed}", 1, BLACK).get_width()
-
+        text_width_BGM = DEFAULT_FONT.render(f"BGM: {BGM_altering_text_reversed}", 1, BLACK).get_width()
         popup_status_button = Button(window=WIN, button_font=DEFAULT_FONT, 
                                     pos=(res_buttons_pos_x[0]+text_width+GAME_BUTTON_INLINE_SPACING, res_buttons_pos_y[0]+0.15*HEIGHT),
                                     size=(res_buttons_size_x, res_buttons_size_y), text=popup_altering_text,
                                     operation=change_popup_status)
+        BGM_button = Button(window=WIN, button_font=DEFAULT_FONT,
+                                    pos=(res_buttons_pos_x[0]+text_width_BGM+GAME_BUTTON_INLINE_SPACING, res_buttons_pos_y[0]+0.3*HEIGHT),
+                                    size=(res_buttons_size_x, res_buttons_size_y), text=BGM_altering_text,
+                                    operation=play_BGM)
         all_button.append(popup_status_button)
+        all_button.append(BGM_button)
     pygame.time.wait(100) # This function was there to prevent mouse double clicking button / it does not work
 
 def keep_the_game_running(things_to_draw=[]):
@@ -274,12 +281,13 @@ def get_user_name(): # get input from user and store in user_name
         
 def play_BGM():
     global music_on
+    music_on = not music_on
     if(music_on == False):
-        pygame.mixer.music.play(-1)
-        music_on = True
+        pygame.mixer.music.pause()
     else:
-        pygame.mixer.pause()
-        music_on = False
+        pygame.mixer.music.unpause()
+    change_game_status(5)
+        
 
 
 def init_game():
