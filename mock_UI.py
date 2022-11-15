@@ -306,6 +306,7 @@ def increase_volume():
     if(BGM_volume>= 1.0):
         BGM_volume = 1.0
     pygame.mixer.music.set_volume(BGM_volume)
+    all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"Volume= {round(BGM_volume*10)}", 1, BLACK)]))
     
 def decrease_volume():
     global BGM_volume
@@ -313,6 +314,7 @@ def decrease_volume():
     if(BGM_volume<= 0.0):
         BGM_volume = 0.0
     pygame.mixer.music.set_volume(BGM_volume)
+    all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"Volume= {round(BGM_volume*10)}", 1, BLACK)]))
 
 
 def init_game():
