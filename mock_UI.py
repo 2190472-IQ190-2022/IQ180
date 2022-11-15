@@ -12,6 +12,7 @@ import time
 import threading
 from Popup import Popup
 import subprocess
+from Animation import Animation
 
 # Constant
 WHITE = (255, 255, 255)
@@ -42,6 +43,7 @@ game_input = ""
 player_submit = False
 user_name = ""
 popup_enable = True
+game_full_screen = False
 
 # Images
 # test_img = pygame.image.load("C:\\Users\\user\\OneDrive\\Desktop\\Susremaster.webp") # add .convert() to make game faster
@@ -56,7 +58,6 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         surface is anything that can be blit'ed, for example, rendered text: rendered_text = FONT.render("hello", 1, WHITE)
         if you want to append draw something from INSIDE this function, append item to to_be_drawn_internal
     """
-    
     to_be_drawn_internal = []
     WIN.fill(WHITE)
     # WIN.blit(test_img, (0,0))
@@ -105,12 +106,7 @@ def change_game_status(new_status):
             all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("name len should be < 20", 1, BLACK)]))
             user_name = ""
             return
-    # while True:
-    #     if pygame.mouse.get_pressed()[0]:
-    #         keep_the_game_running()
-    #         continue
-    #     else:
-    #         break
+
     menu_status = new_status
     all_button = []
     # big button (play game)
@@ -189,13 +185,19 @@ def change_game_status(new_status):
         res_12_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[2],res_buttons_pos_y[0]),
                                 size= (res_buttons_size_x,res_buttons_size_y), text="1280x720",
                                 operation=set_resolution, new_res="12")
-        res_8_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[3],res_buttons_pos_y[0]),
-                                size= (res_buttons_size_x,res_buttons_size_y), text="800x600",
-                                operation=set_resolution, new_res="8")
         all_button.append(res_19_button)
         all_button.append(res_12_button)
         all_button.append(res_16_button)
-        all_button.append(res_8_button)
+        if not game_full_screen:
+            res_full_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[3],res_buttons_pos_y[0]),
+                                    size= (res_buttons_size_x,res_buttons_size_y), text="full screen",
+                                    operation=set_resolution, new_res="full")
+            all_button.append(res_full_button)
+        else:
+            res_window_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[3],res_buttons_pos_y[0]),
+                                    size= (res_buttons_size_x,res_buttons_size_y), text="windowed",
+                                    operation=set_resolution, new_res="unfull")
+            all_button.append(res_window_button)
         popup_altering_text = "Disable" if popup_enable else "Enable"
         popup_altering_text_reversed = "Enabled" if popup_enable else "Disabled"
         text_width = DEFAULT_FONT.render(f"Popup: {popup_altering_text_reversed}", 1, BLACK).get_width()
@@ -458,19 +460,20 @@ def calculate_button_position(number_of_button, border_factor=BUTTON_BORDER_FACT
     if size == -1:
         return button_size, [offset + begining_position + (x * (button_size + inline_space)) for x in range(number_of_button)]
     else:
-        return size, [offset + begining_position + (x * (button_size + inline_space)) for x in range(number_of_button)]
+        return size, [offset + begining_position + (x * (size + inline_space)) for x in range(number_of_button)]
+        # return size, [offset + begining_position + (x * (button_size + inline_space)) for x in range(number_of_button)]
 
 def create_game_button(numbers):
     """This function create game button including numbers and operation"""
     button_size_y, position_y = calculate_button_position(3, axis=HEIGHT, offset=150, border_factor=0.4) # Hard code : 3 is number of rows
-    button_size_x, position_x = calculate_button_position(len(numbers))
+    button_size_x, position_x = calculate_button_position(len(numbers), axis=WIDTH)
     for i in range(len(numbers)):
         button = Button(WIN, DEFAULT_FONT, text=str(numbers[i]), operation=user_game_input,
                         pos=(position_x[i], position_y[0]), size=(button_size_x, button_size_y),
                         button_input=str(numbers[i]), button_index=i)
         all_button.append(button)
 
-    button_size_x, position_x = calculate_button_position(len(ALL_ALLOWS_MATH_OP))
+    button_size_x, position_x = calculate_button_position(len(ALL_ALLOWS_MATH_OP), axis=WIDTH)
 
     for i in range(len(ALL_ALLOWS_MATH_OP)):
         button = Button(WIN, DEFAULT_FONT, text=ALL_ALLOWS_MATH_OP[i], operation=user_game_input,
@@ -478,7 +481,7 @@ def create_game_button(numbers):
                         button_input=ALL_ALLOWS_MATH_OP[i], button_index=i)
         all_button.append(button)
 
-    button_size_x, position_x = calculate_button_position(2)
+    button_size_x, position_x = calculate_button_position(2, axis=WIDTH)
     reset_button = Button(WIN, DEFAULT_FONT, text="Reset", operation=reset_button_operation,
                           pos=(position_x[0], position_y[2]), size=(button_size_x, button_size_y))
     submit_button = Button(WIN, DEFAULT_FONT, text="Submit", operation=submit_button_operation,
@@ -487,25 +490,21 @@ def create_game_button(numbers):
     all_button.append(submit_button)
 
 def set_resolution(new_res):
-    global WIDTH, HEIGHT
+    global WIDTH, HEIGHT, game_full_screen
     if new_res == "19":
-        WIDTH = 1920
-        HEIGHT = 1080
+        WIDTH, HEIGHT = 1920, 1080
     elif new_res == "16":
-        WIDTH = 1600
-        HEIGHT = 900
+        WIDTH, HEIGHT = 1600, 900
     elif new_res == "12":
-        WIDTH = 1280
-        HEIGHT = 720
-    elif new_res == "8":
-        WIDTH = 800
-        HEIGHT = 600
-        # WIDTH, HEIGHT = pyautogui.size()
-        # all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Not ready", 1, BLACK)]))
+        WIDTH, HEIGHT = 1280, 720
+    elif new_res == "full":
+        game_full_screen = True
+    elif new_res == "unfull":
+        game_full_screen = False
+    if game_full_screen:
+        pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
     else:
-        pass
-    
-    pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.set_mode((WIDTH, HEIGHT))
     change_game_status(5)
 
 def change_popup_status():
