@@ -32,6 +32,7 @@ GAME_BUTTON_TWOLINE_SPACING = 10 # how much space between two buttons from diffe
 # display
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 ALL_ALLOWS_MATH_OP = "+-x÷()"
+print(WIN.get_size())
 
 # BGM
 pygame.init()
