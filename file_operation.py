@@ -40,3 +40,6 @@ class file_operation:
         json.dump(settings,self.file,indent=4)
         self.file.close()
         os.system( "attrib +h settings.json" )
+
+    def export_game(self):
+        pass
