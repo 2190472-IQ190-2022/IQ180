@@ -599,6 +599,7 @@ def set_resolution(new_res):
         settings["game_full_screen"] = True
     elif new_res == "unfull":
         game_full_screen = False
+        settings["game_full_screen"] = False
     elif new_res == "def":
         WIDTH, HEIGHT = SCREEN_SIZE
 
