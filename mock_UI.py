@@ -1,5 +1,3 @@
-
-
 from game import Game
 import pygame
 from Button import Button
@@ -14,6 +12,7 @@ from Popup import Popup
 import subprocess
 from Animation import Animation
 import os
+from file_operation import file_operation
 
 # Constant
 WHITE = (255, 255, 255)
@@ -56,6 +55,7 @@ player_submit = False
 user_name = ""
 popup_enable = True
 game_full_screen = True
+fo = file_operation()
 
 # Images
 # test_img = pygame.image.load("C:\\Users\\user\\OneDrive\\Desktop\\Susremaster.webp") # add .convert() to make game faster
@@ -587,16 +587,23 @@ def create_game_button(numbers):
     all_button.append(submit_button)
 
 def set_resolution(new_res):
-    global WIDTH, HEIGHT, game_full_screen
+    global WIDTH, HEIGHT, game_full_screen, settings, fo
     temp_res = WIN.get_size()
     if new_res == "19":
         temp_res = 1920, 1080
+        settings["WIDTH"] = 1920
+        settings["HEIGHT"] = 1080
     elif new_res == "16":
         temp_res = 1600, 900
+        settings["WIDTH"] = 1600
+        settings["HEIGHT"] = 900
     elif new_res == "12":
         temp_res = 1280, 720
+        settings["WIDTH"] = 1280
+        settings["HEIGHT"] = 720
     elif new_res == "full":
         game_full_screen = True
+        settings["game_full_screen"] = True
     elif new_res == "unfull":
         game_full_screen = False
     elif new_res == "def":
@@ -608,16 +615,20 @@ def set_resolution(new_res):
     else:
         WIDTH, HEIGHT = temp_res
 
+        settings["game_full_screen"] = False
     if game_full_screen:
         pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
     else:
         pygame.display.set_mode((WIDTH, HEIGHT))
+    fo.save_settings(settings)
     change_game_status(5)
     # print(f"fs: {game_full_screen}, res: {(WIDTH, HEIGHT)}")
 
 def change_popup_status():
-    global popup_enable
+    global popup_enable, settings, fo
     popup_enable = not popup_enable
+    settings["popup_enable"] = popup_enable
+    fo.save_settings(settings)
     change_game_status(5) # refresh page
     # print(popup_enable)
 
@@ -633,6 +644,16 @@ def main():
         keep_the_game_running() 
 
 if __name__ == "__main__":
+    settings = fo.settings
+    WIDTH = settings["WIDTH"]
+    HEIGHT = settings["HEIGHT"]
+    user_name = settings["player_name"]
+    game_full_screen = settings["game_full_screen"]
+    popup_enable = settings["popup_enable"]
+    if game_full_screen:
+        pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
+    else:
+        pygame.display.set_mode((WIDTH, HEIGHT))
     main()
 
 print(all_button)
