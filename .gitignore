@@ -135,6 +135,12 @@ generator.py
 #Test files
 testfile.py
 test.py
+test.txt
 
 # folder with file for testing
 Test_Images
+
+
+#game local files
+settings.json
+/Exported_Games
