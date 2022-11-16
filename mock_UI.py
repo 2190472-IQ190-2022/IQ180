@@ -58,6 +58,7 @@ user_name = ""
 popup_enable = True
 game_full_screen = True
 fo = file_operation()
+save_name = True
 
 # Images
 # test_img = pygame.image.load("C:\\Users\\user\\OneDrive\\Desktop\\Susremaster.webp") # add .convert() to make game faster
@@ -314,7 +315,6 @@ def keep_the_game_running(things_to_draw=[]):
     
 def get_user_name(): # get input from user and store in user_name
     global user_name
-    user_name = ""
     typing = True
     while typing:
         things_to_draw = []
@@ -328,6 +328,8 @@ def get_user_name(): # get input from user and store in user_name
                     user_name = user_name[0:-1]
                 elif event.key == pygame.K_RETURN:
                     typing = False
+                    settings['player_name'] = user_name
+                    fo.save_settings(settings)
                     change_game_status(3)
                 else:
                     user_name += event.unicode
@@ -350,7 +352,11 @@ def play_BGM():
 
 def init_game():
     """this is the game"""
-    global player_submit, game_input, all_button, user_name
+    global player_submit, game_input, all_button, user_name, save_name, fo, settings
+    if save_name:
+        settings['player_name'] = user_name
+        fo.save_settings(settings)
+        save_name = False
     try:
         net = Network()
         print("you are p"+str(net.player))
@@ -364,6 +370,7 @@ def init_game():
     except:
         all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("server error, disconnected", 1, BLACK)]))
         change_game_status(new_status=2)
+        save_name=True
         return
     
     loop_status = 0
@@ -381,6 +388,7 @@ def init_game():
         except:
             all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
             change_game_status(new_status=2)
+            save_name=True
             break
 
         if game.ready == False:
@@ -394,6 +402,7 @@ def init_game():
             except:
                 all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
                 change_game_status(new_status=2)
+                save_name=True
                 break
         if str(net.player) == str(game.turn):
             player_submit = False
@@ -431,6 +440,7 @@ def init_game():
                     all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
                     change_game_status(new_status=2)
                     status=2
+                    save_name=True
                     break
                 
                 if str(net.player) != str(game.turn):
@@ -478,6 +488,7 @@ def init_game():
             except:
                 all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
                 change_game_status(new_status=2)
+                save_name=True
                 break
             print("send " + equation_str)
         else:
@@ -602,6 +613,9 @@ def set_resolution(new_res):
     if temp_res[0] > SCREEN_SIZE[0] or temp_res[1] > SCREEN_SIZE[1]:
         all_popup.append(Popup(WIN, text_object=[BIG_PIXEL_FONT.render("WARNING", 1, BLACK),
                         SMALL_PIXEL_FONT.render(f"your resolution is terrible", 1, BLACK)]))
+        settings["WIDTH"] = SCREEN_SIZE[0]
+        settings["HEIGHT"] = SCREEN_SIZE[1]
+        fo.save_settings(settings)
     else:
         WIDTH, HEIGHT = temp_res
 
