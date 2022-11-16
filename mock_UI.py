@@ -178,7 +178,7 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
 
 def change_game_status(new_status):
     """This function is called when the menu button is pressed (changing user to each menu, mm1, mm2, game, htp, setting)"""
-    global menu_status, all_button, user_name
+    global menu_status, all_button, user_name, settings, fo
     if new_status == 3:
         if len(user_name) >= 20:
             all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("name len should be < 20", 1, BLACK)]))
@@ -242,6 +242,8 @@ def change_game_status(new_status):
     elif new_status == 3:
         if len(user_name) == 0:
             user_name = "Player"
+        settings['player_name'] = user_name
+        fo.save_settings(settings)
         all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"welcome, {user_name}", 1, BLACK)]))
         init_game()
     elif new_status == 4:
@@ -325,7 +327,6 @@ def keep_the_game_running(things_to_draw=[]):
     
 def get_user_name(): # get input from user and store in user_name
     global user_name
-    user_name = ""
     typing = True
     while typing:
         things_to_draw = []
@@ -339,6 +340,8 @@ def get_user_name(): # get input from user and store in user_name
                     user_name = user_name[0:-1]
                 elif event.key == pygame.K_RETURN:
                     typing = False
+                    settings['player_name'] = user_name
+                    fo.save_settings(settings)
                     change_game_status(3)
                 else:
                     user_name += event.unicode
@@ -602,14 +605,18 @@ def set_resolution(new_res):
         settings["game_full_screen"] = True
     elif new_res == "unfull":
         game_full_screen = False
+        settings["game_full_screen"] = False
 
     if temp_res[0] > SCREEN_SIZE[0] or temp_res[1] > SCREEN_SIZE[1]:
         all_popup.append(Popup(WIN, text_object=[BIG_PIXEL_FONT.render("WARNING", 1, BLACK),
                         SMALL_PIXEL_FONT.render(f"your resolution is terrible", 1, BLACK)]))
+        settings["WIDTH"] = SCREEN_SIZE[0]
+        settings["HEIGHT"] = SCREEN_SIZE[1]
+        fo.save_settings(settings)
     else:
         WIDTH, HEIGHT = temp_res
+        # settings["game_full_screen"] = False
 
-        settings["game_full_screen"] = False
     if game_full_screen:
         pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
     else:
