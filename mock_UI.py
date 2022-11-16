@@ -32,6 +32,7 @@ SCREEN_SIZE = pygame.display.set_mode((0, 0), pygame.HIDDEN).get_size()
 pygame.display.set_mode(SCREEN_SIZE, pygame.FULLSCREEN)
 WIDTH, HEIGHT = SCREEN_SIZE
 ALL_ALLOWS_MATH_OP = "+-x÷()"
+RESOLUTION_LIST = pygame.display.list_modes()
 
 # BGM
 pygame.init()
@@ -143,7 +144,7 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         # if (user_name,(700,300)) in to_be_drawn:
         #     to_be_drawn.remove((user_name,(700,300)))
     elif current_menu_status == 2:
-        print(f"{WIDTH}, {HEIGHT}")
+        # print(f"{WIDTH}, {HEIGHT}")
         text_print = "Main menu 2"
         rect = pygame.Rect(0.25*WIDTH+310,0.75*HEIGHT,0.3*WIDTH,50)
         color = pygame.Color('lightskyblue1')
@@ -184,7 +185,7 @@ def change_game_status(new_status):
             user_name = ""
             return
 
-    a = load_assets("images", "Test_Images\\rickroll")
+    # a = load_assets("images", "Test_Images\\rickroll")
 
     menu_status = new_status
     all_button = []
@@ -259,22 +260,22 @@ def change_game_status(new_status):
         all_button.append(return_to_mm1_button)
         res_buttons_size_x, res_buttons_pos_x = calculate_button_position(5, border_factor=0.8, axis=WIDTH)
         res_buttons_size_y, res_buttons_pos_y = calculate_button_position(1, border_factor=0.1, offset=-0.2*HEIGHT, axis=HEIGHT)
-        res_19_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[0],res_buttons_pos_y[0]),
-                                size= (res_buttons_size_x,res_buttons_size_y), text="1920x1080",
-                                operation=set_resolution, new_res="19")
-        res_16_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[1],res_buttons_pos_y[0]),
-                                size= (res_buttons_size_x,res_buttons_size_y), text="1600x900",
-                                operation=set_resolution, new_res="16")
-        res_12_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[2],res_buttons_pos_y[0]),
-                                size= (res_buttons_size_x,res_buttons_size_y), text="1280x720",
-                                operation=set_resolution, new_res="12")
-        res_def_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[3],res_buttons_pos_y[0]),
-                                size= (res_buttons_size_x,res_buttons_size_y), text="Screen",
-                                operation=set_resolution, new_res="def")
-        all_button.append(res_19_button)
-        all_button.append(res_12_button)
-        all_button.append(res_16_button)
-        all_button.append(res_def_button)
+        res_1_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[0],res_buttons_pos_y[0]),
+                                size= (res_buttons_size_x,res_buttons_size_y), text=f"{RESOLUTION_LIST[0][0]}x{RESOLUTION_LIST[0][1]}",
+                                operation=set_resolution, new_res="0")
+        res_2_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[1],res_buttons_pos_y[0]),
+                                size= (res_buttons_size_x,res_buttons_size_y), text=f"{RESOLUTION_LIST[1][0]}x{RESOLUTION_LIST[1][1]}",
+                                operation=set_resolution, new_res="1")
+        res_3_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[2],res_buttons_pos_y[0]),
+                                size= (res_buttons_size_x,res_buttons_size_y), text=f"{RESOLUTION_LIST[2][0]}x{RESOLUTION_LIST[2][1]}",
+                                operation=set_resolution, new_res="2")
+        res_4_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[3],res_buttons_pos_y[0]),
+                                size= (res_buttons_size_x,res_buttons_size_y), text=f"{RESOLUTION_LIST[3][0]}x{RESOLUTION_LIST[3][1]}",
+                                operation=set_resolution, new_res="3")
+        all_button.append(res_1_button)
+        all_button.append(res_2_button)
+        all_button.append(res_3_button)
+        all_button.append(res_4_button)
         if not game_full_screen:
             res_full_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[4],res_buttons_pos_y[0]),
                                     size= (res_buttons_size_x,res_buttons_size_y), text="Full Screen",
@@ -589,25 +590,18 @@ def create_game_button(numbers):
 def set_resolution(new_res):
     global WIDTH, HEIGHT, game_full_screen, settings, fo
     temp_res = WIN.get_size()
-    if new_res == "19":
-        temp_res = 1920, 1080
-        settings["WIDTH"] = 1920
-        settings["HEIGHT"] = 1080
-    elif new_res == "16":
-        temp_res = 1600, 900
-        settings["WIDTH"] = 1600
-        settings["HEIGHT"] = 900
-    elif new_res == "12":
-        temp_res = 1280, 720
-        settings["WIDTH"] = 1280
-        settings["HEIGHT"] = 720
+    
+    if new_res == "0" or new_res == "1" or new_res == '2' or new_res == "3":
+        new_res = int(new_res)
+        temp_res = RESOLUTION_LIST[new_res][0], RESOLUTION_LIST[new_res][1]
+        settings["WIDTH"] = RESOLUTION_LIST[new_res][0]
+        settings["HEIGHT"] = RESOLUTION_LIST[new_res][1]
+    
     elif new_res == "full":
         game_full_screen = True
         settings["game_full_screen"] = True
     elif new_res == "unfull":
         game_full_screen = False
-    elif new_res == "def":
-        WIDTH, HEIGHT = SCREEN_SIZE
 
     if temp_res[0] > SCREEN_SIZE[0] or temp_res[1] > SCREEN_SIZE[1]:
         all_popup.append(Popup(WIN, text_object=[BIG_PIXEL_FONT.render("WARNING", 1, BLACK),
