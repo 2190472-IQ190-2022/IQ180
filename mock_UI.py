@@ -36,7 +36,7 @@ ALL_ALLOWS_MATH_OP = "+-x÷()"
 
 # fonts
 pygame.font.init()
-DEFAULT_FONT = pygame.font.SysFont('comicsans', 40)
+DEFAULT_FONT = pygame.font.Font('Fonts\\pixel_font.ttf', 40)
 SMALL_PIXEL_FONT = pygame.font.Font('Fonts\\pixel_font.ttf', 20)
 MID_PIXEL_FONT = pygame.font.Font('Fonts\\pixel_font.ttf', 40)
 BIG_PIXEL_FONT = pygame.font.Font('Fonts\\pixel_font.ttf', 60)
@@ -57,6 +57,44 @@ game_full_screen = True
 # test_img = pygame.transform.scale(test_img, (WIDTH, HEIGHT))
 # NOTE: when image is loaded, all of them must be tested. If there's an error, report and replace it with None
 # NOTE: I will create a function for testing images later
+
+class Loading_Thread(threading.Thread):
+
+    def __init__(self, target, args):
+        threading.Thread.__init__(self, target=target, args=args)
+        self.value = None
+        
+    def run(self):
+        self.value = self._target(*self._args)
+
+    def join(self):
+        threading.Thread.join(self)
+        return self.value
+
+def load_assets(type, file_path):
+    # try:
+    list_of_assets = []
+    if type == "image":
+        return pygame.image.load(file_path)
+    if type == "audio":
+        pass
+    if type == "images":
+        for p in os.listdir(file_path):
+            full_path = os.path.join(file_path, p)
+            if os.path.isfile(full_path): # maybe add file type check here later
+                pic = pygame.image.load(full_path)
+                list_of_assets.append(pic)
+        return list_of_assets
+    if type == "img_folder":
+        pass
+    # except Exception as e:
+    #     pass # must return something to handle the fault
+    #     print("error file loading")
+    #     print(f"type: {type}")
+    #     print(f"path {file_path}")
+    #     print(e)
+        # maybe exit the program
+    
 
 def draw_everything(current_menu_status, to_be_drawn=[]):
     """
@@ -114,6 +152,20 @@ def change_game_status(new_status):
             all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("name len should be < 20", 1, BLACK)]))
             user_name = ""
             return
+
+    loading_thread = Loading_Thread(load_assets, ("images", 'Test_Images\\rickroll'))
+    loading_thread.start()
+    loading_popup = Popup(WIN, text_object=[DEFAULT_FONT.render("Loading", 1, BLACK)])
+    all_popup.append(loading_popup)
+    while loading_thread.is_alive():
+        keep_the_game_running()
+    loading_thread.join()
+    try:
+        all_popup.remove(loading_popup)
+    except:
+        pass
+
+    print(f"loading thread len: {len(loading_thread.value)}")
 
     menu_status = new_status
     all_button = []
