@@ -17,8 +17,16 @@ class file_operation:
             self.settings = json.load(self.file)
             #print(self.settings)
         except:
-            self.file = open("settings.json",'x',)
+            self.file = open("settings.json",'x')
+            self.file.close()
+            self.file = open("settings.json",'w')
             self.settings = dict()
+            self.settings["player_name"] = ""
+            self.settings["WIDTH"] = 1280
+            self.settings["HEIGHT"] = 720
+            self.settings["game_full_screen"] = True
+            self.settings["popup_enable"] = True
+            json.dump(self.settings,self.file,indent=4)
             #print("Created settings.json")
         os.system( "attrib +h settings.json" ) #hidden setting file
         os.chmod("settings.json",0o666)
