@@ -135,3 +135,8 @@ generator.py
 #Test files
 testfile.py
 test.py
+test.txt
+
+#game local files
+settings.json
+/Exported_Games
