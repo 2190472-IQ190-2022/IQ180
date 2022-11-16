@@ -47,8 +47,6 @@ MID_PIXEL_FONT = pygame.font.Font('Fonts\\pixel_font.ttf', 40)
 BIG_PIXEL_FONT = pygame.font.Font('Fonts\\pixel_font.ttf', 60)
 pygame.display.set_caption("IQ1")
 
-
-
 # Global Variable
 menu_status = 1 # menu status = 1 is mm1, = 2 is mm2, = 3 is game, = 4 is htp, = 5 is setting
 all_button = []
@@ -89,32 +87,44 @@ class Loading_Thread(threading.Thread):
                 self.value = list_of_assets
             if type == "img_folder":
                 pass
+            if type == "font":
+                pass
         except Exception as e:
-            print("error file loading")
-            print(f"type: {type}")
-            print(f"path: {path}")
-            all_popup.append()
-            print(e)
-            exit()
+            t_obj = []
+            t_obj.append(BIG_PIXEL_FONT.render("Error", 1, BLACK))
+            t_obj.append(DEFAULT_FONT.render("An exception has occured when loading the following file", 1, BLACK))
+            t_obj.append(DEFAULT_FONT.render(f"file type: {type}, file path: {path}", 1, BLACK))
+            t_obj.append(DEFAULT_FONT.render("The game will now self destruct in 5 second haha bye", 1, BLACK))
+            t_obj.append(SMALL_PIXEL_FONT.render(f"error message: {e}", 1, BLACK))
+            all_popup.append(Popup(WIN, text_object=t_obj, duration=5))
+            time.sleep(5)
+        return None
 
     def join(self):
         threading.Thread.join(self)
         return self.value
 
 def load_assets(type, file_path): # this function may not be used anymore, already in loading class
+    """load asset is BLOCKING, except the process is put into the while loop here"""
     loading_thread = Loading_Thread(None, (type, file_path))
     loading_thread.start()
-    loading_popup = Popup(WIN, text_object=[DEFAULT_FONT.render("Loading", 1, BLACK)])
+    loading_popup = Popup(WIN, text_object=[DEFAULT_FONT.render("Loading", 1, BLACK)], allow_click_end=False)
     all_popup.append(loading_popup)
+
     while loading_thread.is_alive():
         keep_the_game_running()
+        loading_popup.extend_time()
     loading_thread.join()
     try:
+
         all_popup.remove(loading_popup)
     except:
         pass
+    
+    if loading_thread.value is None:
+        exit()
 
-    print(f"loading thread len: {len(loading_thread.value)}")
+    return loading_thread.value
     
 
 def draw_everything(current_menu_status, to_be_drawn=[]):
@@ -174,7 +184,7 @@ def change_game_status(new_status):
             user_name = ""
             return
 
-    # a = load_assets("images", "Test_Images\\rickroll")
+    a = load_assets("images", "Test_Images\\rickroll")
 
     menu_status = new_status
     all_button = []

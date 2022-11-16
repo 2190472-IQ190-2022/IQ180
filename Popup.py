@@ -8,7 +8,7 @@ class Popup:
     
     def __init__(self, window, duration=2, text_object=[], bg_color=(200, 200, 200), 
                 two_line_padding=10, side_padding=10, box_pos=(0, 0), show_text=True,
-                img_mode=False, img=None):
+                img_mode=False, img=None, allow_click_end=True):
         self.window = window
         self.duration = duration
         self.text_object = text_object
@@ -29,9 +29,13 @@ class Popup:
         else:
             self.img_mode = img_mode
             self.img = pygame.transform.scale(img, self.box_size)
+        self.allow_click_end = allow_click_end
 
     def extend(self, duration):
         self.duration = duration
+
+    def extend_time(self):
+        self.start_time = time.time()
     
     def calculate_pop_up_box_size(self):
         size_y = self.two_line_padding
@@ -60,7 +64,7 @@ class Popup:
 
     def draw(self):
         """draw all the text in text object"""
-        if not self.clicked and not pygame.mouse.get_pressed()[0]:
+        if not self.clicked and not pygame.mouse.get_pressed()[0] and self.allow_click_end:
             self.clicked = True
         if self.clicked and pygame.mouse.get_pressed()[0]:
             self.finish = True
