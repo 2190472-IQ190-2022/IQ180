@@ -58,7 +58,6 @@ user_name = ""
 popup_enable = True
 game_full_screen = True
 fo = file_operation()
-save_name = True
 
 # Images
 # test_img = pygame.image.load("C:\\Users\\user\\OneDrive\\Desktop\\Susremaster.webp") # add .convert() to make game faster
@@ -168,7 +167,7 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
 
 def change_game_status(new_status):
     """This function is called when the menu button is pressed (changing user to each menu, mm1, mm2, game, htp, setting)"""
-    global menu_status, all_button, user_name
+    global menu_status, all_button, user_name, settings, fo
     if new_status == 3:
         if len(user_name) >= 20:
             all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("name len should be < 20", 1, BLACK)]))
@@ -232,6 +231,8 @@ def change_game_status(new_status):
     elif new_status == 3:
         if len(user_name) == 0:
             user_name = "Player"
+        settings['player_name'] = user_name
+        fo.save_settings(settings)
         all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"welcome, {user_name}", 1, BLACK)]))
         init_game()
     elif new_status == 4:
@@ -352,11 +353,7 @@ def play_BGM():
 
 def init_game():
     """this is the game"""
-    global player_submit, game_input, all_button, user_name, save_name, fo, settings
-    if save_name:
-        settings['player_name'] = user_name
-        fo.save_settings(settings)
-        save_name = False
+    global player_submit, game_input, all_button, user_name
     try:
         net = Network()
         print("you are p"+str(net.player))
@@ -370,7 +367,6 @@ def init_game():
     except:
         all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("server error, disconnected", 1, BLACK)]))
         change_game_status(new_status=2)
-        save_name=True
         return
     
     loop_status = 0
@@ -388,7 +384,6 @@ def init_game():
         except:
             all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
             change_game_status(new_status=2)
-            save_name=True
             break
 
         if game.ready == False:
@@ -402,7 +397,6 @@ def init_game():
             except:
                 all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
                 change_game_status(new_status=2)
-                save_name=True
                 break
         if str(net.player) == str(game.turn):
             player_submit = False
@@ -440,7 +434,6 @@ def init_game():
                     all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
                     change_game_status(new_status=2)
                     status=2
-                    save_name=True
                     break
                 
                 if str(net.player) != str(game.turn):
@@ -488,7 +481,6 @@ def init_game():
             except:
                 all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
                 change_game_status(new_status=2)
-                save_name=True
                 break
             print("send " + equation_str)
         else:
