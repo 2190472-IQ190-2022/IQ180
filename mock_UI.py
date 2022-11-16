@@ -65,35 +65,49 @@ class Loading_Thread(threading.Thread):
         self.value = None
         
     def run(self):
-        self.value = self._target(*self._args)
+        try:
+            list_of_assets = []
+            type = self._args[0]
+            path = self._args[1]
+            if type == "image":
+                self.value = pygame.image.load(path)
+            if type == "audio":
+                pass
+            if type == "images":
+                for subpath in os.listdir(path):
+                    full_path = os.path.join(path, subpath)
+                    if os.path.isfile(full_path): # maybe add file type check here later
+                        pic = pygame.image.load(full_path)
+                        list_of_assets.append(pic)
+                self.value = list_of_assets
+            if type == "img_folder":
+                pass
+        except Exception as e:
+            print("error file loading")
+            print(f"type: {type}")
+            print(f"path: {path}")
+            all_popup.append()
+            print(e)
+            exit()
 
     def join(self):
         threading.Thread.join(self)
         return self.value
 
-def load_assets(type, file_path):
-    # try:
-    list_of_assets = []
-    if type == "image":
-        return pygame.image.load(file_path)
-    if type == "audio":
+def load_assets(type, file_path): # this function may not be used anymore, already in loading class
+    loading_thread = Loading_Thread(None, (type, file_path))
+    loading_thread.start()
+    loading_popup = Popup(WIN, text_object=[DEFAULT_FONT.render("Loading", 1, BLACK)])
+    all_popup.append(loading_popup)
+    while loading_thread.is_alive():
+        keep_the_game_running()
+    loading_thread.join()
+    try:
+        all_popup.remove(loading_popup)
+    except:
         pass
-    if type == "images":
-        for p in os.listdir(file_path):
-            full_path = os.path.join(file_path, p)
-            if os.path.isfile(full_path): # maybe add file type check here later
-                pic = pygame.image.load(full_path)
-                list_of_assets.append(pic)
-        return list_of_assets
-    if type == "img_folder":
-        pass
-    # except Exception as e:
-    #     pass # must return something to handle the fault
-    #     print("error file loading")
-    #     print(f"type: {type}")
-    #     print(f"path {file_path}")
-    #     print(e)
-        # maybe exit the program
+
+    print(f"loading thread len: {len(loading_thread.value)}")
     
 
 def draw_everything(current_menu_status, to_be_drawn=[]):
@@ -153,19 +167,7 @@ def change_game_status(new_status):
             user_name = ""
             return
 
-    loading_thread = Loading_Thread(load_assets, ("images", 'Test_Images\\rickroll'))
-    loading_thread.start()
-    loading_popup = Popup(WIN, text_object=[DEFAULT_FONT.render("Loading", 1, BLACK)])
-    all_popup.append(loading_popup)
-    while loading_thread.is_alive():
-        keep_the_game_running()
-    loading_thread.join()
-    try:
-        all_popup.remove(loading_popup)
-    except:
-        pass
-
-    print(f"loading thread len: {len(loading_thread.value)}")
+    # a = load_assets("images", "Test_Images\\rickroll")
 
     menu_status = new_status
     all_button = []
@@ -557,7 +559,7 @@ def set_resolution(new_res):
     global WIDTH, HEIGHT, game_full_screen
     temp_res = WIN.get_size()
     if new_res == "19":
-        temp_res = 3000, 2000
+        temp_res = 1920, 1080
     elif new_res == "16":
         temp_res = 1600, 900
     elif new_res == "12":
