@@ -89,11 +89,12 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         #     pass
     elif current_menu_status == 4:
         how_to_play = DEFAULT_FONT.render("How to play", 1, BLACK)
+        font = pygame.font.SysFont('comicsans', 30)
         WIN.blit(how_to_play, (WIDTH/2-how_to_play.get_width()/2, 75))
         text_print = "You will be given 5 numbers (1-9), a resulting answer, and 4 operators '+', '-', '*', '/'. "
         text_print += "You must make an equation using all 5 numbers to get the assigned result with the restriction that they have 60 seconds, and only 1 chance. Who answered correctly will get 1 point. "
         text_print += "If both got the answer, it will give the score to the one with shorter time. Otherwise, no score."
-        display_text(WIN, text_print, (0.1*WIDTH, 200), DEFAULT_FONT, BLACK)
+        display_text(WIN, text_print, (0.1*WIDTH, 175), font, BLACK)
         for tbd in to_be_drawn:
             WIN.blit(tbd[0], tbd[1])
         for tbd in to_be_drawn_internal:
