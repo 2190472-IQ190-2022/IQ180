@@ -370,6 +370,7 @@ def play_BGM():
 def init_game():
     """this is the game"""
     global player_submit, game_input, all_button, user_name
+    start_waiting_time = time.time()
     try:
         net = Network()
         print("you are p"+str(net.player))
@@ -392,6 +393,7 @@ def init_game():
     while True:
         clock = pygame.time.Clock()
         clock.tick(FPS)
+        waiting_time = math.ceil(time.time() - start_waiting_time)
         try:
             net.client.send(pickle.dumps(dummy))
             game = net.recv() # add try except here to prevent server crash
@@ -415,6 +417,7 @@ def init_game():
                 change_game_status(new_status=2)
                 break
         if str(net.player) == str(game.turn):
+            start_waiting_time = time.time()
             player_submit = False
             game_input = ""
             print("your turn")
@@ -494,6 +497,7 @@ def init_game():
                 game.turn = 1
             try:
                 net.client.send(pickle.dumps(game))
+                start_waiting_time = time.time()
             except:
                 all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
                 change_game_status(new_status=2)
@@ -502,6 +506,7 @@ def init_game():
         else:
             all_button = []
             clock.tick(FPS)
+            waiting_time = math.ceil(time.time() - start_waiting_time)
             keep_the_game_running()
     game_state = []
 
