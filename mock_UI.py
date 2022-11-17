@@ -25,6 +25,7 @@ SMALL_BUTTON_BORDER_FACTOR = 0.07 # how much one small button would take up the 
 HUD_BORDER_FACTOR = 0.05 # how much of area around the screen element should not enter (use in calculate button position)
 GAME_BUTTON_INLINE_SPACING = 10 # how much space between two side-by-side buttons 
 GAME_BUTTON_TWOLINE_SPACING = 10 # how much space between two buttons from different line
+# how many pictures are avail?
 
 # display
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -33,7 +34,9 @@ pygame.display.set_mode(SCREEN_SIZE, pygame.FULLSCREEN)
 WIDTH, HEIGHT = SCREEN_SIZE
 ALL_ALLOWS_MATH_OP = "+-x÷()"
 RESOLUTION_LIST = pygame.display.list_modes()
-background = pygame.image.load("Images\\background\\img-1.png")
+image_path = "Images\\background"
+image_number = len([entry for entry in os.listdir(image_path) if os.path.isfile(os.path.join(image_path, entry))])
+background = pygame.image.load(f"Images\\background\\img-{random.randint(0, image_number-1)}.png")
 background_pos = (0, 0)
 
 # BGM
