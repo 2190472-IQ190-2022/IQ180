@@ -26,6 +26,7 @@ class file_operation:
             self.settings["HEIGHT"] = 720
             self.settings["game_full_screen"] = True
             self.settings["popup_enable"] = True
+            self.settings["music_on"] = True
             json.dump(self.settings,self.file,indent=4)
             #print("Created settings.json")
         os.system( "attrib +h settings.json" ) #hidden setting file
