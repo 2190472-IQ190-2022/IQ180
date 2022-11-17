@@ -144,3 +144,13 @@ class Game:
         # The first game will random.
         # The following game will be set by the server according to the winner of the previous round.
         return self.turn
+
+    def to_dict(self):
+        ret = dict()
+        ret["player1's name"] = self.p1_name
+        ret["player2's name"] = self.p2_name
+        ret["player1's score"] = self.p1_score
+        ret["player2's score"] = self.p2_score
+        ret["five digits"] = self.numbers_array
+        ret["final result"] = self.sum
+        return ret
