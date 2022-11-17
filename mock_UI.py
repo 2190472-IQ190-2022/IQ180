@@ -88,8 +88,17 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         # else:
         #     pass
     elif current_menu_status == 4:
-        text_print = "How to play"
-        # to_be_drawn_internal.append(("this game's trash don't play it", (500, 550)))
+        how_to_play = DEFAULT_FONT.render("How to play", 1, BLACK)
+        WIN.blit(how_to_play, (WIDTH/2-how_to_play.get_width()/2, 75))
+        text_print = "You will be given 5 numbers (1-9), a resulting answer, and 4 operators '+', '-', '*', '/'. "
+        text_print += "You must make an equation using all 5 numbers to get the assigned result with the restriction that they have 60 seconds, and only 1 chance. Who answered correctly will get 1 point. "
+        text_print += "If both got the answer, it will give the score to the one with shorter time. Otherwise, no score."
+        display_text(WIN, text_print, (0.1*WIDTH, 200), DEFAULT_FONT, BLACK)
+        for tbd in to_be_drawn:
+            WIN.blit(tbd[0], tbd[1])
+        for tbd in to_be_drawn_internal:
+            WIN.blit(tbd[0], tbd[1])
+        return
     elif current_menu_status == 5:
         _, res_buttons_pos_x = calculate_button_position(4, border_factor=0.8, axis=WIDTH)
         _, res_buttons_pos_y = calculate_button_position(1, border_factor=0.1, offset=-0.2*HEIGHT, axis=HEIGHT)
@@ -111,6 +120,27 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
     for tbd in to_be_drawn_internal:
         # test = DEFAULT_FONT.render(tbd[0], 1, BLACK)
         WIN.blit(tbd[0], tbd[1])
+
+def display_text(surface, text, pos, font, color):
+    collection = [word.split(' ') for word in text.splitlines()]
+    space = font.size(' ')[0]
+    x,y = pos
+    for lines in collection:
+        for words in lines:
+            word_surface = font.render(words, True, color)
+            word_width, word_height = word_surface.get_size()
+            if x + word_width >= 0.9*WIDTH:
+                x = pos[0]
+                y += word_height
+            if y < 0 or y + word_height > HEIGHT - word_height:
+                for event in pygame.event.get():
+                    if event.type == pygame.MOUSEWHEEL:
+                        y -= 1 if event.y == 1 else -1
+            surface.blit(word_surface, (x,y))
+            x += word_width + space
+        x = pos[0]
+        y += word_height
+
 
 def change_game_status(new_status):
     """This function is called when the menu button is pressed (changing user to each menu, mm1, mm2, game, htp, setting)"""
