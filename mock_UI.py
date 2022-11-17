@@ -597,8 +597,6 @@ def set_resolution(new_res):
     if new_res == "0" or new_res == "1" or new_res == '2' or new_res == "3":
         new_res = int(new_res)
         temp_res = RESOLUTION_LIST[new_res][0], RESOLUTION_LIST[new_res][1]
-        settings["WIDTH"] = RESOLUTION_LIST[new_res][0]
-        settings["HEIGHT"] = RESOLUTION_LIST[new_res][1]
     
     elif new_res == "full":
         game_full_screen = True
@@ -612,10 +610,10 @@ def set_resolution(new_res):
                         SMALL_PIXEL_FONT.render(f"your resolution is terrible", 1, BLACK)]))
         settings["WIDTH"] = SCREEN_SIZE[0]
         settings["HEIGHT"] = SCREEN_SIZE[1]
-        fo.save_settings(settings)
     else:
         WIDTH, HEIGHT = temp_res
-        # settings["game_full_screen"] = False
+        settings["WIDTH"] = temp_res[0]
+        settings["HEIGHT"] = temp_res[1]
 
     if game_full_screen:
         pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
