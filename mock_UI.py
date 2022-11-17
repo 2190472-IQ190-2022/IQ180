@@ -132,10 +132,6 @@ def display_text(surface, text, pos, font, color):
             if x + word_width >= 0.9*WIDTH:
                 x = pos[0]
                 y += word_height
-            if y < 0 or y + word_height > HEIGHT - word_height:
-                for event in pygame.event.get():
-                    if event.type == pygame.MOUSEWHEEL:
-                        y -= 1 if event.y == 1 else -1
             surface.blit(word_surface, (x,y))
             x += word_width + space
         x = pos[0]
