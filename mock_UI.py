@@ -353,14 +353,17 @@ def get_user_name(): # get input from user and store in user_name
         keep_the_game_running(things_to_draw=things_to_draw) # these 3 lines can be converted to this
         
 def play_BGM():
-    global music_on
-    if(music_on == False):
+    global music_on, settings, fo
+    if not music_on:
         pygame.mixer.music.play(-1)
         music_on = True
+        settings["music_on"] = True
+        fo.save_settings(settings)
     else:
-        pygame.mixer.pause()
+        pygame.mixer.stop()
         music_on = False
-
+        settings["music_on"] = False
+        fo.save_settings(settings)
 
 def init_game():
     """this is the game"""
@@ -649,6 +652,9 @@ if __name__ == "__main__":
     user_name = settings["player_name"]
     game_full_screen = settings["game_full_screen"]
     popup_enable = settings["popup_enable"]
+    music_on = settings["music_on"]
+    if music_on:
+        pygame.mixer.music.play(-1)
     if game_full_screen:
         pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
     else:
