@@ -179,11 +179,6 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
 def change_game_status(new_status):
     """This function is called when the menu button is pressed (changing user to each menu, mm1, mm2, game, htp, setting)"""
     global menu_status, all_button, user_name, settings, fo
-    if new_status == 3:
-        if len(user_name) >= 20:
-            all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("name len should be < 20", 1, BLACK)]))
-            user_name = ""
-            return
 
     # a = load_assets("images", "Test_Images\\rickroll")
 
@@ -344,7 +339,10 @@ def get_user_name(): # get input from user and store in user_name
                     fo.save_settings(settings)
                     change_game_status(3)
                 else:
-                    user_name += event.unicode
+                    if len(user_name) >= 20:
+                        all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Maximum name length is 20 characters", 1, BLACK)]))
+                    else:
+                        user_name += event.unicode
         rendered_user_name = DEFAULT_FONT.render((user_name + "|") if int(time.time()) % 2 == 0 else user_name, 1, BLACK)
         things_to_draw.append((rendered_user_name,(0.25*WIDTH+310,0.75*HEIGHT)))
             # draw_everything(menu_status, things_to_draw)
