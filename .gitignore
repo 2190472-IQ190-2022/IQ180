@@ -135,6 +135,7 @@ generator.py
 #Test files
 testfile.py
 test.py
+result.json
 test.txt
 
 #game local files
