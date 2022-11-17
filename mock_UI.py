@@ -144,28 +144,36 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
     global background_pos
 
     to_be_drawn_internal = []
-    # WIN.fill(WHITE)
+    WIN.fill(WHITE)
     WIN.blit(background, background_pos)
     background_pos = (background_pos[0]-0.2, background_pos[1])
     text_print = ""
     if current_menu_status == 1:
+        WIN.fill(WHITE)
         text_print = "Main menu 1"
         
     elif current_menu_status == 2:
         # print(f"{WIDTH}, {HEIGHT}")
+        WIN.fill(WHITE)
         text_print = "Main menu 2"
         rect = pygame.Rect(0.25*WIDTH+310,0.75*HEIGHT,0.3*WIDTH,50)
         color = pygame.Color('lightskyblue1')
         pygame.draw.rect(WIN,color,rect,2)
     elif current_menu_status == 3:
+        WIN.blit(background, background_pos)
+        background_pos = (background_pos[0]-0.2, background_pos[1])
         if len(all_button) == 0:
             text_print = "Waiting for player"
         # else:
         #     pass
     elif current_menu_status == 4:
+        WIN.blit(background, background_pos)
+        background_pos = (background_pos[0]-0.2, background_pos[1])
         text_print = "How to play"
         # to_be_drawn_internal.append(("this game's trash don't play it", (500, 550)))
     elif current_menu_status == 5:
+        WIN.blit(background, background_pos)
+        background_pos = (background_pos[0]-0.2, background_pos[1])
         _, res_buttons_pos_x = calculate_button_position(4, border_factor=0.8, axis=WIDTH)
         _, res_buttons_pos_y = calculate_button_position(1, border_factor=0.1, offset=-0.2*HEIGHT, axis=HEIGHT)
         text_print = "Setting"
