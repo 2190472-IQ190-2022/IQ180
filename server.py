@@ -7,6 +7,7 @@ from game import Game
 import pygame
 from Button import Button
 from Popup import Popup
+from file_operation import file_operation
 
 hostname=socket.gethostname()
 server=socket.gethostbyname(hostname)
@@ -38,8 +39,8 @@ def check_status(game_ID):
         game = games[game_ID]
         all_popup_text.append(
             f"""{game.p1_name}: {game.p1_score}-{game.p2_score}: {game.p2_name}
-{game.equation} = {game.sum}
-Player {game.turn}'s turn: {math.ceil(60 - (time() - game.start_time))}""")
+                {game.equation} = {game.sum}
+                Player {game.turn}'s turn: {math.ceil(60 - (time() - game.start_time))}""")
         extended = True
     else:
         all_popup_text.append(f"error, index out of bound")
@@ -64,7 +65,26 @@ def reset_game(game_ID):
 def reset_games():
     for e in games:
         reset_game(e)
-    
+
+def export_games(game_ID):
+    global fo
+    if game_ID == "":
+        for game in games:
+            fo.export_game(games[game].to_dict(),game)
+        all_popup_text.append(f"export all games")
+    else:
+        try: 
+            game_ID = int(game_ID)
+        except:
+            all_popup_text.append(f"error, not a number input")
+            return
+        try:
+            fo.export_game(games[game].to_dict(),game)
+        except:
+            all_popup_text.append(f"error, index out of bound")
+            return
+        all_popup_text.append(f"export game # {game_ID}")
+        
 def threaded_client(conn, player, gameId, games):
     global idCount
     conn.send(str.encode(str(player)))
@@ -128,12 +148,14 @@ def UI():
     running = True
     all_popup = []
     
-    reset_all_button = Button(WIN, button_font=server_font, pos=(0.25*width-0.5*button_size, 0.75*height-0.5*button_size), 
+    reset_all_button = Button(WIN, button_font=server_font, pos=(0.20*width-0.5*button_size, 0.75*height-0.5*button_size), 
                         text="reset all", enabled_color=(255, 0, 0), operation=reset_game, game_ID="")
-    reset_button = Button(WIN, button_font=server_font, pos=(0.50*width-0.5*button_size, 0.75*height-0.5*button_size), 
+    reset_button = Button(WIN, button_font=server_font, pos=(0.40*width-0.5*button_size, 0.75*height-0.5*button_size), 
                     text="reset", enabled_color=(255, 0, 0), operation=reset_game, game_ID=user_input)
-    check_button = Button(WIN, button_font=server_font, pos=(0.75*width-0.5*button_size, 0.75*height-0.5*button_size), 
-                    text="game status", enabled_color=(255, 0, 0), operation=check_status, game_ID=user_input)                    
+    check_button = Button(WIN, button_font=server_font, pos=(0.60*width-0.5*button_size, 0.75*height-0.5*button_size), 
+                    text="game status", enabled_color=(255, 0, 0), operation=check_status, game_ID=user_input)
+    export_game = Button(WIN, button_font=server_font, pos=(0.80*width-0.5*button_size, 0.75*height-0.5*button_size), 
+                    text="export", enabled_color=(255, 0, 0), operation=export_games, game_ID=user_input)                     
     
     while running:
         clock.tick(60)
@@ -160,6 +182,7 @@ def UI():
         reset_button.update_button()
         check_button.set_args(game_ID=user_input)
         check_button.update_button()
+        export_game.update_button()
         for popup in all_popup_text:
             user_input = ""
             if extended:
@@ -180,6 +203,7 @@ def UI():
         pygame.display.update()
 
 if __name__ == "__main__":
+    fo = file_operation()
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -192,6 +216,7 @@ if __name__ == "__main__":
 
     start_new_thread(UI, ())
     games = {}
+    # start_new_thread(UI, (games))
     idCount = 0
     
     while True:
