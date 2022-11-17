@@ -33,6 +33,8 @@ pygame.display.set_mode(SCREEN_SIZE, pygame.FULLSCREEN)
 WIDTH, HEIGHT = SCREEN_SIZE
 ALL_ALLOWS_MATH_OP = "+-x÷()"
 RESOLUTION_LIST = pygame.display.list_modes()
+background = pygame.image.load("Images\\background\\img-1.png")
+background_pos = (0, 0)
 
 # BGM
 pygame.init()
@@ -117,7 +119,6 @@ def load_assets(type, file_path): # this function may not be used anymore, alrea
         loading_popup.extend_time()
     loading_thread.join()
     try:
-
         all_popup.remove(loading_popup)
     except:
         pass
@@ -135,9 +136,12 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         surface is anything that can be blit'ed, for example, rendered text: rendered_text = FONT.render("hello", 1, WHITE)
         if you want to append draw something from INSIDE this function, append item to to_be_drawn_internal
     """
+    global background_pos
+
     to_be_drawn_internal = []
-    WIN.fill(WHITE)
-    # WIN.blit(test_img, (0,0))
+    # WIN.fill(WHITE)
+    WIN.blit(background, background_pos)
+    background_pos = (background_pos[0]-0.2, background_pos[1])
     text_print = ""
     if current_menu_status == 1:
         text_print = "Main menu 1"
