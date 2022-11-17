@@ -3,8 +3,8 @@ import os
 
 class Animation:
 
-    def __init__(self, window, size, pos, frame, pictures=[], current_frame=0, rerun=True,
-                run_every_frame=1, speed=(0, 0)):
+    def __init__(self, window, size, pos, frame, screen_size, pictures=[], current_frame=0, rerun=True,
+                run_every_frame=1, speed=(0, 0), self_replicate=False):
         self.window = window
         self.size = size
         self.pos = pos
@@ -17,6 +17,9 @@ class Animation:
         self.total_frame = 0
         self.speed = speed
         self.pause = False
+        self.self_replicate = self_replicate
+        self.screen_size = screen_size
+        # print("__init__ pic" + str(self.pictures))
 
     def play(self):
         """start the animation if the animation is paused"""
@@ -44,7 +47,18 @@ class Animation:
 
     def draw_animation(self):
         """check draw/not draw and blit the animation if allowed"""
-        self.window.blit(self.pictures[self.current_frame], self.pos)
+        # print(f"pictures {self.pictures}")
+        if self.self_replicate:
+            # print("hello" + str(len(self.pictures)))
+            position = self.pos
+            while position[0] < self.screen_size[0] + self.size[0]:
+                # print(f"current frame: {self.current_frame}")
+                self.window.blit(self.pictures[self.current_frame], position)
+                position = (position[0] + self.size[0], position[1])
+            if self.pos[0] + self.size[0] < 0:
+                self.pos = (0, self.pos[1])
+        else:
+            self.window.blit(self.pictures[self.current_frame], self.pos)
         self.total_frame += 1
         if not self.pause:
             if self.total_frame % self.run_every_frame == 0:
@@ -52,9 +66,14 @@ class Animation:
                 self.pos = (self.pos[0] + self.speed[0], self.pos[1] + self.speed[1])
                 if self.current_frame >= self.frame or self.current_frame >= len(self.pictures):
                     if self.rerun:
+                        # print("reset frame")
                         self.current_frame = 0
                     else:
                         self.finished = True
+        # print(f"next frame = {self.current_frame}")
+        # print(f"pictures {self.pictures}")
+        # print(f"position {self.pos}")
+        # print(f"rerun {self.rerun}")
 
     @staticmethod
     def create_animation_from_sheet(full_sheet, frame_size, scale_size, color=None):
@@ -69,7 +88,6 @@ class Animation:
                 if not color is None:
                     pic.set_colorkey(color)
                 pictures.append(pic)
-        print(len(pictures))
         return pictures
     
     @staticmethod

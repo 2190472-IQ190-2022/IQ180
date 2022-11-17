@@ -34,10 +34,13 @@ pygame.display.set_mode(SCREEN_SIZE, pygame.FULLSCREEN)
 WIDTH, HEIGHT = SCREEN_SIZE
 ALL_ALLOWS_MATH_OP = "+-x÷()"
 RESOLUTION_LIST = pygame.display.list_modes()
+
+# background randomizer
 image_path = "Images\\background"
-image_number = len([entry for entry in os.listdir(image_path) if os.path.isfile(os.path.join(image_path, entry))])
-background = pygame.image.load(f"Images\\background\\img-{random.randint(0, image_number-1)}.png")
-background_pos = (0, 0)
+# image_number = len([entry for entry in os.listdir(image_path) if os.path.isfile(os.path.join(image_path, entry))])
+# background = pygame.image.load(f"Images\\background\\img-{random.randint(0, image_number-1)}.png")
+# background_pos = (0, 0)
+tile = pygame.image.load("Images\\tile\\Tileset.png")
 
 # BGM
 pygame.init()
@@ -62,12 +65,6 @@ user_name = ""
 popup_enable = True
 game_full_screen = True
 fo = file_operation()
-
-# Images
-# test_img = pygame.image.load("C:\\Users\\user\\OneDrive\\Desktop\\Susremaster.webp") # add .convert() to make game faster
-# test_img = pygame.transform.scale(test_img, (WIDTH, HEIGHT))
-# NOTE: when image is loaded, all of them must be tested. If there's an error, report and replace it with None
-# NOTE: I will create a function for testing images later
 
 class Loading_Thread(threading.Thread):
 
@@ -142,14 +139,13 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
     global background_pos
 
     to_be_drawn_internal = []
-    # WIN.fill(WHITE)
-    WIN.blit(background, background_pos)
-    background_pos = (background_pos[0]-0.2, background_pos[1])
+    WIN.fill(WHITE)
+    # WIN.blit(background, background_pos)
+    # background_pos = (background_pos[0]-0.2, background_pos[1])
     text_print = ""
     if current_menu_status == 1:
         text_print = "Main menu 1"
-        # if (user_name,(700,300)) in to_be_drawn:
-        #     to_be_drawn.remove((user_name,(700,300)))
+        
     elif current_menu_status == 2:
         # print(f"{WIDTH}, {HEIGHT}")
         text_print = "Main menu 2"
