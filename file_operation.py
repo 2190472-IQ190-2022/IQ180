@@ -16,11 +16,9 @@ class file_operation:
         try:
             file = open("settings.json")
             self.settings = json.load(file)
+            file.close()
             #print(self.settings)
         except:
-            file = open("settings.json",'x')
-            file.close()
-            file = open("settings.json",'w')
             self.settings = dict()
             self.settings["player_name"] = ""
             self.settings["WIDTH"] = 1280
@@ -28,27 +26,20 @@ class file_operation:
             self.settings["game_full_screen"] = True
             self.settings["popup_enable"] = True
             self.settings["music_on"] = True
-            json.dump(self.settings,file,indent=4)
-            #print("Created settings.json")
+            json_object = json.dumps(self.settings, indent=4)
+            with open("settings.json", "w") as outfile:
+                outfile.write(json_object)
         os.system( "attrib +h settings.json" ) #hidden setting file
         os.chmod("settings.json",0o666)
         #print(oct(os.stat("settings.json").st_mode))
         #print(os.access("settings.json",os.X_OK))
-        file.close()
 
-    #Take dictionary
     def save_settings(self, settings):
         self.settings = settings
-        try:
-            os.system( "attrib -h settings.json" )
-            file = open("settings.json",'w')
-        except:
-            #Just in case user manually delete the file
-            file = open("settings.json",'x')
-            file.close()
-            file = open("settings.json",'w')
-        json.dump(settings,self.file,indent=4)
-        file.close()
+        os.system( "attrib -h settings.json" )
+        json_object = json.dumps(settings, indent=4)
+        with open("settings.json", "w") as outfile:
+            outfile.write(json_object)
         os.system( "attrib +h settings.json" )
 
     def export_game(self, game_data, game_id):
@@ -58,11 +49,6 @@ class file_operation:
         if str(game_id) != '0':
             path+=f"({game_id})"
         path+=".json"
-        try:
-            file = open(path, 'x')
-            file.close()
-            file = open(path, 'w')
-        except:
-            file = open(path, 'w')
-        json.dump(game_data,file,indent=4)
-        file.close()
+        json_object = json.dumps(game_data, indent=4)
+        with open(path, "w") as outfile:
+            outfile.write(json_object)
