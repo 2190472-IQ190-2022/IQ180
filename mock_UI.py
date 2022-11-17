@@ -187,11 +187,6 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
 def change_game_status(new_status):
     """This function is called when the menu button is pressed (changing user to each menu, mm1, mm2, game, htp, setting)"""
     global menu_status, all_button, user_name, settings, fo
-    if new_status == 3:
-        if len(user_name) >= 20:
-            all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("name len should be < 20", 1, BLACK)]))
-            user_name = ""
-            return
 
     # a = load_assets("images", "Test_Images\\rickroll")
 
@@ -365,7 +360,10 @@ def get_user_name(): # get input from user and store in user_name
                     fo.save_settings(settings)
                     change_game_status(3)
                 else:
-                    user_name += event.unicode
+                    if len(user_name) >= 20:
+                        all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Maximum name length is 20 characters", 1, BLACK)]))
+                    else:
+                        user_name += event.unicode
         rendered_user_name = DEFAULT_FONT.render((user_name + "|") if int(time.time()) % 2 == 0 else user_name, 1, BLACK)
         things_to_draw.append((rendered_user_name,(0.25*WIDTH+310,0.75*HEIGHT)))
             # draw_everything(menu_status, things_to_draw)
@@ -381,7 +379,7 @@ def play_BGM():
         settings["music_on"] = True
         fo.save_settings(settings)
     else:
-        pygame.mixer.stop()
+        pygame.mixer.music.stop()
         music_on = False
         settings["music_on"] = False
         fo.save_settings(settings)
@@ -389,6 +387,7 @@ def play_BGM():
 def init_game():
     """this is the game"""
     global player_submit, game_input, all_button, user_name
+    start_waiting_time = time.time()
     try:
         net = Network()
         print("you are p"+str(net.player))
@@ -411,6 +410,7 @@ def init_game():
     while True:
         clock = pygame.time.Clock()
         clock.tick(FPS)
+        waiting_time = math.ceil(time.time() - start_waiting_time)
         try:
             net.client.send(pickle.dumps(dummy))
             game = net.recv() # add try except here to prevent server crash
@@ -434,6 +434,7 @@ def init_game():
                 change_game_status(new_status=2)
                 break
         if str(net.player) == str(game.turn):
+            start_waiting_time = time.time()
             player_submit = False
             game_input = ""
             print("your turn")
@@ -513,6 +514,7 @@ def init_game():
                 game.turn = 1
             try:
                 net.client.send(pickle.dumps(game))
+                start_waiting_time = time.time()
             except:
                 all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
                 change_game_status(new_status=2)
@@ -521,6 +523,7 @@ def init_game():
         else:
             all_button = []
             clock.tick(FPS)
+            waiting_time = math.ceil(time.time() - start_waiting_time)
             keep_the_game_running()
     game_state = []
 
