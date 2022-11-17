@@ -7,7 +7,7 @@ from game import Game
 import pygame
 from Button import Button
 from Popup import Popup
-import json
+from file_operation import file_operation
 
 hostname=socket.gethostname()
 server=socket.gethostbyname(hostname)
@@ -66,19 +66,25 @@ def reset_games():
     for e in games:
         reset_game(e)
 
-def export_games():
-    data = {}
-    for game in games:
-        this_game = {}
-        this_game["p1_name"] = games[game].p1_name
-        this_game["p2_name"] = games[game].p2_name
-        this_game["p1_score"] = games[game].p1_score
-        this_game["p2_score"] = games[game].p2_score
-        data[str(games[game].id)] = this_game 
-    json_object = json.dumps(data, indent=4)
-    with open("result.json", "w") as outfile:
-        outfile.write(json_object)
-    
+def export_games(game_ID):
+    global fo
+    if game_ID == "":
+        for game in games:
+            fo.export_game(games[game].to_dict(),game)
+        all_popup_text.append(f"export all games")
+    else:
+        try: 
+            game_ID = int(game_ID)
+        except:
+            all_popup_text.append(f"error, not a number input")
+            return
+        try:
+            fo.export_game(games[game].to_dict(),game)
+        except:
+            all_popup_text.append(f"error, index out of bound")
+            return
+        all_popup_text.append(f"export game # {game_ID}")
+        
 def threaded_client(conn, player, gameId, games):
     global idCount
     conn.send(str.encode(str(player)))
@@ -149,7 +155,7 @@ def UI():
     check_button = Button(WIN, button_font=server_font, pos=(0.60*width-0.5*button_size, 0.75*height-0.5*button_size), 
                     text="game status", enabled_color=(255, 0, 0), operation=check_status, game_ID=user_input)
     export_game = Button(WIN, button_font=server_font, pos=(0.80*width-0.5*button_size, 0.75*height-0.5*button_size), 
-                    text="export", enabled_color=(255, 0, 0), operation=export_games)                     
+                    text="export", enabled_color=(255, 0, 0), operation=export_games, game_ID=user_input)                     
     
     while running:
         clock.tick(60)
@@ -197,6 +203,7 @@ def UI():
         pygame.display.update()
 
 if __name__ == "__main__":
+    fo = file_operation()
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
