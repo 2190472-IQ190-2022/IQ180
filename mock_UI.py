@@ -33,6 +33,7 @@ pygame.display.set_mode(SCREEN_SIZE, pygame.FULLSCREEN)
 WIDTH, HEIGHT = SCREEN_SIZE
 ALL_ALLOWS_MATH_OP = "+-x÷()"
 RESOLUTION_LIST = pygame.display.list_modes()
+# print(RESOLUTION_LIST)
 
 # BGM
 pygame.init()
@@ -117,7 +118,6 @@ def load_assets(type, file_path): # this function may not be used anymore, alrea
         loading_popup.extend_time()
     loading_thread.join()
     try:
-
         all_popup.remove(loading_popup)
     except:
         pass
