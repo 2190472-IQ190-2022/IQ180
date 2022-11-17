@@ -45,6 +45,9 @@ class Animation:
     def set_finish(self, finish):
         self.set_finish = finish
 
+    def get_finish(self):
+        return self.finished
+
     def draw_animation(self):
         """check draw/not draw and blit the animation if allowed"""
         # print(f"pictures {self.pictures}")
@@ -53,8 +56,10 @@ class Animation:
             position = self.pos
             while position[0] < self.screen_size[0] + self.size[0]:
                 # print(f"current frame: {self.current_frame}")
-                self.window.blit(self.pictures[self.current_frame], position)
-                position = (position[0] + self.size[0], position[1])
+                while position[1] < self.screen_size[1] + self.size[1]:
+                    self.window.blit(self.pictures[self.current_frame], position)
+                    position = (position[0], position[1] + self.size[1])
+                position = (position[0] + self.size[0], self.pos[1])
             if self.pos[0] + self.size[0] < 0:
                 self.pos = (0, self.pos[1])
         else:

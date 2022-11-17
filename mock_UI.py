@@ -37,10 +37,14 @@ RESOLUTION_LIST = pygame.display.list_modes()
 
 # background randomizer
 image_path = "Images\\background"
-# image_number = len([entry for entry in os.listdir(image_path) if os.path.isfile(os.path.join(image_path, entry))])
-# background = pygame.image.load(f"Images\\background\\img-{random.randint(0, image_number-1)}.png")
-# background_pos = (0, 0)
-tile = pygame.image.load("Images\\tile\\Tileset.png")
+image_number = len([entry for entry in os.listdir(image_path) if os.path.isfile(os.path.join(image_path, entry))])
+background = pygame.image.load(f"Images\\background\\img-{random.randint(0, image_number-1)}.png")
+background_pos = (0, 0)
+tile_bw = pygame.image.load("Images\\tile\\jungle_floor_bw.png")
+tile_size = (tile_bw.get_size()[0] * 7, tile_bw.get_size()[1] * 7)
+tile_bw = pygame.transform.scale(tile_bw, tile_size)
+tile_colored = pygame.transform.scale(pygame.image.load("Images\\tile\\jungle_floor.png"), tile_size)
+
 
 # BGM
 pygame.init()
@@ -59,6 +63,7 @@ pygame.display.set_caption("IQ1")
 menu_status = 1 # menu status = 1 is mm1, = 2 is mm2, = 3 is game, = 4 is htp, = 5 is setting
 all_button = []
 all_popup = []
+all_animation = []
 game_input = ""
 player_submit = False
 user_name = ""
@@ -139,9 +144,9 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
     global background_pos
 
     to_be_drawn_internal = []
-    WIN.fill(WHITE)
-    # WIN.blit(background, background_pos)
-    # background_pos = (background_pos[0]-0.2, background_pos[1])
+    # WIN.fill(WHITE)
+    WIN.blit(background, background_pos)
+    background_pos = (background_pos[0]-0.2, background_pos[1])
     text_print = ""
     if current_menu_status == 1:
         text_print = "Main menu 1"
@@ -200,6 +205,10 @@ def change_game_status(new_status):
     _, y_border = calculate_button_position(1, edge_start=True, left_or_top_edge=True)
     y_border = y_border[0]
     if new_status == 1:
+        # print("status 1")
+        all_animation.append(Animation(WIN, tile_size, (0, 0.75 * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_bw], 
+                                        speed=(-1, 0), self_replicate=True))
+        # print(all_animation)
         _, three_bpos_x = calculate_button_position(4, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         to_mm2_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Play",
                                operation=change_game_status, new_status=2,
@@ -223,6 +232,8 @@ def change_game_status(new_status):
         all_button.append(to_howtoplay_button)
         all_button.append(exit_button)
     elif new_status == 2:
+        all_animation.append(Animation(WIN, tile_size, (WIDTH, 0.75 * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_colored], 
+                                        speed=(-1, 0), self_replicate=True))
         _, two_bpos_x = calculate_button_position(2, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         to_game_button = Button(window=WIN, button_font=DEFAULT_FONT, text="To game",
                                 operation=change_game_status, new_status=3,
@@ -313,6 +324,12 @@ def keep_the_game_running(things_to_draw=[]):
         
     draw_everything(menu_status, things_to_draw)
 
+    for anime in all_animation:
+        if anime.get_finish():
+            all_animation.remove(anime)
+            continue
+        anime.draw_animation()
+
     # game_button_control()
     for button in all_button:
         button.update_button()
@@ -320,12 +337,13 @@ def keep_the_game_running(things_to_draw=[]):
     # game_popup_control()
     for popup in all_popup:
         if popup.get_finish():
+            print("remove anime")
             all_popup.remove(popup)
             continue
         if popup_enable:
             popup.draw()
 
-    
+    # print(all_animation)
     pygame.display.update()
     
 def get_user_name(): # get input from user and store in user_name
