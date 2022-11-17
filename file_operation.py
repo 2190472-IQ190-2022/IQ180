@@ -65,4 +65,4 @@ class file_operation:
         except:
             file = open(path, 'w')
         json.dump(game_data,file,indent=4)
-        file.close
+        file.close()
