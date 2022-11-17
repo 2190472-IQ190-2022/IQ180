@@ -360,7 +360,7 @@ def play_BGM():
         settings["music_on"] = True
         fo.save_settings(settings)
     else:
-        pygame.mixer.stop()
+        pygame.mixer.music.stop()
         music_on = False
         settings["music_on"] = False
         fo.save_settings(settings)
