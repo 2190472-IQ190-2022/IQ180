@@ -9,7 +9,6 @@ import pickle
 import time
 import threading
 from Popup import Popup
-import subprocess
 from Animation import Animation
 import os
 from file_operation import file_operation
