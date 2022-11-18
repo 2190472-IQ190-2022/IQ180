@@ -186,6 +186,7 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
     """
     global background_pos
 
+    print(f"menu: {menu_status}")
     to_be_drawn_internal = []
     # WIN.fill(WHITE)
     # WIN.blit(background, background_pos)
@@ -202,6 +203,12 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         rect = pygame.Rect(0.25*WIDTH+310,0.75*HEIGHT,0.3*WIDTH,50)
         color = pygame.Color('lightskyblue1')
         pygame.draw.rect(WIN,color,rect,2)
+
+        rect_surface = pygame.Surface((rect.w, rect.h))
+        to_be_drawn_internal.append((rect_surface, (0.25*WIDTH+310,0.75*HEIGHT)))
+        rendered_user_name = DEFAULT_FONT.render((user_name + "|") if int(time.time()) % 2 == 0 else user_name, 1, WHITE)
+        to_be_drawn_internal.append((rendered_user_name, (0.25*WIDTH+310,0.75*HEIGHT)))
+
     elif current_menu_status == 3:
         # WIN.blit(background, background_pos)
         # background_pos = (background_pos[0]-0.2, background_pos[1])
@@ -375,6 +382,7 @@ def change_game_status(new_status):
         all_button.append(return_to_mm1_button)
         all_button.append(exit_button)
         init_game()
+        return
     elif new_status == 4:
         _, one_bpos_x = calculate_button_position(1, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT,
