@@ -4,7 +4,8 @@ import os
 class Animation:
 
     def __init__(self, window, size, pos, frame, screen_size, ident, pictures=[], current_frame=0, rerun=True,
-                run_every_frame=1, speed=(0, 0), self_replicate=False, hidden=False):
+                run_every_frame=1, speed=(0, 0), self_replicate=False, hidden=False, position_function=None,
+                function_speed=40, function_distance=1.2):
         self.window = window
         self.size = size
         self.pos = pos
@@ -21,6 +22,9 @@ class Animation:
         self.screen_size = screen_size
         self.ident = ident
         self.hidden = hidden
+        self.position_function = position_function
+        self.function_speed = function_speed
+        self.function_distance = function_distance
         # print("__init__ pic" + str(self.pictures))
 
     def play(self):
@@ -65,6 +69,18 @@ class Animation:
     def draw_animation(self):
         """check draw/not draw and blit the animation if allowed"""
         # print(f"pictures {self.pictures}")
+        if not self.position_function is None:
+            # self.position_function is (func1, func2)
+            if callable(self.position_function[0]):
+                if callable(self.position_function[1]):
+                    self.pos = (self.pos[0] + self.function_distance * self.position_function[0](self.total_frame/self.function_speed), 
+                                    self.pos[1] + 1.5 * self.position_function[1](self.total_frame/self.function_speed))
+                else:
+                    self.pos = (self.pos[0] + self.function_distance * self.position_function[0](self.total_frame/self.function_speed), self.pos[1])
+            else:
+                if callable(self.position_function[1]):
+                    self.pos = (self.pos[0], self.pos[1] + self.function_distance * self.position_function[1](self.total_frame/self.function_speed))
+            
         if self.self_replicate:
             # print("hello" + str(len(self.pictures)))
             position = self.pos
