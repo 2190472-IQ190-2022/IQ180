@@ -186,7 +186,7 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
     """
     global background_pos
 
-    print(f"menu: {menu_status}")
+    # print(f"menu: {menu_status}")
     to_be_drawn_internal = []
     # WIN.fill(WHITE)
     # WIN.blit(background, background_pos)
@@ -245,6 +245,7 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
 def change_game_status(new_status):
     """This function is called when the menu button is pressed (changing user to each menu, mm1, mm2, game, htp, setting)"""
     global menu_status, all_button, user_name, settings, fo
+    print("hello the button is gone wtf")
 
     # a = load_assets("images", "Test_Images\\rickroll")
 
@@ -442,12 +443,14 @@ def keep_the_game_running(things_to_draw=[]):
         This function keep pygame updating and stop it from not responding
         you can also pass something to be drawn in draw_everything function here
     """
+    # print(f"menu status {menu_status}")
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
 
     WIN.fill(WHITE)
     # draw_everything(menu_status, things_to_draw)
+    all_asset_count = 0
 
     for anime in all_animation:
         # print(f"render {anime.get_ident()} {anime.pos}")
@@ -455,10 +458,15 @@ def keep_the_game_running(things_to_draw=[]):
             all_animation.remove(anime)
             continue
         anime.draw_animation()
+        all_asset_count += 1
+
 
     # game_button_control()
     for button in all_button:
         button.update_button()
+        all_asset_count += 1
+
+    # print(len(all_button))
 
     # game_popup_control()
     for popup in all_popup:
@@ -467,11 +475,13 @@ def keep_the_game_running(things_to_draw=[]):
             continue
         if popup_enable:
             popup.draw()
+        all_asset_count += 1
 
     # print(all_animation)
     draw_everything(menu_status, things_to_draw)
 
     for tl in top_level: # top level is for the upper most layer only
+        all_asset_count += 1
         if type(tl) == Animation:
             if tl.get_finish():
                 top_level.remove(tl)
@@ -486,7 +496,7 @@ def keep_the_game_running(things_to_draw=[]):
             if popup_enable:
                 tl.draw()
         
-    # print("--------------------------")
+    # print(all_asset_count)
     pygame.display.update()
     
 def get_user_name(): # get input from user and store in user_name
@@ -536,6 +546,13 @@ def init_game():
     """this is the game"""
     global player_submit, game_input, all_button, user_name, background
     start_waiting_time = time.time()
+
+    exit_and_gtfo_exist = False
+    small_bsize, _ = calculate_button_position(1, border_factor=SMALL_BUTTON_BORDER_FACTOR, axis=WIDTH)
+    _, y_border = calculate_button_position(1, edge_start=True, left_or_top_edge=True)
+    _, one_bpos_x = calculate_button_position(2, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
+    y_border = y_border[0]
+    
     try:
         net = Network()
         print("you are p"+str(net.player))
@@ -590,6 +607,7 @@ def init_game():
         if str(net.player) == str(game.turn):
             start_waiting_time = time.time()
             player_submit = False
+            exit_and_gtfo_exist = False
             game_input = ""
             print("your turn")
             print(game.start_time)
@@ -600,6 +618,14 @@ def init_game():
             print(f"P2: {game.p2_score}")
             current_array=game.numbers_array
             current_sum=game.sum
+            exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
+                                    pos=(one_bpos_x[0], y_border),size=(small_bsize, small_bsize), text="GTFO",
+                                    operation=exit)
+            return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[1], y_border),
+                                    size= (small_bsize, small_bsize), text="back",
+                                    operation=change_game_status, new_status=2)
+            all_button.append(return_to_mm1_button)
+            all_button.append(exit_button)
             create_game_button(game.numbers_array)
             while not player_submit:
                 clock.tick(FPS)
@@ -610,6 +636,18 @@ def init_game():
                     current_array=game.numbers_array
                     current_sum=game.sum
                     all_button = []
+                    
+                    # print(small_bsize)
+                    # print(one_bpos_x)
+                    # print(y_border)
+                    exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
+                                    pos=(one_bpos_x[0],y_border),size=(small_bsize, small_bsize), text="GTFO",
+                                    operation=exit)
+                    return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[1],y_border),
+                                    size=(small_bsize, small_bsize), text="back",
+                                    operation=change_game_status, new_status=2)
+                    all_button.append(return_to_mm1_button)
+                    all_button.append(exit_button)
                     create_game_button(game.numbers_array)
                     print("your turn")
                     print(game.start_time)
@@ -626,7 +664,6 @@ def init_game():
                 except:
                     all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
                     change_game_status(new_status=2)
-                    status=2
                     break
                 
                 if str(net.player) != str(game.turn):
@@ -652,6 +689,9 @@ def init_game():
 
             equation_str = game_input.replace("x", "*").replace("÷", "/")
             print(equation_str)
+            if menu_status != 3:
+                net.client.close()
+                return
             all_button = []
 
             if loop_status == 1:
@@ -672,14 +712,25 @@ def init_game():
             try:
                 net.client.send(pickle.dumps(game))
                 start_waiting_time = time.time()
+                
             except:
                 all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
                 change_game_status(new_status=2)
                 break
             print("send " + equation_str)
         else:
-            all_button = []
+            # all_button = []
             clock.tick(FPS)
+            if not exit_and_gtfo_exist:
+                exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
+                                    pos=(one_bpos_x[0], y_border),size=(small_bsize, small_bsize), text="GTFO",
+                                    operation=exit)
+                return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[1], y_border),
+                                    size= (small_bsize, small_bsize), text="back",
+                                    operation=change_game_status, new_status=2)
+                all_button.append(return_to_mm1_button)
+                all_button.append(exit_button)
+                exit_and_gtfo_exist = True
             waiting_time = math.ceil(time.time() - start_waiting_time)
             keep_the_game_running()
     game_state = []
