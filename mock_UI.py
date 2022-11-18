@@ -24,6 +24,8 @@ SMALL_BUTTON_BORDER_FACTOR = 0.07 # how much one small button would take up the 
 HUD_BORDER_FACTOR = 0.05 # how much of area around the screen element should not enter (use in calculate button position)
 GAME_BUTTON_INLINE_SPACING = 10 # how much space between two side-by-side buttons 
 GAME_BUTTON_TWOLINE_SPACING = 10 # how much space between two buttons from different line
+SPRITE_SIZE_FACTOR = 10
+TILE_POSITION_FACTOR = 0.75
 # how many pictures are avail?
 
 # display
@@ -64,6 +66,23 @@ fade_in = fade_out[::-1]
 fade_in_white = fade_out_white[::-1]
 
 logo = pygame.transform.scale(pygame.image.load("Images\\logo.jpeg"), (0.4 * HEIGHT, 0.4 * HEIGHT))
+character = pygame.image.load("Images\\character\\character-1.png")
+character_bw = pygame.image.load("Images\\character\\character-1-bw.png")
+
+character_frame = Animation.create_animation_from_sheet(character, (character.get_width()//8, character.get_height()//3),
+                                                        scale_size=(SPRITE_SIZE_FACTOR * (character.get_size()[0] // 8), 
+                                                        SPRITE_SIZE_FACTOR * (character.get_size()[1] // 3)), color=BLACK)[16:]
+character_frame_bw = Animation.create_animation_from_sheet(character_bw, (character.get_width()//8, character.get_height()//3),
+                                                        scale_size=(SPRITE_SIZE_FACTOR * (character.get_size()[0] // 8), 
+                                                        SPRITE_SIZE_FACTOR * (character.get_size()[1] // 3)), color=BLACK)[16:]
+
+sprite_pos_y = TILE_POSITION_FACTOR * HEIGHT - SPRITE_SIZE_FACTOR * (character.get_size()[1] / 3) + (1/16 * tile_size[1]) + (1/6 * character.get_height())
+character_anime = Animation(WIN, (SPRITE_SIZE_FACTOR * (character.get_size()[0] // 8), SPRITE_SIZE_FACTOR * (character.get_size()[1] // 3)), 
+                            (0.15 * WIDTH, sprite_pos_y), 1, (WIDTH, HEIGHT), "char", character_frame, run_every_frame=8)
+character_anime_bw = Animation(WIN, (SPRITE_SIZE_FACTOR * (character.get_size()[0] // 8), SPRITE_SIZE_FACTOR * (character.get_size()[1] // 3)), 
+                            (0.15 * WIDTH, sprite_pos_y), 1, (WIDTH, HEIGHT), 
+                            "char", character_frame_bw, run_every_frame=8)
+# print(SPRITE_SIZE_FACTOR * character.get_size()[0], SPRITE_SIZE_FACTOR * character.get_size()[1])
 
 # BGM
 pygame.init()
@@ -294,10 +313,13 @@ def change_game_status(new_status):
         remove_animation_by_ident("tile_colored")
         remove_animation_by_ident("tile_colored_cont")
         remove_animation_by_ident("space_background")
+        remove_animation_by_ident("char")
+        if not animation_exist_by_ident("char"):
+            all_animation.append(character_anime_bw)
         if not animation_exist_by_ident("tile"):
-            all_animation.append(Animation(WIN, tile_size, (0, 0.75 * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_bw], 
+            all_animation.append(Animation(WIN, tile_size, (0, TILE_POSITION_FACTOR * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_bw], 
                                             ident="tile", speed=(-1, 0), self_replicate=True))
-            all_animation.append(Animation(WIN, tile_size, (0, 0.75 * HEIGHT+tile_bw.get_size()[1]), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_cont_bw], 
+            all_animation.append(Animation(WIN, tile_size, (0, TILE_POSITION_FACTOR * HEIGHT+tile_bw.get_size()[1]), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_cont_bw], 
                                             ident="tile_cont", speed=(-1, 0), self_replicate=True))
         if not animation_exist_by_ident("logo"):
             logo_anime = Animation(WIN, (0.3 * WIDTH, 0.3 * HEIGHT), (WIDTH//2-logo.get_size()[0]//2, HEIGHT//2-logo.get_size()[1]//2), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[logo], 
@@ -349,10 +371,13 @@ def change_game_status(new_status):
         remove_animation_by_ident("tile")
         remove_animation_by_ident("tile_cont")
         remove_animation_by_ident("space_background")
+        remove_animation_by_ident("char")
+        if not animation_exist_by_ident("char"):
+            all_animation.append(character_anime)
         if not animation_exist_by_ident("tile_colored"):
-            all_animation.append(Animation(WIN, tile_size, (0, 0.75 * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_colored], 
+            all_animation.append(Animation(WIN, tile_size, (0, TILE_POSITION_FACTOR * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_colored], 
                                             ident="tile_colored", speed=(-1, 0), self_replicate=True))
-            all_animation.append(Animation(WIN, tile_size, (0, 0.75 * HEIGHT + tile_colored.get_size()[1]), frame=1, screen_size=(WIDTH, HEIGHT), 
+            all_animation.append(Animation(WIN, tile_size, (0, TILE_POSITION_FACTOR * HEIGHT + tile_colored.get_size()[1]), frame=1, screen_size=(WIDTH, HEIGHT), 
             pictures=[tile_cont_colored], ident="tile_colored_cont", speed=(-1, 0), self_replicate=True))
 
         # keep_the_game_running()
@@ -378,7 +403,6 @@ def change_game_status(new_status):
                                     operation=exit)
         all_button.append(exit_button)
 
-
     elif new_status == 3:
         if len(user_name) == 0:
             user_name = "Player"
@@ -396,15 +420,19 @@ def change_game_status(new_status):
         all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"welcome, {user_name}", 1, BLACK)]))
         remove_animation_by_ident("tile_colored")
         remove_animation_by_ident("tile_colored_cont")
+        remove_animation_by_ident("char")
 
         if not animation_exist_by_ident("space_background"):
             all_animation.append(Animation(WIN, size=(WIDTH, HEIGHT), pos=(0, 0), frame=1, screen_size=(WIDTH, HEIGHT),
                                 ident="space_background", pictures=[background], speed=(-0.5, 0)))
+        if not animation_exist_by_ident("char"):
+            all_animation.append(character_anime)
         if not animation_exist_by_ident("tile_colored"):
-            all_animation.append((Animation(WIN, tile_size, (0, 0.75 * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_colored], 
+            all_animation.append((Animation(WIN, tile_size, (0, TILE_POSITION_FACTOR * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_colored], 
                                             ident="tile_colored", speed=(-1, 0), self_replicate=True, )))
-            all_animation.append((Animation(WIN, tile_size, (0, 0.75 * HEIGHT + tile_colored.get_size()[1]), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_cont_colored], 
+            all_animation.append((Animation(WIN, tile_size, (0, TILE_POSITION_FACTOR * HEIGHT + tile_colored.get_size()[1]), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_cont_colored], 
                                             ident="tile_colored_cont", speed=(-1, 0), self_replicate=True, )))
+        
             # print(all_animation)
         # menu_status = new_status
         _, one_bpos_x = calculate_button_position(2, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
@@ -736,12 +764,12 @@ def init_game():
                 if math.ceil(60 - (time.time() - game.start_time)) < 0:
                     game_input = ""
                     break # I think break alone actually work
-                sum_font = pygame.font.SysFont('comicsans', 200).render(f"{game.sum}", 1, BLACK)
+                sum_font = pygame.font.Font('Fonts\\pixel_font.ttf', 200).render(f"{game.sum}", 1, WHITE)
 
-                to_draw_string = [DEFAULT_FONT.render(f"{game.p1_name}: {game.p1_score}", 1, BLACK),
-                                DEFAULT_FONT.render(f"{game.p2_name}: {game.p2_score}", 1, BLACK),
-                                DEFAULT_FONT.render(f"time: {math.ceil(60 - (time.time() - game.start_time))}", 1, BLACK),
-                                DEFAULT_FONT.render(f"input: {game_input}", 1, BLACK),
+                to_draw_string = [DEFAULT_FONT.render(f"{game.p1_name}: {game.p1_score}", 1, WHITE),
+                                DEFAULT_FONT.render(f"{game.p2_name}: {game.p2_score}", 1, WHITE),
+                                DEFAULT_FONT.render(f"time: {math.ceil(60 - (time.time() - game.start_time))}", 1, WHITE),
+                                DEFAULT_FONT.render(f"input: {game_input}", 1, WHITE),
                                 sum_font                            
                                 ]
                 to_draw = [(to_draw_string[0], (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT)),
@@ -830,9 +858,9 @@ def submit_button_operation():
 
 def show_sum(sum):
     """Show the expected value from the user's equation"""
-    sum_font = pygame.font.SysFont('comicsans', 200)
+    sum_font = pygame.font.Font('Fonts\\pixel_font.ttf', 200)
     button = Button(WIN, sum_font, text=str(sum), operation=None, pos=(WIDTH/2, 150), size=(0, 0),
-                    disabled_color=(255, 255, 255))
+                    disabled_color=(255, 255, 255), text_color=WHITE)
     all_button.append(button)
 
 def calculate_button_position(number_of_button, border_factor=BUTTON_BORDER_FACTOR,

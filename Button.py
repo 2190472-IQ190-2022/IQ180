@@ -30,7 +30,8 @@ class Button:
 
     def __init__(self, window, button_font, pos=(300, 300), size=(100, 100), enabled_color=(100, 100, 100),
                  hover_color=(170, 170, 170), pressed_color=(20, 20, 20), disabled_color=(50, 50, 50), text="text", show_text=True,
-                 disabled=False, img_mode=False, img_enabled=None, img_hover=None, img_pressed=None, img_disabled=None, operation=None, ** op_args):
+                 disabled=False, img_mode=False, img_enabled=None, img_hover=None, img_pressed=None, img_disabled=None, operation=None, 
+                 text_color=(0, 0, 0), ** op_args):
         self.window = window
         self.button_font = button_font
         self.pos = pos
@@ -44,12 +45,13 @@ class Button:
         self.show_text = show_text
         self.op_args = op_args
         self.status = 0  # 0 is disbled 1 is enabled 2 is hovered 3 is pressed
-        self.text_rendered = self.button_font.render(self.text, 1, (0, 0, 0))
         self.img_mode = img_mode
         self.img_disabled = None
         self.img_pressed = None
         self.img_hover = None
         self.img_enabled = None
+        self.text_color = text_color
+        self.text_rendered = self.button_font.render(self.text, 1, self.text_color)
 
         if img_disabled is None or img_enabled is None or img_hover is None or img_pressed is None:
             self.img_mode = False
@@ -76,7 +78,7 @@ class Button:
 
     def set_text(self, text):
         self.text = text
-        self.text_rendered = self.button_font.render(self.text, 1, (0, 0, 0))
+        self.text_rendered = self.button_font.render(self.text, 1, self.text_color)
         self.draw()
 
     def set_img(self, img_mode, img_enabled, img_disabled,  img_hover, img_pressed):
