@@ -417,7 +417,7 @@ def change_game_status(new_status):
 
         # print(str(3) + str(remove_animation_by_ident("tile")))
         # print(str(3) + str(remove_animation_by_ident("tile_colored")))
-        all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"welcome, {user_name}", 1, BLACK)]))
+        top_level.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"welcome, {user_name}", 1, BLACK)]))
         remove_animation_by_ident("tile_colored")
         remove_animation_by_ident("tile_colored_cont")
         remove_animation_by_ident("char")
@@ -685,8 +685,10 @@ def init_game():
             break
 
         if game.ready == False:
+            waiting_time_rendered = DEFAULT_FONT.render(f"Waiting time: {waiting_time}", 1, WHITE)
+            keep_the_game_running([(waiting_time_rendered, ((WIDTH - waiting_time_rendered.get_width()) / 2, (HEIGHT - waiting_time_rendered.get_height()) / 2))])
             #print("Waiting for another player")
-            keep_the_game_running()
+            # keep_the_game_running()
             continue
         if game.p1_played and game.p2_played:
             game.update_score()
@@ -824,7 +826,8 @@ def init_game():
                 all_button.append(exit_button)
                 exit_and_gtfo_exist = True
             waiting_time = math.ceil(time.time() - start_waiting_time)
-            keep_the_game_running()
+            waiting_time_rendered = DEFAULT_FONT.render(f"Waiting time: {waiting_time}", 1, WHITE)
+            keep_the_game_running([(waiting_time_rendered, ((WIDTH - waiting_time_rendered.get_width()) / 2, (HEIGHT - waiting_time_rendered.get_height()) / 2))])
     game_state = []
 
 def user_game_input(button_input, button_index):
