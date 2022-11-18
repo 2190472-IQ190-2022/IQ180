@@ -55,7 +55,7 @@ for alpha in range(0, 256, 4):
     screen.set_alpha(alpha)
     fade_out.append(screen)
 
-for alpha in range(0, 256, 4):
+for alpha in range(0, 256, 8):
     screen = pygame.Surface((WIDTH, HEIGHT))
     screen.fill(WHITE)
     screen.set_alpha(alpha)
@@ -254,6 +254,7 @@ def change_game_status(new_status):
         # print("status 1")
         remove_animation_by_ident("tile_colored")
         remove_animation_by_ident("tile_colored_cont")
+        remove_animation_by_ident("space_background")
         if not animation_exist_by_ident("tile"):
             all_animation.append(Animation(WIN, tile_size, (0, 0.75 * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_bw], 
                                             ident="tile", speed=(-1, 0), self_replicate=True))
@@ -305,6 +306,7 @@ def change_game_status(new_status):
 
         remove_animation_by_ident("tile")
         remove_animation_by_ident("tile_cont")
+        remove_animation_by_ident("space_background")
         if not animation_exist_by_ident("tile_colored"):
             all_animation.append(Animation(WIN, tile_size, (0, 0.75 * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_colored], 
                                             ident="tile_colored", speed=(-1, 0), self_replicate=True))
@@ -350,18 +352,27 @@ def change_game_status(new_status):
         # print(str(3) + str(remove_animation_by_ident("tile")))
         # print(str(3) + str(remove_animation_by_ident("tile_colored")))
         all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"welcome, {user_name}", 1, BLACK)]))
+        remove_animation_by_ident("tile_colored")
+        remove_animation_by_ident("tile_colored_cont")
+
         if not animation_exist_by_ident("space_background"):
             all_animation.append(Animation(WIN, size=(WIDTH, HEIGHT), pos=(0, 0), frame=1, screen_size=(WIDTH, HEIGHT),
                                 ident="space_background", pictures=[background], speed=(-0.5, 0)))
-        
+        if not animation_exist_by_ident("tile_colored"):
             all_animation.append((Animation(WIN, tile_size, (0, 0.75 * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_colored], 
                                             ident="tile_colored", speed=(-1, 0), self_replicate=True, )))
+            all_animation.append((Animation(WIN, tile_size, (0, 0.75 * HEIGHT + tile_colored.get_size()[1]), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_cont_colored], 
+                                            ident="tile_colored_cont", speed=(-1, 0), self_replicate=True, )))
             print(all_animation)
         # menu_status = new_status
-        _, one_bpos_x = calculate_button_position(1, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
+        _, one_bpos_x = calculate_button_position(2, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(one_bpos_x[0],y_border),size=(small_bsize, small_bsize), text="GTFO",
                                     operation=exit)
+        return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[1],y_border),
+                                    size= (small_bsize, small_bsize), text="back",
+                                      operation=change_game_status, new_status=2)
+        all_button.append(return_to_mm1_button)
         all_button.append(exit_button)
         init_game()
     elif new_status == 4:
@@ -426,7 +437,7 @@ def keep_the_game_running(things_to_draw=[]):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
-    
+
     WIN.fill(WHITE)
     # draw_everything(menu_status, things_to_draw)
 
@@ -467,6 +478,7 @@ def keep_the_game_running(things_to_draw=[]):
             if popup_enable:
                 tl.draw()
         
+    # print("--------------------------")
     pygame.display.update()
     
 def get_user_name(): # get input from user and store in user_name
@@ -530,6 +542,7 @@ def init_game():
         all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("server error, disconnected", 1, BLACK)]))
         print(remove_animation_by_ident("space_background"))
         print(remove_animation_by_ident("tile_colored"))
+        print(remove_animation_by_ident("tile_colored_cont"))
         change_game_status(new_status=2)
         return
     
@@ -538,6 +551,9 @@ def init_game():
     current_sum=0
 
     while True:
+        if menu_status != 3:
+            net.client.close()
+            return
         clock = pygame.time.Clock()
         clock.tick(FPS)
         waiting_time = math.ceil(time.time() - start_waiting_time)
@@ -579,6 +595,9 @@ def init_game():
             create_game_button(game.numbers_array)
             while not player_submit:
                 clock.tick(FPS)
+                if menu_status != 3:
+                    net.client.close()
+                    return
                 if current_sum!=game.sum or current_array!=game.numbers_array:
                     current_array=game.numbers_array
                     current_sum=game.sum
@@ -725,10 +744,11 @@ def create_game_button(numbers):
     """This function create game button including numbers and operation"""
     button_size_y, position_y = calculate_button_position(3, axis=HEIGHT, offset=150, border_factor=0.4) # Hard code : 3 is number of rows
     button_size_x, position_x = calculate_button_position(len(numbers), axis=WIDTH)
+    current_number_of_button = len(all_button)
     for i in range(len(numbers)):
         button = Button(WIN, DEFAULT_FONT, text=str(numbers[i]), operation=user_game_input,
                         pos=(position_x[i], position_y[0]), size=(button_size_x, button_size_y),
-                        button_input=str(numbers[i]), button_index=i)
+                        button_input=str(numbers[i]), button_index=i+current_number_of_button)
         all_button.append(button)
 
     button_size_x, position_x = calculate_button_position(len(ALL_ALLOWS_MATH_OP), axis=WIDTH)
