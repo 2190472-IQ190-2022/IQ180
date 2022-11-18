@@ -142,6 +142,7 @@ def UI():
     user_input = ""
     WIN = pygame.display.set_mode((width, height))
     pygame.font.init()
+    pygame.display.set_caption("IQ1_Server")
     server_font = pygame.font.SysFont('comicsans', 40)
     clock = pygame.time.Clock()
     
