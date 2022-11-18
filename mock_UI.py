@@ -69,10 +69,7 @@ logo = pygame.transform.scale(pygame.image.load("Images\\logo.jpeg"), (0.4 * HEI
 # BGM
 pygame.init()
 pygame.mixer.music.load("Sound\BGM.wav")
-music_on = True
-BGM_volume = 0.5
 pygame.mixer.music.play(-1)
-pygame.mixer.music.set_volume(BGM_volume)
 
 # fonts
 pygame.font.init()
@@ -582,28 +579,34 @@ def get_user_name(): # get input from user and store in user_name
         keep_the_game_running(things_to_draw=things_to_draw) # these 3 lines can be converted to this
         
 def play_BGM():
-    global music_on
+    global music_on, settings, fo
     music_on = not music_on
-    if(music_on == False):
+    if not music_on:
         pygame.mixer.music.pause()
     else:
         pygame.mixer.music.unpause()
+    settings["music_on"] = music_on
+    fo.save_settings(settings)
     change_game_status(5)
 
 def increase_volume():
     global BGM_volume
     BGM_volume += 0.1
-    if(BGM_volume>= 1.0):
-        BGM_volume = 1.0
+    if(BGM_volume > 1):
+        BGM_volume = 1
     pygame.mixer.music.set_volume(BGM_volume)
+    settings["volume"] = BGM_volume
+    fo.save_settings(settings)
     all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"Volume= {round(BGM_volume*10)}", 1, BLACK)]))
     
 def decrease_volume():
     global BGM_volume
     BGM_volume -= 0.1
-    if(BGM_volume<= 0.0):
-        BGM_volume = 0.0
+    if(BGM_volume < 0):
+        BGM_volume = 0
     pygame.mixer.music.set_volume(BGM_volume)
+    settings["volume"] = BGM_volume
+    fo.save_settings(settings)
     all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"Volume= {round(BGM_volume*10)}", 1, BLACK)]))
 
 
@@ -951,8 +954,10 @@ if __name__ == "__main__":
     game_full_screen = settings["game_full_screen"]
     popup_enable = settings["popup_enable"]
     music_on = settings["music_on"]
-    if music_on:
-        pygame.mixer.music.play(-1)
+    BGM_volume = settings["volume"]
+    pygame.mixer.music.set_volume(BGM_volume)
+    if not music_on:
+        pygame.mixer.music.pause()
     if game_full_screen:
         pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
     else:
