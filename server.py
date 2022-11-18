@@ -78,8 +78,9 @@ def export_games(game_ID):
         except:
             all_popup_text.append(f"error, not a number input")
             return
+        # fo.export_game(games[game_ID].to_dict(),game_ID)
         try:
-            fo.export_game(games[game].to_dict(),game)
+            fo.export_game(games[game_ID].to_dict(),game_ID)
         except:
             all_popup_text.append(f"error, index out of bound")
             return
@@ -155,7 +156,7 @@ def UI():
                     text="reset", enabled_color=(255, 0, 0), operation=reset_game, game_ID=user_input)
     check_button = Button(WIN, button_font=server_font, pos=(0.60*width-0.5*button_size, 0.75*height-0.5*button_size), 
                     text="game status", enabled_color=(255, 0, 0), operation=check_status, game_ID=user_input)
-    export_game = Button(WIN, button_font=server_font, pos=(0.80*width-0.5*button_size, 0.75*height-0.5*button_size), 
+    export_button = Button(WIN, button_font=server_font, pos=(0.80*width-0.5*button_size, 0.75*height-0.5*button_size), 
                     text="export", enabled_color=(255, 0, 0), operation=export_games, game_ID=user_input)                     
     
     while running:
@@ -181,9 +182,10 @@ def UI():
         reset_all_button.update_button()
         reset_button.set_args(game_ID=user_input)
         reset_button.update_button()
+        export_button.set_args(game_ID=user_input)
         check_button.set_args(game_ID=user_input)
         check_button.update_button()
-        export_game.update_button()
+        export_button.update_button()
         for popup in all_popup_text:
             user_input = ""
             if extended:
