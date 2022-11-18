@@ -44,7 +44,13 @@ tile_bw = pygame.image.load("Images\\tile\\jungle_floor_bw.png")
 tile_size = (tile_bw.get_size()[0] * 7, tile_bw.get_size()[1] * 7)
 tile_bw = pygame.transform.scale(tile_bw, tile_size)
 tile_colored = pygame.transform.scale(pygame.image.load("Images\\tile\\jungle_floor.png"), tile_size)
-
+fade_out = []
+for alpha in range(0, 256, 4):
+    screen = pygame.Surface((WIDTH, HEIGHT))
+    screen.fill(BLACK)
+    screen.set_alpha(alpha)
+    fade_out.append(screen)
+fade_int = fade_out[::-1]
 
 # BGM
 pygame.init()
@@ -64,6 +70,7 @@ menu_status = 1 # menu status = 1 is mm1, = 2 is mm2, = 3 is game, = 4 is htp, =
 all_button = []
 all_popup = []
 all_animation = []
+top_level = []
 game_input = ""
 player_submit = False
 user_name = ""
@@ -112,6 +119,16 @@ class Loading_Thread(threading.Thread):
         threading.Thread.join(self)
         return self.value
 
+def remove_animation_by_ident(ident):
+    try:
+        for anime in all_animation:
+            if anime.get_ident == ident:
+                all_animation.remove(anime)
+                break
+        return True
+    except:
+        return False
+
 def load_assets(type, file_path): # this function may not be used anymore, already in loading class
     """load asset is BLOCKING, except the process is put into the while loop here"""
     loading_thread = Loading_Thread(None, (type, file_path))
@@ -144,36 +161,36 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
     global background_pos
 
     to_be_drawn_internal = []
-    WIN.fill(WHITE)
-    WIN.blit(background, background_pos)
-    background_pos = (background_pos[0]-0.2, background_pos[1])
+    # WIN.fill(WHITE)
+    # WIN.blit(background, background_pos)
+    # background_pos = (background_pos[0]-0.2, background_pos[1])
     text_print = ""
     if current_menu_status == 1:
-        WIN.fill(WHITE)
+        # WIN.fill(WHITE)
         text_print = "Main menu 1"
         
     elif current_menu_status == 2:
         # print(f"{WIDTH}, {HEIGHT}")
-        WIN.fill(WHITE)
+        # WIN.fill(WHITE)
         text_print = "Main menu 2"
         rect = pygame.Rect(0.25*WIDTH+310,0.75*HEIGHT,0.3*WIDTH,50)
         color = pygame.Color('lightskyblue1')
         pygame.draw.rect(WIN,color,rect,2)
     elif current_menu_status == 3:
-        WIN.blit(background, background_pos)
-        background_pos = (background_pos[0]-0.2, background_pos[1])
+        # WIN.blit(background, background_pos)
+        # background_pos = (background_pos[0]-0.2, background_pos[1])
         if len(all_button) == 0:
             text_print = "Waiting for player"
         # else:
         #     pass
     elif current_menu_status == 4:
-        WIN.blit(background, background_pos)
-        background_pos = (background_pos[0]-0.2, background_pos[1])
+        # WIN.blit(background, background_pos)
+        # background_pos = (background_pos[0]-0.2, background_pos[1])
         text_print = "How to play"
         # to_be_drawn_internal.append(("this game's trash don't play it", (500, 550)))
     elif current_menu_status == 5:
-        WIN.blit(background, background_pos)
-        background_pos = (background_pos[0]-0.2, background_pos[1])
+        # WIN.blit(background, background_pos)
+        # background_pos = (background_pos[0]-0.2, background_pos[1])
         _, res_buttons_pos_x = calculate_button_position(4, border_factor=0.8, axis=WIDTH)
         _, res_buttons_pos_y = calculate_button_position(1, border_factor=0.1, offset=-0.2*HEIGHT, axis=HEIGHT)
         text_print = "Setting"
@@ -183,8 +200,8 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         # to_be_drawn_internal.append(("you can change audio, game resolution here (hopefully)", (300, 550)))
     else:
         text_print = "What"
-    this_text = DEFAULT_FONT.render(text_print, 1, BLACK)
-    WIN.blit(this_text, (WIDTH/2-this_text.get_width()/2, HEIGHT/2-this_text.get_height()/2))
+    # this_text = DEFAULT_FONT.render(text_print, 1, BLACK)
+    # WIN.blit(this_text, (WIDTH/2-this_text.get_width()/2, HEIGHT/2-this_text.get_height()/2))
     for tbd in to_be_drawn:
         # test = DEFAULT_FONT.render(tbd[0], 1, BLACK)
         WIN.blit(tbd[0], tbd[1])
@@ -198,7 +215,7 @@ def change_game_status(new_status):
 
     # a = load_assets("images", "Test_Images\\rickroll")
 
-    menu_status = new_status
+    # menu_status = new_status
     all_button = []
     # big button (play game)
     button_size_x, position_one_button_x = calculate_button_position(1, border_factor=0.3, axis=WIDTH)
@@ -210,7 +227,7 @@ def change_game_status(new_status):
     if new_status == 1:
         # print("status 1")
         all_animation.append(Animation(WIN, tile_size, (0, 0.75 * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_bw], 
-                                        speed=(-1, 0), self_replicate=True))
+                                        ident="tile", speed=(-1, 0), self_replicate=True))
         # print(all_animation)
         _, three_bpos_x = calculate_button_position(4, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         to_mm2_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Play",
@@ -236,7 +253,7 @@ def change_game_status(new_status):
         all_button.append(exit_button)
     elif new_status == 2:
         all_animation.append(Animation(WIN, tile_size, (WIDTH, 0.75 * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_colored], 
-                                        speed=(-1, 0), self_replicate=True))
+                                        ident="tile_colored", speed=(-1, 0), self_replicate=True))
         _, two_bpos_x = calculate_button_position(2, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         to_game_button = Button(window=WIN, button_font=DEFAULT_FONT, text="To game",
                                 operation=change_game_status, new_status=3,
@@ -261,7 +278,21 @@ def change_game_status(new_status):
             user_name = "Player"
         settings['player_name'] = user_name
         fo.save_settings(settings)
+        menu_status = new_status
+        
+        fade_out_anime_obj = Animation(WIN, size=(WIDTH, HEIGHT), pos=(0, 0), frame=256, screen_size=(WIDTH, HEIGHT), pictures=fade_out, rerun=False, ident="fade_out")
+        top_level.append(fade_out_anime_obj)
+        while not fade_out_anime_obj.get_finish():
+            keep_the_game_running()
+
+        remove_animation_by_ident("tile")
+        remove_animation_by_ident("tile_colored")
         all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"welcome, {user_name}", 1, BLACK)]))
+        all_animation.append(Animation(WIN, size=(WIDTH, HEIGHT), pos=(0, 0), frame=1, screen_size=(WIDTH, HEIGHT),
+                            ident="space_background", pictures=[background], speed=(-1, 0)))
+        all_animation.append((Animation(WIN, tile_size, (0, 0.75 * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_colored], 
+                                        ident="tile_colored", speed=(-1, 0), self_replicate=True)))
+        # menu_status = new_status
         init_game()
     elif new_status == 4:
         _, one_bpos_x = calculate_button_position(1, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
@@ -314,6 +345,7 @@ def change_game_status(new_status):
                                     size=(res_buttons_size_x, res_buttons_size_y), text=popup_altering_text,
                                     operation=change_popup_status)
         all_button.append(popup_status_button)
+    menu_status = new_status
     pygame.time.wait(100) # This function was there to prevent mouse double clicking button / it does not work
 
 def keep_the_game_running(things_to_draw=[]):
@@ -324,8 +356,9 @@ def keep_the_game_running(things_to_draw=[]):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
-        
-    draw_everything(menu_status, things_to_draw)
+    
+    WIN.fill(WHITE)
+    # draw_everything(menu_status, things_to_draw)
 
     for anime in all_animation:
         if anime.get_finish():
@@ -347,6 +380,24 @@ def keep_the_game_running(things_to_draw=[]):
             popup.draw()
 
     # print(all_animation)
+    draw_everything(menu_status, things_to_draw)
+
+    for tl in top_level: # top level is for the upper most layer only
+        if type(tl) == Animation:
+            if tl.get_finish():
+                top_level.remove(tl)
+                continue
+            tl.draw_animation()
+        elif type(tl) == Popup:
+            if tl.get_finish():
+                # print("remove anime")
+                top_level.remove(tl)
+                continue
+            if popup_enable:
+                tl.draw()
+        elif type(tl) == Button:
+            tl.update_button()
+
     pygame.display.update()
     
 def get_user_name(): # get input from user and store in user_name

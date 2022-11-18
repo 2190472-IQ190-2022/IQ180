@@ -3,7 +3,7 @@ import os
 
 class Animation:
 
-    def __init__(self, window, size, pos, frame, screen_size, pictures=[], current_frame=0, rerun=True,
+    def __init__(self, window, size, pos, frame, screen_size, ident, pictures=[], current_frame=0, rerun=True,
                 run_every_frame=1, speed=(0, 0), self_replicate=False):
         self.window = window
         self.size = size
@@ -19,6 +19,7 @@ class Animation:
         self.pause = False
         self.self_replicate = self_replicate
         self.screen_size = screen_size
+        self.ident = ident
         # print("__init__ pic" + str(self.pictures))
 
     def play(self):
@@ -39,14 +40,19 @@ class Animation:
     def get_pos(self):
         return self.pos
 
+    def get_finish(self):
+        return self.finished
+
+    def get_ident(self):
+        return self.ident
+
     def set_speed(self, speed):
         self.speed = speed
 
     def set_finish(self, finish):
         self.set_finish = finish
 
-    def get_finish(self):
-        return self.finished
+    
 
     def draw_animation(self):
         """check draw/not draw and blit the animation if allowed"""
