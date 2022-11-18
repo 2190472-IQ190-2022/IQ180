@@ -39,12 +39,12 @@ image_path = os.path.join("Images","background")
 image_number = len([entry for entry in os.listdir(image_path) if os.path.isfile(os.path.join(image_path, entry))])
 background = pygame.image.load(os.path.join(image_path,f"img-{random.randint(0, image_number-1)}.png"))
 background_pos = (0, 0)
-tile_bw = pygame.image.load(os.path.join("Image","title","jungle_floor_bw.png"))
+tile_bw = pygame.image.load(os.path.join("Images","tile","jungle_floor_bw.png"))
 tile_size = (tile_bw.get_size()[0] * 7, tile_bw.get_size()[1] * 7)
 tile_bw = pygame.transform.scale(tile_bw, tile_size)
-tile_colored = pygame.transform.scale(pygame.image.load(os.path.join("Image","title","jungle_floor.png")), tile_size)
-tile_cont_bw = pygame.transform.scale(pygame.image.load(os.path.join("Image","title","jungle_floor_bw_cont.png")), tile_size)
-tile_cont_colored = pygame.transform.scale(pygame.image.load(os.path.join("Image","title","jungle_floor_cont.png")), tile_size)
+tile_colored = pygame.transform.scale(pygame.image.load(os.path.join("Images","tile","jungle_floor.png")), tile_size)
+tile_cont_bw = pygame.transform.scale(pygame.image.load(os.path.join("Images","tile","jungle_floor_bw_cont.png")), tile_size)
+tile_cont_colored = pygame.transform.scale(pygame.image.load(os.path.join("Images","tile","jungle_floor_cont.png")), tile_size)
 
 fade_out = []
 fade_out_white = []
@@ -63,7 +63,7 @@ for alpha in range(0, 256, 8):
 fade_in = fade_out[::-1]
 fade_in_white = fade_out_white[::-1]
 
-logo = pygame.transform.scale(pygame.image.load(os.path.join("Image","logo.jpg")), (0.4 * HEIGHT, 0.4 * HEIGHT))
+logo = pygame.transform.scale(pygame.image.load(os.path.join("Images","logo.jpeg")), (0.4 * HEIGHT, 0.4 * HEIGHT))
 
 # BGM
 pygame.init()
