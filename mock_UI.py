@@ -44,13 +44,24 @@ tile_bw = pygame.image.load("Images\\tile\\jungle_floor_bw.png")
 tile_size = (tile_bw.get_size()[0] * 7, tile_bw.get_size()[1] * 7)
 tile_bw = pygame.transform.scale(tile_bw, tile_size)
 tile_colored = pygame.transform.scale(pygame.image.load("Images\\tile\\jungle_floor.png"), tile_size)
+
 fade_out = []
+fade_out_white = []
 for alpha in range(0, 256, 4):
     screen = pygame.Surface((WIDTH, HEIGHT))
     screen.fill(BLACK)
     screen.set_alpha(alpha)
     fade_out.append(screen)
-fade_int = fade_out[::-1]
+
+for alpha in range(0, 256, 2):
+    screen = pygame.Surface((WIDTH, HEIGHT))
+    screen.fill(WHITE)
+    screen.set_alpha(alpha)
+    fade_out_white.append(screen)
+
+fade_in = fade_out[::-1]
+fade_in_white = fade_out_white[::-1]
+
 
 # BGM
 pygame.init()
@@ -122,12 +133,20 @@ class Loading_Thread(threading.Thread):
 def remove_animation_by_ident(ident):
     try:
         for anime in all_animation:
-            if anime.get_ident == ident:
+            if anime.get_ident() == ident:
                 all_animation.remove(anime)
                 break
         return True
     except:
         return False
+
+def animation_exist_by_ident(ident):
+    for anime in all_animation:
+        if anime.get_ident() == ident:
+            return True
+
+    return False
+
 
 def load_assets(type, file_path): # this function may not be used anymore, already in loading class
     """load asset is BLOCKING, except the process is put into the while loop here"""
@@ -226,8 +245,10 @@ def change_game_status(new_status):
     y_border = y_border[0]
     if new_status == 1:
         # print("status 1")
-        all_animation.append(Animation(WIN, tile_size, (0, 0.75 * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_bw], 
-                                        ident="tile", speed=(-1, 0), self_replicate=True))
+        remove_animation_by_ident("tile_colored")
+        if not animation_exist_by_ident("tile"):
+            all_animation.append(Animation(WIN, tile_size, (0, 0.75 * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_bw], 
+                                            ident="tile", speed=(-1, 0), self_replicate=True))
         # print(all_animation)
         _, three_bpos_x = calculate_button_position(4, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         to_mm2_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Play",
@@ -252,9 +273,29 @@ def change_game_status(new_status):
         all_button.append(to_howtoplay_button)
         all_button.append(exit_button)
     elif new_status == 2:
-        all_animation.append(Animation(WIN, tile_size, (WIDTH, 0.75 * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_colored], 
-                                        ident="tile_colored", speed=(-1, 0), self_replicate=True))
+        
+        fade_out_white_anime_obj = Animation(WIN, tile_size, (0, 0), frame=256, screen_size=(WIDTH, HEIGHT), pictures=fade_out_white, 
+                                    ident="fade_out_white", speed=(0, 0), rerun=False) 
+        top_level.append(fade_out_white_anime_obj)
+        while not fade_out_white_anime_obj.get_finish():
+            if fade_out_white_anime_obj.get_current_frame() == fade_out_white_anime_obj.get_frame() :
+                fade_out_white_anime_obj.pause_animation()
+                break
+            keep_the_game_running()
+
+        remove_animation_by_ident("tile")
+        if not animation_exist_by_ident("tile_colored"):
+            all_animation.append(Animation(WIN, tile_size, (0, 0.75 * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_colored], 
+                                            ident="tile_colored", speed=(-1, 0), self_replicate=True))
+
+        fade_in_white_anime_obj = Animation(WIN, tile_size, (0, 0), frame=256, screen_size=(WIDTH, HEIGHT), pictures=fade_in_white, 
+                                    ident="fade_in_white", speed=(0, 0), rerun=False) 
+        top_level.append(fade_in_white_anime_obj)
+        fade_out_white_anime_obj.play()
+        # keep_the_game_running()
+    
         _, two_bpos_x = calculate_button_position(2, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
+        
         to_game_button = Button(window=WIN, button_font=DEFAULT_FONT, text="To game",
                                 operation=change_game_status, new_status=3,
                                 pos=(position_one_button_x[0], position_one_button_y[0]),
@@ -273,6 +314,8 @@ def change_game_status(new_status):
                                     size=(small_bsize, small_bsize), text="GTFO",
                                     operation=exit)
         all_button.append(exit_button)
+
+
     elif new_status == 3:
         if len(user_name) == 0:
             user_name = "Player"
@@ -285,13 +328,15 @@ def change_game_status(new_status):
         while not fade_out_anime_obj.get_finish():
             keep_the_game_running()
 
-        remove_animation_by_ident("tile")
-        remove_animation_by_ident("tile_colored")
+        print(str(3) + str(remove_animation_by_ident("tile")))
+        print(str(3) + str(remove_animation_by_ident("tile_colored")))
         all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"welcome, {user_name}", 1, BLACK)]))
-        all_animation.append(Animation(WIN, size=(WIDTH, HEIGHT), pos=(0, 0), frame=1, screen_size=(WIDTH, HEIGHT),
-                            ident="space_background", pictures=[background], speed=(-1, 0)))
-        all_animation.append((Animation(WIN, tile_size, (0, 0.75 * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_colored], 
-                                        ident="tile_colored", speed=(-1, 0), self_replicate=True)))
+        if not animation_exist_by_ident("space_background"):
+            all_animation.append(Animation(WIN, size=(WIDTH, HEIGHT), pos=(0, 0), frame=1, screen_size=(WIDTH, HEIGHT),
+                                ident="space_background", pictures=[background], speed=(-1, 0)))
+        if not animation_exist_by_ident("tile_colored"):
+            all_animation.append((Animation(WIN, tile_size, (0, 0.75 * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_colored], 
+                                            ident="tile_colored", speed=(-1, 0), self_replicate=True)))
         # menu_status = new_status
         init_game()
     elif new_status == 4:
@@ -361,6 +406,8 @@ def keep_the_game_running(things_to_draw=[]):
     # draw_everything(menu_status, things_to_draw)
 
     for anime in all_animation:
+        print(anime.get_ident())
+        print(f"rendered {anime.get_ident()}")
         if anime.get_finish():
             all_animation.remove(anime)
             continue
@@ -368,26 +415,32 @@ def keep_the_game_running(things_to_draw=[]):
 
     # game_button_control()
     for button in all_button:
+        print(f"rendered {button.get_text()}")
         button.update_button()
 
     # game_popup_control()
     for popup in all_popup:
         if popup.get_finish():
-            print("remove anime")
+            # print("remove anime")
             all_popup.remove(popup)
             continue
         if popup_enable:
+            print(f"rendered {popup.text_object[0]}")
             popup.draw()
 
     # print(all_animation)
     draw_everything(menu_status, things_to_draw)
+    print("++++++++++++++++")
 
     for tl in top_level: # top level is for the upper most layer only
         if type(tl) == Animation:
+            print(f"rendered tl : {tl.get_ident()} cf: {tl.current_frame}")
             if tl.get_finish():
                 top_level.remove(tl)
                 continue
             tl.draw_animation()
+        elif type(tl) == Button:
+            tl.update_button()
         elif type(tl) == Popup:
             if tl.get_finish():
                 # print("remove anime")
@@ -395,9 +448,8 @@ def keep_the_game_running(things_to_draw=[]):
                 continue
             if popup_enable:
                 tl.draw()
-        elif type(tl) == Button:
-            tl.update_button()
-
+        
+    print("---------------------")
     pygame.display.update()
     
 def get_user_name(): # get input from user and store in user_name
@@ -459,6 +511,8 @@ def init_game():
         net.client.send(pickle.dumps(game))
     except:
         all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("server error, disconnected", 1, BLACK)]))
+        print(remove_animation_by_ident("space_background"))
+        print(remove_animation_by_ident("tile_colored"))
         change_game_status(new_status=2)
         return
     

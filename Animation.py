@@ -8,8 +8,8 @@ class Animation:
         self.window = window
         self.size = size
         self.pos = pos
-        self.frame = frame
         self.pictures = pictures
+        self.frame = len(self.pictures)
         self.current_frame = current_frame
         self.rerun = rerun
         self.run_every_frame=run_every_frame
@@ -26,7 +26,7 @@ class Animation:
         """start the animation if the animation is paused"""
         self.pause = False
 
-    def pause(self):
+    def pause_animation(self):
         """stop the animation in place if the animation is paused"""
         self.pause = True
 
@@ -46,13 +46,17 @@ class Animation:
     def get_ident(self):
         return self.ident
 
+    def get_current_frame(self):
+        return self.current_frame
+
+    def get_frame(self):
+        return self.frame
+
     def set_speed(self, speed):
         self.speed = speed
 
     def set_finish(self, finish):
         self.set_finish = finish
-
-    
 
     def draw_animation(self):
         """check draw/not draw and blit the animation if allowed"""
