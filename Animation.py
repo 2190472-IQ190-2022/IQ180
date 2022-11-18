@@ -4,7 +4,7 @@ import os
 class Animation:
 
     def __init__(self, window, size, pos, frame, screen_size, ident, pictures=[], current_frame=0, rerun=True,
-                run_every_frame=1, speed=(0, 0), self_replicate=False):
+                run_every_frame=1, speed=(0, 0), self_replicate=False, hidden=False):
         self.window = window
         self.size = size
         self.pos = pos
@@ -20,6 +20,7 @@ class Animation:
         self.self_replicate = self_replicate
         self.screen_size = screen_size
         self.ident = ident
+        self.hidden = hidden
         # print("__init__ pic" + str(self.pictures))
 
     def play(self):
@@ -58,6 +59,9 @@ class Animation:
     def set_finish(self, finish):
         self.set_finish = finish
 
+    def set_hidden(self, hidden):
+        self.hidden = hidden
+
     def draw_animation(self):
         """check draw/not draw and blit the animation if allowed"""
         # print(f"pictures {self.pictures}")
@@ -67,13 +71,15 @@ class Animation:
             while position[0] < self.screen_size[0] + self.size[0]:
                 # print(f"current frame: {self.current_frame}")
                 while position[1] < self.screen_size[1] + self.size[1]:
-                    self.window.blit(self.pictures[self.current_frame], position)
+                    if not self.hidden:
+                        self.window.blit(self.pictures[self.current_frame], position)
                     position = (position[0], position[1] + self.size[1])
                 position = (position[0] + self.size[0], self.pos[1])
             if self.pos[0] + self.size[0] < 0:
                 self.pos = (0, self.pos[1])
         else:
-            self.window.blit(self.pictures[self.current_frame], self.pos)
+            if not self.hidden:
+                self.window.blit(self.pictures[self.current_frame], self.pos)
         self.total_frame += 1
         if not self.pause:
             if self.total_frame % self.run_every_frame == 0:
