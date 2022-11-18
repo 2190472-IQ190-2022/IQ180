@@ -64,6 +64,7 @@ for alpha in range(0, 256, 8):
 fade_in = fade_out[::-1]
 fade_in_white = fade_out_white[::-1]
 
+logo = pygame.transform.scale(pygame.image.load("Images\\logo.jpeg"), (0.4 * HEIGHT, 0.4 * HEIGHT))
 
 # BGM
 pygame.init()
@@ -245,7 +246,7 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
 def change_game_status(new_status):
     """This function is called when the menu button is pressed (changing user to each menu, mm1, mm2, game, htp, setting)"""
     global menu_status, all_button, user_name, settings, fo
-    print("hello the button is gone wtf")
+    # print("hello the button is gone wtf")
 
     # a = load_assets("images", "Test_Images\\rickroll")
 
@@ -267,7 +268,12 @@ def change_game_status(new_status):
             all_animation.append(Animation(WIN, tile_size, (0, 0.75 * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_bw], 
                                             ident="tile", speed=(-1, 0), self_replicate=True))
             all_animation.append(Animation(WIN, tile_size, (0, 0.75 * HEIGHT+tile_bw.get_size()[1]), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_cont_bw], 
-                                            ident="tile_cont", speed=(-1, 0), self_replicate=True))   
+                                            ident="tile_cont", speed=(-1, 0), self_replicate=True))
+        if not animation_exist_by_ident("logo"):
+            logo_anime = Animation(WIN, (0.3 * WIDTH, 0.3 * HEIGHT), (WIDTH//2-logo.get_size()[0]//2, HEIGHT//2-logo.get_size()[1]//2), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[logo], 
+                                            ident="logo", speed=(0, 0), self_replicate=False, position_function=(None, math.sin))
+            all_animation.append(logo_anime)
+            
         # print(all_animation)
         _, three_bpos_x = calculate_button_position(4, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         to_mm2_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Play",
@@ -312,6 +318,7 @@ def change_game_status(new_status):
                 break
             keep_the_game_running()
 
+        remove_animation_by_ident("logo")
         remove_animation_by_ident("tile")
         remove_animation_by_ident("tile_cont")
         remove_animation_by_ident("space_background")
@@ -371,7 +378,7 @@ def change_game_status(new_status):
                                             ident="tile_colored", speed=(-1, 0), self_replicate=True, )))
             all_animation.append((Animation(WIN, tile_size, (0, 0.75 * HEIGHT + tile_colored.get_size()[1]), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_cont_colored], 
                                             ident="tile_colored_cont", speed=(-1, 0), self_replicate=True, )))
-            print(all_animation)
+            # print(all_animation)
         # menu_status = new_status
         _, one_bpos_x = calculate_button_position(2, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
@@ -565,9 +572,9 @@ def init_game():
         net.client.send(pickle.dumps(game))
     except:
         all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("server error, disconnected", 1, BLACK)]))
-        print(remove_animation_by_ident("space_background"))
-        print(remove_animation_by_ident("tile_colored"))
-        print(remove_animation_by_ident("tile_colored_cont"))
+        # print(remove_animation_by_ident("space_background"))
+        # print(remove_animation_by_ident("tile_colored"))
+        # print(remove_animation_by_ident("tile_colored_cont"))
         change_game_status(new_status=2)
         return
     
