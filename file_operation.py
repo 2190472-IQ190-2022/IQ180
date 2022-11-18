@@ -39,8 +39,7 @@ class file_operation:
 
     def export_game(self, game_data, game_id):
         filename = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
-        path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"Exported_Games")
-        path +=f"\\Game_{filename}"
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"Exported_Games",f"Game_{filename}")
         if str(game_id) != '0':
             path+=f"({game_id})"
         path+=".json"
