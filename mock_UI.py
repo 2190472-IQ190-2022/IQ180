@@ -206,7 +206,7 @@ def load_assets(type, file_path): # this function may not be used anymore, alrea
     """load asset is BLOCKING, except the process is put into the while loop here"""
     loading_thread = Loading_Thread(None, (type, file_path))
     loading_thread.start()
-    loading_popup = Popup(WIN, text_object=[DEFAULT_FONT.render("Loading", 1, BLACK)], allow_click_end=False)
+    loading_popup = Popup(WIN, text_object=[DEFAULT_FONT.render("Loading...", 1, BLACK)], allow_click_end=False)
     all_popup.append(loading_popup)
 
     while loading_thread.is_alive():
@@ -472,11 +472,11 @@ def change_game_status(new_status):
         for anime in all_animation:
             anime.set_hidden(False)
 
-        top_level.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"welcome, {user_name}", 1, BLACK)]))
+        top_level.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"Welcome, {user_name}", 1, BLACK)]))
 
         if not animation_exist_by_ident("space_background"):
             all_animation.insert(0, Animation(WIN, size=(WIDTH, HEIGHT), pos=(0, 0), frame=1, screen_size=(WIDTH, HEIGHT),
-                                ident="space_background", pictures=[background], speed=(-0.5, 0)))
+                                ident="space_background", pictures=[background], speed=(-0.5, 0), self_replicate=True))
         
         _, one_bpos_x = calculate_button_position(2, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
@@ -708,6 +708,10 @@ def init_game():
     _, y_border = calculate_button_position(1, edge_start=True, left_or_top_edge=True)
     _, one_bpos_x = calculate_button_position(2, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
     y_border = y_border[0]
+
+    disc_message_1 = BIG_PIXEL_FONT.render("Disconnected", 1, BLACK)
+    disc_message_2 = SMALL_PIXEL_FONT.render("Reason: Unable to establish connection to server", 1, BLACK)
+    disc_message_3 = SMALL_PIXEL_FONT.render("Reason: Player disconnected", 1, BLACK)
     
     try:
         net = Network()
@@ -720,7 +724,8 @@ def init_game():
         #print(game.p2_name)
         net.client.send(pickle.dumps(game))
     except:
-        all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("server error, disconnected", 1, BLACK)]))
+        
+        all_popup.append(Popup(WIN, text_object=[disc_message_1, disc_message_2]))
         # print(remove_animation_by_ident("space_background"))
         # print(remove_animation_by_ident("tile_colored"))
         # print(remove_animation_by_ident("tile_colored_cont"))
@@ -730,6 +735,7 @@ def init_game():
     loop_status = 0
     current_array=[]
     current_sum=0
+
 
     while True:
         if menu_status != 3:
@@ -744,7 +750,7 @@ def init_game():
             if game is None:
                 raise Exception
         except:
-            all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
+            all_popup.append(Popup(WIN, text_object=[disc_message_1, disc_message_3]))
             change_game_status(new_status=2)
             break
 
@@ -759,7 +765,7 @@ def init_game():
             try:
                 net.client.send(pickle.dumps(game))
             except:
-                all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
+                all_popup.append(Popup(WIN, text_object=[disc_message_1, disc_message_3]))
                 change_game_status(new_status=2)
                 break
         if str(net.player) == str(game.turn):
@@ -824,7 +830,7 @@ def init_game():
                     if game is None:
                         raise Exception
                 except:
-                    all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
+                    all_popup.append(Popup(WIN, text_object=[disc_message_1, disc_message_3]))
                     change_game_status(new_status=2)
                     break
                 
@@ -876,7 +882,7 @@ def init_game():
                 start_waiting_time = time.time()
                 
             except:
-                all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Error, disconnected", 1, BLACK)]))
+                all_popup.append(Popup(WIN, text_object=[disc_message_1, disc_message_3]))
                 change_game_status(new_status=2)
                 break
             print("send " + equation_str)
@@ -908,7 +914,9 @@ def user_game_input(button_input, button_index):
     else:
         if game_input[len(game_input)-1:].isdigit(): # if last char is number, prevent them to input number
             print("pls choose op")
-            all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("pls choose op", 1, BLACK)]))
+            text_1 = BIG_PIXEL_FONT.render("Warning", 1, BLACK)
+            text_2 = DEFAULT_FONT.render(f"Please choose operation: {ALL_ALLOWS_MATH_OP}", 1, BLACK)
+            all_popup.append(Popup(WIN, text_object=[text_1, text_2]))
             return
         all_button[button_index].disable_button()
         print(f"{button_input}: numbers")
@@ -1012,7 +1020,7 @@ def set_resolution(new_res):
 
     if temp_res[0] > SCREEN_SIZE[0] or temp_res[1] > SCREEN_SIZE[1]:
         all_popup.append(Popup(WIN, text_object=[BIG_PIXEL_FONT.render("WARNING", 1, BLACK),
-                        SMALL_PIXEL_FONT.render(f"your resolution is terrible", 1, BLACK)]))
+                        SMALL_PIXEL_FONT.render(f"Your resolution is incompatible", 1, BLACK)]))
         settings["WIDTH"] = SCREEN_SIZE[0]
         settings["HEIGHT"] = SCREEN_SIZE[1]
     else:
