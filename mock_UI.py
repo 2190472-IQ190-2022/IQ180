@@ -19,7 +19,7 @@ BLACK = (0, 0, 0)
 WIDTH = 1280
 HEIGHT = 720
 FPS = 60
-BUTTON_BORDER_FACTOR = 0.6 # how much button(s) would take up the screen
+BUTTON_BORDER_FACTOR = 0.5 # how much button(s) would take up the screen
 SMALL_BUTTON_BORDER_FACTOR = 0.07 # how much one small button would take up the screen
 HUD_BORDER_FACTOR = 0.05 # how much of area around the screen element should not enter (use in calculate button position)
 GAME_BUTTON_INLINE_SPACING = 10 # how much space between two side-by-side buttons 
@@ -28,6 +28,7 @@ SPRITE_SIZE_FACTOR = 10
 TILE_POSITION_FACTOR = 0.75
 BUTTON_COLOR_ADDITIVE = (128, 128, 128)
 CLOUD_SIZE_FACTOR = 0.15
+FOREGROUND_SIZE_FACTOR = 0.9
 # how many pictures are avail?
 
 def make_transparent(image, size, colorkey=BLACK):
@@ -46,9 +47,9 @@ RESOLUTION_LIST = pygame.display.list_modes()
 
 # background randomizer
 image_path = "Images\\background"
-planet_path = "Images\\planet_100px"
-blackhole_path = "Images\\blackhole_200px"
-giant_path = "Images\\giant_300px"
+# planet_path = "Images\\planet_100px"
+# blackhole_path = "Images\\blackhole_200px"
+# giant_path = "Images\\giant_300px"
 foreground_path = "Images\\foreground"
 image_number = len([entry for entry in os.listdir(image_path) if os.path.isfile(os.path.join(image_path, entry))])
 background = pygame.image.load(f"Images\\background\\img-{random.randint(0, image_number-1)}.png").convert()
@@ -59,9 +60,9 @@ tile_bw = pygame.transform.scale(tile_bw, tile_size)
 tile_colored = make_transparent("Images\\tile\\jungle_floor.png", tile_size)
 tile_cont_bw = make_transparent("Images\\tile\\jungle_floor_bw_cont.png", tile_size)
 tile_cont_colored = make_transparent("Images\\tile\\jungle_floor_cont.png", tile_size)
-planer_number = len([entry for entry in os.listdir(planet_path) if os.path.isfile(os.path.join(planet_path, entry))])
-blackhole_number = len([entry for entry in os.listdir(blackhole_path) if os.path.isfile(os.path.join(blackhole_path, entry))])
-giant_number = len([entry for entry in os.listdir(giant_path) if os.path.isfile(os.path.join(giant_path, entry))])
+# planer_number = len([entry for entry in os.listdir(planet_path) if os.path.isfile(os.path.join(planet_path, entry))])
+# blackhole_number = len([entry for entry in os.listdir(blackhole_path) if os.path.isfile(os.path.join(blackhole_path, entry))])
+# giant_number = len([entry for entry in os.listdir(giant_path) if os.path.isfile(os.path.join(giant_path, entry))])
 foreground_number = len([entry for entry in os.listdir(foreground_path)])
 
 fade_out = []
@@ -165,14 +166,15 @@ class Loading_Thread(threading.Thread):
             type = self._args[0]
             path = self._args[1]
             if type == "image":
-                self.value = pygame.image.load(path).convert()
+                self.value = pygame.image.load(path)
             if type == "audio":
                 pass
             if type == "images":
                 for subpath in os.listdir(path):
                     full_path = os.path.join(path, subpath)
                     if os.path.isfile(full_path): # maybe add file type check here later
-                        pic = pygame.image.load(full_path).convert()
+                        # pic = pygame.image.load(full_path).convert()
+                        pic = pygame.image.load(full_path)
                         list_of_assets.append(pic)
                 self.value = list_of_assets
             if type == "img_folder":
@@ -246,54 +248,39 @@ def load_assets(type, file_path): # this function may not be used anymore, alrea
 
 def graphic_randomizer():
     """random what graphic assets are being rendered in the back"""
-    """Probably not used anymore this thing bricked performance"""
-    # random 0-3 how many planet, 1 for foreground and 2 for pet
-    # for each asset random type (100px, 200px, 300px etc)
-    # for each asset random file, size, speed and position
     asset_list = []
     
-    print(foreground_number)
+    # print(foreground_number)
     foreground_index = random.randint(0, foreground_number-1)
+    # foreground_index = 5
     foreground_layer_number = len([entry for entry in os.listdir(foreground_path + f"\\set-{foreground_index}") if os.path.isfile(os.path.join(foreground_path + f"\\set-{foreground_index}", entry))])
     speed_foreground_layer = (-2, 0)
     for i in range(foreground_layer_number):
         keep_the_game_running()
         loaded_image = load_assets("image", foreground_path + f"\\set-{foreground_index}\\img-{i}.png")
-        loaded_image = pygame.transform.scale(loaded_image, (WIDTH, HEIGHT))
         loaded_image.set_colorkey(BLACK)
-        foreground_anime = Animation(WIN, (WIDTH, HEIGHT), (0, 0), 1, (WIDTH, HEIGHT), "foreground", [loaded_image], self_replicate=True, speed=speed_foreground_layer)
+        size_factor = 1
+        if foreground_index == 2:
+            size_factor = 0.8
+            loaded_image.set_colorkey(WHITE)
+            loaded_image = pygame.transform.scale(loaded_image, (size_factor * WIDTH, size_factor * HEIGHT)).convert_alpha()
+        elif foreground_index == 3:
+            loaded_image.set_colorkey(WHITE)
+            loaded_image = pygame.transform.scale(loaded_image, (WIDTH, HEIGHT)).convert()
+        elif foreground_index == 4 or foreground_index == 5:
+            loaded_image.set_colorkey(WHITE)
+            size_factor = 0.8
+            loaded_image = pygame.transform.scale(loaded_image, (size_factor * WIDTH, size_factor * HEIGHT)).convert_alpha()
+        else:
+            loaded_image = pygame.transform.scale(loaded_image, (WIDTH, HEIGHT)).convert()
+
+        foreground_anime = Animation(WIN, (size_factor * WIDTH, size_factor * HEIGHT), (0, 0), 1, (WIDTH, HEIGHT), "foreground", [loaded_image], self_replicate=True, speed=speed_foreground_layer)
         # foreground_anime.pause_animation()
         asset_list.append(foreground_anime)
-        speed_foreground_layer = (speed_foreground_layer[0] - 0.5, 0)
-    
-    number_of_asset = random.randint(0, 3)
-    for i in range(number_of_asset):
-        keep_the_game_running()
-        random_number = random.randint(0, 9)
-        keep_the_game_running()
-        random_size_speed = random.random() # this is a factor
-        keep_the_game_running()
-        random_position = random.random()/2 * HEIGHT
-        keep_the_game_running()
-        image_frame = None
-        frame_size = 0
-        if 0 <= random_number <= 4: # 100 px
-            loaded_image = load_assets("image", planet_path + f"\\img-{random.randint(0, planer_number-1)}.png")
-            frame_size = 100
-        elif 5 <= random_number <= 7: # 200 px
-            loaded_image = load_assets("image", blackhole_path + f"\\img-{random.randint(0, blackhole_number-1)}.png")
-            frame_size = 200
-        elif 8 <= random_number <= 9: # 300 px
-            loaded_image = load_assets("image", giant_path + f"\\img-{random.randint(0, giant_number-1)}.png")
-            frame_size = 300
-        image_frame = Animation.create_animation_from_sheet(loaded_image, (frame_size, frame_size), (random_size_speed * HEIGHT, random_size_speed * HEIGHT),
-                                    color=BLACK)
-        keep_the_game_running()
-        planet_anime = Animation(WIN, (random_size_speed * HEIGHT, random_size_speed * HEIGHT), (WIDTH, random_position), 1
-                                        , (WIDTH, HEIGHT),"star", image_frame, rerun=False, speed=(random_size_speed * WIDTH, random_size_speed * WIDTH))
-        keep_the_game_running()
-        # planet_anime.pause_animation()
-        asset_list.append(planet_anime)
+
+        if foreground_index != 2:
+            speed_foreground_layer = (speed_foreground_layer[0] - 0.5, 0)
+
     # outside this function
     # for every x frame, has y chance start animation
     # return {type and animation obj}
@@ -420,7 +407,7 @@ def change_game_status(new_status):
         tile_type = (tile_bw, tile_cont_bw)
 
     character_anime = Animation(WIN, (SPRITE_SIZE_FACTOR * (character.get_size()[0] // 8), SPRITE_SIZE_FACTOR * (character.get_size()[1] // 3)), 
-                            (0.15 * WIDTH, sprite_pos_y), 1, (WIDTH, HEIGHT), 
+                            (0.12 * WIDTH, sprite_pos_y), 1, (WIDTH, HEIGHT), 
                             "char", character_frame, run_every_frame=8, hidden=True)
         
     if not animation_exist_by_ident("tile"):
@@ -540,6 +527,10 @@ def change_game_status(new_status):
         fo.save_settings(settings)
         menu_status = new_status
         
+        for anime in graphic_randomizer():
+            anime.set_hidden(True)
+            all_animation.insert(0, anime)
+
         fade_out_anime_obj = Animation(WIN, size=(WIDTH, HEIGHT), pos=(0, 0), frame=256, screen_size=(WIDTH, HEIGHT), pictures=fade_out, rerun=False, ident="fade_out")
         top_level.append(fade_out_anime_obj)
         
@@ -549,22 +540,19 @@ def change_game_status(new_status):
         for anime in all_animation:
             anime.set_hidden(False)
 
-        for anime in graphic_randomizer():
-            all_animation.insert(0, anime)
-
         top_level.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"Welcome, {user_name}", 1, BLACK)]))
 
         if not animation_exist_by_ident("space_background"):
-            all_animation.insert(0, Animation(WIN, size=(WIDTH, HEIGHT), pos=(0, 0), frame=1, screen_size=(WIDTH, HEIGHT),
+            all_animation.insert(0, Animation(WIN, size=(background.get_width(), background.get_height()), pos=(0, 0), frame=1, screen_size=(WIDTH, HEIGHT),
                                 ident="space_background", pictures=[background], speed=(-0.5, 0), self_replicate=True))
         
         _, one_bpos_x = calculate_button_position(2, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
-                                    pos=(one_bpos_x[0],y_border),size=(small_bsize, small_bsize), text="GTFO",
+                                    pos=(one_bpos_x[1],y_border),size=(small_bsize, small_bsize), text="GTFO",
                                     operation=exit, img_mode=True, img_disabled=button_square_bw,
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken,
                                     )
-        return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[1],y_border),
+        return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[0],y_border),
                                     size= (small_bsize, small_bsize), text="back",
                                       operation=change_game_status, new_status=2, img_mode=True, img_disabled=button_square_bw,
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken,
@@ -922,18 +910,21 @@ def init_game():
                     game_input = ""
                     break # I think break alone actually work
                 sum_font = pygame.font.Font('Fonts\\pixel_font.ttf', 200).render(f"{game.sum}", 1, WHITE)
+                time_font = pygame.font.Font('Fonts\\pixel_font.ttf', 120)
 
                 to_draw_string = [DEFAULT_FONT.render(f"{game.p1_name}: {game.p1_score}", 1, WHITE),
                                 DEFAULT_FONT.render(f"{game.p2_name}: {game.p2_score}", 1, WHITE),
-                                DEFAULT_FONT.render(f"time: {math.ceil(60 - (time.time() - game.start_time))}", 1, WHITE),
+                                DEFAULT_FONT.render(f"Time left: ", 1, WHITE),
+                                time_font.render(f"{math.ceil(60 - (time.time() - game.start_time))}", 1, WHITE),
                                 DEFAULT_FONT.render(f"input: {game_input}", 1, WHITE),
                                 sum_font                            
                                 ]
                 to_draw = [(to_draw_string[0], (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT)),
-                           (to_draw_string[1], (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT+50)),
-                           (to_draw_string[2], (WIDTH//2-200, 300)),
-                           (to_draw_string[3], (WIDTH//2+200, 300)),
-                           (to_draw_string[4], (WIDTH//2-sum_font.get_width()//2, 0))]
+                           (to_draw_string[1], (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT+to_draw_string[1].get_height()+0.003*HEIGHT)),
+                           (to_draw_string[2], (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT+2*to_draw_string[1].get_height()+2*0.003*HEIGHT)),
+                           (to_draw_string[3], (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT+2.5*to_draw_string[1].get_height()+3*0.003*HEIGHT)),
+                           (to_draw_string[4], (WIDTH * 0.3, (0.25 * HEIGHT - sum_font.get_height() // 2 + 0.7 * HEIGHT) // 2)),
+                           (to_draw_string[5], (WIDTH//2-sum_font.get_width()//2, 0.25 * HEIGHT - sum_font.get_height() // 2))]
                 keep_the_game_running(things_to_draw=to_draw)
 
             equation_str = game_input.replace("x", "*").replace("÷", "/")
@@ -969,7 +960,7 @@ def init_game():
             print("send " + equation_str)
         else:
             # all_button = []
-            clock.tick(FPS)
+            # clock.tick(FPS)
             if not exit_and_gtfo_exist:
                 exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(one_bpos_x[0], y_border),size=(small_bsize, small_bsize), text="GTFO",
@@ -1055,7 +1046,7 @@ def calculate_button_position(number_of_button, border_factor=BUTTON_BORDER_FACT
 
 def create_game_button(numbers):
     """This function create game button including numbers and operation"""
-    button_size_y, position_y = calculate_button_position(3, axis=HEIGHT, offset=180, border_factor=0.35) # Hard code : 3 is number of rows
+    button_size_y, position_y = calculate_button_position(3, axis=HEIGHT, offset=0.2 * HEIGHT, border_factor=0.35) # Hard code : 3 is number of rows
     button_size_x, position_x = calculate_button_position(len(numbers), axis=WIDTH)
     current_number_of_button = len(all_button)
     for i in range(len(numbers)):
