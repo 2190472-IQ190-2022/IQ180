@@ -27,7 +27,14 @@ GAME_BUTTON_TWOLINE_SPACING = 10 # how much space between two buttons from diffe
 SPRITE_SIZE_FACTOR = 10
 TILE_POSITION_FACTOR = 0.75
 BUTTON_COLOR_ADDITIVE = (128, 128, 128)
+CLOUD_SIZE_FACTOR = 0.15
 # how many pictures are avail?
+
+def make_transparent(image, size, colorkey=BLACK):
+    image = pygame.image.load(image)
+    image = pygame.transform.scale(image, size)
+    image.set_colorkey(colorkey)
+    return image.convert()
 
 # display
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -39,15 +46,23 @@ RESOLUTION_LIST = pygame.display.list_modes()
 
 # background randomizer
 image_path = "Images\\background"
+planet_path = "Images\\planet_100px"
+blackhole_path = "Images\\blackhole_200px"
+giant_path = "Images\\giant_300px"
+foreground_path = "Images\\foreground"
 image_number = len([entry for entry in os.listdir(image_path) if os.path.isfile(os.path.join(image_path, entry))])
-background = pygame.image.load(f"Images\\background\\img-{random.randint(0, image_number-1)}.png")
+background = pygame.image.load(f"Images\\background\\img-{random.randint(0, image_number-1)}.png").convert()
 background_pos = (0, 0)
 tile_bw = pygame.image.load("Images\\tile\\jungle_floor_bw.png")
 tile_size = (tile_bw.get_size()[0] * 7, tile_bw.get_size()[1] * 7)
 tile_bw = pygame.transform.scale(tile_bw, tile_size)
-tile_colored = pygame.transform.scale(pygame.image.load("Images\\tile\\jungle_floor.png"), tile_size)
-tile_cont_bw = pygame.transform.scale(pygame.image.load("Images\\tile\\jungle_floor_bw_cont.png"), tile_size)
-tile_cont_colored = pygame.transform.scale(pygame.image.load("Images\\tile\\jungle_floor_cont.png"), tile_size)
+tile_colored = make_transparent("Images\\tile\\jungle_floor.png", tile_size)
+tile_cont_bw = make_transparent("Images\\tile\\jungle_floor_bw_cont.png", tile_size)
+tile_cont_colored = make_transparent("Images\\tile\\jungle_floor_cont.png", tile_size)
+planer_number = len([entry for entry in os.listdir(planet_path) if os.path.isfile(os.path.join(planet_path, entry))])
+blackhole_number = len([entry for entry in os.listdir(blackhole_path) if os.path.isfile(os.path.join(blackhole_path, entry))])
+giant_number = len([entry for entry in os.listdir(giant_path) if os.path.isfile(os.path.join(giant_path, entry))])
+foreground_number = len([entry for entry in os.listdir(foreground_path)])
 
 fade_out = []
 fade_out_white = []
@@ -66,9 +81,9 @@ for alpha in range(0, 256, 8):
 fade_in = fade_out[::-1]
 fade_in_white = fade_out_white[::-1]
 
-logo = pygame.transform.scale(pygame.image.load("Images\\logo.jpeg"), (0.4 * HEIGHT, 0.4 * HEIGHT))
-character = pygame.image.load("Images\\character\\character-1.png")
-character_bw = pygame.image.load("Images\\character\\character-1-bw.png")
+logo = pygame.transform.scale(pygame.image.load("Images\\logo.jpeg").convert(), (0.4 * HEIGHT, 0.4 * HEIGHT))
+character = pygame.image.load("Images\\character\\character-1.png").convert()
+character_bw = pygame.image.load("Images\\character\\character-1-bw.png").convert()
 
 character_frame = Animation.create_animation_from_sheet(character, (character.get_width()//8, character.get_height()//3),
                                                         scale_size=(SPRITE_SIZE_FACTOR * (character.get_size()[0] // 8), 
@@ -84,27 +99,27 @@ character_anime_bw = Animation(WIN, (SPRITE_SIZE_FACTOR * (character.get_size()[
                             (0.15 * WIDTH, sprite_pos_y), 1, (WIDTH, HEIGHT), 
                             "char", character_frame_bw, run_every_frame=8)
 
-button_square = pygame.image.load("Images\\button\\square\\img-0.png")
-button_square_brighten = pygame.image.load("Images\\button\\square\\img-0.png")
-button_square_darken = pygame.image.load("Images\\button\\square\\img-0.png")
+button_square = pygame.image.load("Images\\button\\square\\img-0.png").convert()
+button_square_brighten = pygame.image.load("Images\\button\\square\\img-0.png").convert()
+button_square_darken = pygame.image.load("Images\\button\\square\\img-0.png").convert()
 button_square_brighten.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_ADD)
 button_square_darken.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_SUB)
-button_square_bw = pygame.image.load("Images\\button\\square\\img-bw.png")
-button_square_bw_brighten = pygame.image.load("Images\\button\\square\\img-bw.png")
-button_square_bw_darken = pygame.image.load("Images\\button\\square\\img-bw.png")
-button_square_bw_darkest = pygame.image.load("Images\\button\\square\\img-bw.png")
+button_square_bw = pygame.image.load("Images\\button\\square\\img-bw.png").convert()
+button_square_bw_brighten = pygame.image.load("Images\\button\\square\\img-bw.png").convert()
+button_square_bw_darken = pygame.image.load("Images\\button\\square\\img-bw.png").convert()
+button_square_bw_darkest = pygame.image.load("Images\\button\\square\\img-bw.png").convert()
 button_square_bw_brighten.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_ADD)
 button_square_bw_darken.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_SUB)
 button_square_bw_darkest.fill((200, 200, 200), special_flags=pygame.BLEND_RGB_SUB)
-button_rect = pygame.image.load("Images\\button\\rect\\img-0.png")
-button_rect_brighten = pygame.image.load("Images\\button\\rect\\img-0.png")
-button_rect_darken = pygame.image.load("Images\\button\\rect\\img-0.png")
+button_rect = pygame.image.load("Images\\button\\rect\\img-0.png").convert()
+button_rect_brighten = pygame.image.load("Images\\button\\rect\\img-0.png").convert()
+button_rect_darken = pygame.image.load("Images\\button\\rect\\img-0.png").convert()
 button_rect_brighten.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_ADD)
 button_rect_darken.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_SUB)
-button_rect_bw = pygame.image.load("Images\\button\\rect\\img-bw.png")
-button_rect_bw_brighten = pygame.image.load("Images\\button\\rect\\img-bw.png")
-button_rect_bw_darken = pygame.image.load("Images\\button\\rect\\img-bw.png")
-button_rect_bw_darkest = pygame.image.load("Images\\button\\rect\\img-bw.png")
+button_rect_bw = pygame.image.load("Images\\button\\rect\\img-bw.png").convert()
+button_rect_bw_brighten = pygame.image.load("Images\\button\\rect\\img-bw.png").convert()
+button_rect_bw_darken = pygame.image.load("Images\\button\\rect\\img-bw.png").convert()
+button_rect_bw_darkest = pygame.image.load("Images\\button\\rect\\img-bw.png").convert()
 button_rect_bw_brighten.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_ADD)
 button_rect_bw_darken.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_SUB)
 button_rect_bw_darkest.fill((200, 200, 200), special_flags=pygame.BLEND_RGB_SUB)
@@ -150,14 +165,14 @@ class Loading_Thread(threading.Thread):
             type = self._args[0]
             path = self._args[1]
             if type == "image":
-                self.value = pygame.image.load(path)
+                self.value = pygame.image.load(path).convert()
             if type == "audio":
                 pass
             if type == "images":
                 for subpath in os.listdir(path):
                     full_path = os.path.join(path, subpath)
                     if os.path.isfile(full_path): # maybe add file type check here later
-                        pic = pygame.image.load(full_path)
+                        pic = pygame.image.load(full_path).convert()
                         list_of_assets.append(pic)
                 self.value = list_of_assets
             if type == "img_folder":
@@ -179,18 +194,25 @@ class Loading_Thread(threading.Thread):
         threading.Thread.join(self)
         return self.value
 
-def remove_animation_by_ident(ident):
+def remove_animation_by_ident(ident, rev_all=False):
+    removed_all = False
     try:
-        for anime in all_animation:
-            if anime.get_ident() == ident:
-                all_animation.remove(anime)
-                break
-        for anime in top_level:
-            if type(anime) == Animation:
+        while not removed_all:
+            for anime in all_animation:
                 if anime.get_ident() == ident:
-                    top_level.remove(anime)
+                    all_animation.remove(anime)
                     break
-        return True
+            for anime in top_level:
+                if type(anime) == Animation:
+                    if anime.get_ident() == ident:
+                        top_level.remove(anime)
+                        break
+            removed_all = True
+            for anime in top_level + all_animation:
+                if type(anime) == Animation:
+                    if anime.get_ident() == ident:
+                        removed_all = False
+                        break
     except:
         return False
 
@@ -200,7 +222,6 @@ def animation_exist_by_ident(ident):
             return True
 
     return False
-
 
 def load_assets(type, file_path): # this function may not be used anymore, already in loading class
     """load asset is BLOCKING, except the process is put into the while loop here"""
@@ -222,7 +243,61 @@ def load_assets(type, file_path): # this function may not be used anymore, alrea
         exit()
 
     return loading_thread.value
+
+def graphic_randomizer():
+    """random what graphic assets are being rendered in the back"""
+    """Probably not used anymore this thing bricked performance"""
+    # random 0-3 how many planet, 1 for foreground and 2 for pet
+    # for each asset random type (100px, 200px, 300px etc)
+    # for each asset random file, size, speed and position
+    asset_list = []
     
+    print(foreground_number)
+    foreground_index = random.randint(0, foreground_number-1)
+    foreground_layer_number = len([entry for entry in os.listdir(foreground_path + f"\\set-{foreground_index}") if os.path.isfile(os.path.join(foreground_path + f"\\set-{foreground_index}", entry))])
+    speed_foreground_layer = (-2, 0)
+    for i in range(foreground_layer_number):
+        keep_the_game_running()
+        loaded_image = load_assets("image", foreground_path + f"\\set-{foreground_index}\\img-{i}.png")
+        loaded_image = pygame.transform.scale(loaded_image, (WIDTH, HEIGHT))
+        loaded_image.set_colorkey(BLACK)
+        foreground_anime = Animation(WIN, (WIDTH, HEIGHT), (0, 0), 1, (WIDTH, HEIGHT), "foreground", [loaded_image], self_replicate=True, speed=speed_foreground_layer)
+        # foreground_anime.pause_animation()
+        asset_list.append(foreground_anime)
+        speed_foreground_layer = (speed_foreground_layer[0] - 0.5, 0)
+    
+    number_of_asset = random.randint(0, 3)
+    for i in range(number_of_asset):
+        keep_the_game_running()
+        random_number = random.randint(0, 9)
+        keep_the_game_running()
+        random_size_speed = random.random() # this is a factor
+        keep_the_game_running()
+        random_position = random.random()/2 * HEIGHT
+        keep_the_game_running()
+        image_frame = None
+        frame_size = 0
+        if 0 <= random_number <= 4: # 100 px
+            loaded_image = load_assets("image", planet_path + f"\\img-{random.randint(0, planer_number-1)}.png")
+            frame_size = 100
+        elif 5 <= random_number <= 7: # 200 px
+            loaded_image = load_assets("image", blackhole_path + f"\\img-{random.randint(0, blackhole_number-1)}.png")
+            frame_size = 200
+        elif 8 <= random_number <= 9: # 300 px
+            loaded_image = load_assets("image", giant_path + f"\\img-{random.randint(0, giant_number-1)}.png")
+            frame_size = 300
+        image_frame = Animation.create_animation_from_sheet(loaded_image, (frame_size, frame_size), (random_size_speed * HEIGHT, random_size_speed * HEIGHT),
+                                    color=BLACK)
+        keep_the_game_running()
+        planet_anime = Animation(WIN, (random_size_speed * HEIGHT, random_size_speed * HEIGHT), (WIDTH, random_position), 1
+                                        , (WIDTH, HEIGHT),"star", image_frame, rerun=False, speed=(random_size_speed * WIDTH, random_size_speed * WIDTH))
+        keep_the_game_running()
+        # planet_anime.pause_animation()
+        asset_list.append(planet_anime)
+    # outside this function
+    # for every x frame, has y chance start animation
+    # return {type and animation obj}
+    return asset_list
 
 def draw_everything(current_menu_status, to_be_drawn=[]):
     """
@@ -331,6 +406,7 @@ def change_game_status(new_status):
     remove_animation_by_ident("logo")
     remove_animation_by_ident("space_background")
     remove_animation_by_ident("char")
+    remove_animation_by_ident("foreground", True)
 
     if new_status == 2 or new_status == 3:
         character_frame = Animation.create_animation_from_sheet(character, (character.get_width()//8, character.get_height()//3),
@@ -466,11 +542,15 @@ def change_game_status(new_status):
         
         fade_out_anime_obj = Animation(WIN, size=(WIDTH, HEIGHT), pos=(0, 0), frame=256, screen_size=(WIDTH, HEIGHT), pictures=fade_out, rerun=False, ident="fade_out")
         top_level.append(fade_out_anime_obj)
+        
         while not fade_out_anime_obj.get_finish():
             keep_the_game_running()
 
         for anime in all_animation:
             anime.set_hidden(False)
+
+        for anime in graphic_randomizer():
+            all_animation.insert(0, anime)
 
         top_level.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"Welcome, {user_name}", 1, BLACK)]))
 
@@ -640,6 +720,7 @@ def keep_the_game_running(things_to_draw=[]):
                 tl.draw()
         
     # print(all_asset_count)
+    # print("==========================")
     pygame.display.update()
     
 def get_user_name(): # get input from user and store in user_name
