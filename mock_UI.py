@@ -320,11 +320,47 @@ def display_text(surface, text, pos, font, color):
 def change_game_status(new_status):
     """This function is called when the menu button is pressed (changing user to each menu, mm1, mm2, game, htp, setting)"""
     global menu_status, all_button, user_name, settings, fo
-    # print("hello the button is gone wtf")
 
-    # a = load_assets("images", "Test_Images\\rickroll")
+    sprite_pos_y = TILE_POSITION_FACTOR * HEIGHT - SPRITE_SIZE_FACTOR * (character.get_size()[1] / 3) + (1/16 * tile_size[1]) + (1/6 * character.get_height())
+    character_frame = None
+    # character_anime = None
+    tile_type = None
 
-    # menu_status = new_status
+    remove_animation_by_ident("tile")
+    remove_animation_by_ident("tile_cont")
+    remove_animation_by_ident("logo")
+    remove_animation_by_ident("space_background")
+    remove_animation_by_ident("char")
+
+    if new_status == 2 or new_status == 3:
+        character_frame = Animation.create_animation_from_sheet(character, (character.get_width()//8, character.get_height()//3),
+                                                        scale_size=(SPRITE_SIZE_FACTOR * (character.get_size()[0] // 8), 
+                                                        SPRITE_SIZE_FACTOR * (character.get_size()[1] // 3)), color=BLACK)[16:]
+        tile_type = (tile_colored, tile_cont_colored)
+    else:
+        character_frame = Animation.create_animation_from_sheet(character_bw, (character.get_width()//8, character.get_height()//3),
+                                                        scale_size=(SPRITE_SIZE_FACTOR * (character.get_size()[0] // 8), 
+                                                        SPRITE_SIZE_FACTOR * (character.get_size()[1] // 3)), color=BLACK)[16:]
+        tile_type = (tile_bw, tile_cont_bw)
+
+    character_anime = Animation(WIN, (SPRITE_SIZE_FACTOR * (character.get_size()[0] // 8), SPRITE_SIZE_FACTOR * (character.get_size()[1] // 3)), 
+                            (0.15 * WIDTH, sprite_pos_y), 1, (WIDTH, HEIGHT), 
+                            "char", character_frame, run_every_frame=8, hidden=True)
+        
+    if not animation_exist_by_ident("tile"):
+        all_animation.append(Animation(WIN, tile_size, (0, TILE_POSITION_FACTOR * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_type[0]], 
+                                                ident="tile", speed=(-1, 0), self_replicate=True, hidden=True))
+        all_animation.append(Animation(WIN, tile_size, (0, TILE_POSITION_FACTOR * HEIGHT+tile_type[0].get_size()[1]), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_type[1]], 
+                                                ident="tile_cont", speed=(-1, 0), self_replicate=True, hidden=True))
+    if not animation_exist_by_ident("char"):
+        all_animation.append(character_anime)
+
+    if new_status == 1 or new_status == 2:
+        if not animation_exist_by_ident("logo"):
+            logo_anime = Animation(WIN, (0.3 * WIDTH, 0.3 * HEIGHT), (WIDTH//2-logo.get_size()[0]//2, HEIGHT//2-logo.get_size()[1]//2), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[logo], 
+                                                ident="logo", speed=(0, 0), self_replicate=False, position_function=(None, math.sin), hidden=True)
+            all_animation.append(logo_anime)
+
     all_button = []
     # big button (play game)
     button_size_x, position_one_button_x = calculate_button_position(1, border_factor=0.3, axis=WIDTH)
@@ -335,21 +371,9 @@ def change_game_status(new_status):
     y_border = y_border[0]
     if new_status == 1:
         # print("status 1")
-        remove_animation_by_ident("tile_colored")
-        remove_animation_by_ident("tile_colored_cont")
-        remove_animation_by_ident("space_background")
-        remove_animation_by_ident("char")
-        if not animation_exist_by_ident("char"):
-            all_animation.append(character_anime_bw)
-        if not animation_exist_by_ident("tile"):
-            all_animation.append(Animation(WIN, tile_size, (0, TILE_POSITION_FACTOR * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_bw], 
-                                            ident="tile", speed=(-1, 0), self_replicate=True))
-            all_animation.append(Animation(WIN, tile_size, (0, TILE_POSITION_FACTOR * HEIGHT+tile_bw.get_size()[1]), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_cont_bw], 
-                                            ident="tile_cont", speed=(-1, 0), self_replicate=True))
-        if not animation_exist_by_ident("logo"):
-            logo_anime = Animation(WIN, (0.3 * WIDTH, 0.3 * HEIGHT), (WIDTH//2-logo.get_size()[0]//2, HEIGHT//2-logo.get_size()[1]//2), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[logo], 
-                                            ident="logo", speed=(0, 0), self_replicate=False, position_function=(None, math.sin))
-            all_animation.append(logo_anime)
+        
+        for anime in all_animation:
+            anime.set_hidden(False)
             
         # print(all_animation)
         # _, three_bpos_x = calculate_button_position(4, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
@@ -380,6 +404,7 @@ def change_game_status(new_status):
         all_button.append(exit_button)
     elif new_status == 2:
         
+
         fade_out_white_anime_obj = Animation(WIN, tile_size, (0, 0), frame=256, screen_size=(WIDTH, HEIGHT), pictures=fade_out_white, 
                                     ident="fade_out_white", speed=(0, 0), rerun=False) 
         top_level.append(fade_out_white_anime_obj)
@@ -398,19 +423,8 @@ def change_game_status(new_status):
                 remove_animation_by_ident("fade_out_white")
                 break
             keep_the_game_running()
-
-        remove_animation_by_ident("logo")
-        remove_animation_by_ident("tile")
-        remove_animation_by_ident("tile_cont")
-        remove_animation_by_ident("space_background")
-        remove_animation_by_ident("char")
-        if not animation_exist_by_ident("char"):
-            all_animation.append(character_anime)
-        if not animation_exist_by_ident("tile_colored"):
-            all_animation.append(Animation(WIN, tile_size, (0, TILE_POSITION_FACTOR * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_colored], 
-                                            ident="tile_colored", speed=(-1, 0), self_replicate=True))
-            all_animation.append(Animation(WIN, tile_size, (0, TILE_POSITION_FACTOR * HEIGHT + tile_colored.get_size()[1]), frame=1, screen_size=(WIDTH, HEIGHT), 
-            pictures=[tile_cont_colored], ident="tile_colored_cont", speed=(-1, 0), self_replicate=True))
+        for anime in all_animation:
+            anime.set_hidden(False)
 
         # keep_the_game_running()
     
@@ -455,26 +469,15 @@ def change_game_status(new_status):
         while not fade_out_anime_obj.get_finish():
             keep_the_game_running()
 
-        # print(str(3) + str(remove_animation_by_ident("tile")))
-        # print(str(3) + str(remove_animation_by_ident("tile_colored")))
+        for anime in all_animation:
+            anime.set_hidden(False)
+
         top_level.append(Popup(WIN, text_object=[DEFAULT_FONT.render(f"welcome, {user_name}", 1, BLACK)]))
-        remove_animation_by_ident("tile_colored")
-        remove_animation_by_ident("tile_colored_cont")
-        remove_animation_by_ident("char")
 
         if not animation_exist_by_ident("space_background"):
-            all_animation.append(Animation(WIN, size=(WIDTH, HEIGHT), pos=(0, 0), frame=1, screen_size=(WIDTH, HEIGHT),
+            all_animation.insert(0, Animation(WIN, size=(WIDTH, HEIGHT), pos=(0, 0), frame=1, screen_size=(WIDTH, HEIGHT),
                                 ident="space_background", pictures=[background], speed=(-0.5, 0)))
-        if not animation_exist_by_ident("char"):
-            all_animation.append(character_anime)
-        if not animation_exist_by_ident("tile_colored"):
-            all_animation.append((Animation(WIN, tile_size, (0, TILE_POSITION_FACTOR * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_colored], 
-                                            ident="tile_colored", speed=(-1, 0), self_replicate=True, )))
-            all_animation.append((Animation(WIN, tile_size, (0, TILE_POSITION_FACTOR * HEIGHT + tile_colored.get_size()[1]), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_cont_colored], 
-                                            ident="tile_colored_cont", speed=(-1, 0), self_replicate=True, )))
         
-            # print(all_animation)
-        # menu_status = new_status
         _, one_bpos_x = calculate_button_position(2, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(one_bpos_x[0],y_border),size=(small_bsize, small_bsize), text="GTFO",
@@ -491,6 +494,8 @@ def change_game_status(new_status):
         init_game()
         return
     elif new_status == 4:
+        for anime in all_animation:
+            anime.set_hidden(False)
         _, one_bpos_x = calculate_button_position(1, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(one_bpos_x[0], y_border),
@@ -500,6 +505,8 @@ def change_game_status(new_status):
                                     )
         all_button.append(return_to_mm1_button)
     elif new_status == 5:
+        for anime in all_animation:
+            anime.set_hidden(False)
         _, one_bpos_x = calculate_button_position(1, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                         pos=(one_bpos_x[0],y_border),
@@ -959,7 +966,7 @@ def calculate_button_position(number_of_button, border_factor=BUTTON_BORDER_FACT
 
 def create_game_button(numbers):
     """This function create game button including numbers and operation"""
-    button_size_y, position_y = calculate_button_position(3, axis=HEIGHT, offset=150, border_factor=0.4) # Hard code : 3 is number of rows
+    button_size_y, position_y = calculate_button_position(3, axis=HEIGHT, offset=180, border_factor=0.35) # Hard code : 3 is number of rows
     button_size_x, position_x = calculate_button_position(len(numbers), axis=WIDTH)
     current_number_of_button = len(all_button)
     for i in range(len(numbers)):

@@ -5,7 +5,7 @@ class Animation:
 
     def __init__(self, window, size, pos, frame, screen_size, ident, pictures=[], current_frame=0, rerun=True,
                 run_every_frame=1, speed=(0, 0), self_replicate=False, hidden=False, position_function=None,
-                function_speed=40, function_distance=1.2):
+                function_speed=40, function_distance=1.1):
         self.window = window
         self.size = size
         self.pos = pos
