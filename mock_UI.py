@@ -26,6 +26,7 @@ GAME_BUTTON_INLINE_SPACING = 10 # how much space between two side-by-side button
 GAME_BUTTON_TWOLINE_SPACING = 10 # how much space between two buttons from different line
 SPRITE_SIZE_FACTOR = 10
 TILE_POSITION_FACTOR = 0.75
+BUTTON_COLOR_ADDITIVE = (128, 128, 128)
 # how many pictures are avail?
 
 # display
@@ -82,7 +83,31 @@ character_anime = Animation(WIN, (SPRITE_SIZE_FACTOR * (character.get_size()[0] 
 character_anime_bw = Animation(WIN, (SPRITE_SIZE_FACTOR * (character.get_size()[0] // 8), SPRITE_SIZE_FACTOR * (character.get_size()[1] // 3)), 
                             (0.15 * WIDTH, sprite_pos_y), 1, (WIDTH, HEIGHT), 
                             "char", character_frame_bw, run_every_frame=8)
-# print(SPRITE_SIZE_FACTOR * character.get_size()[0], SPRITE_SIZE_FACTOR * character.get_size()[1])
+
+button_square = pygame.image.load("Images\\button\\square\\img-0.png")
+button_square_brighten = pygame.image.load("Images\\button\\square\\img-0.png")
+button_square_darken = pygame.image.load("Images\\button\\square\\img-0.png")
+button_square_brighten.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_ADD)
+button_square_darken.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_SUB)
+button_square_bw = pygame.image.load("Images\\button\\square\\img-bw.png")
+button_square_bw_brighten = pygame.image.load("Images\\button\\square\\img-bw.png")
+button_square_bw_darken = pygame.image.load("Images\\button\\square\\img-bw.png")
+button_square_bw_darkest = pygame.image.load("Images\\button\\square\\img-bw.png")
+button_square_bw_brighten.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_ADD)
+button_square_bw_darken.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_SUB)
+button_square_bw_darkest.fill((200, 200, 200), special_flags=pygame.BLEND_RGB_SUB)
+button_rect = pygame.image.load("Images\\button\\rect\\img-0.png")
+button_rect_brighten = pygame.image.load("Images\\button\\rect\\img-0.png")
+button_rect_darken = pygame.image.load("Images\\button\\rect\\img-0.png")
+button_rect_brighten.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_ADD)
+button_rect_darken.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_SUB)
+button_rect_bw = pygame.image.load("Images\\button\\rect\\img-bw.png")
+button_rect_bw_brighten = pygame.image.load("Images\\button\\rect\\img-bw.png")
+button_rect_bw_darken = pygame.image.load("Images\\button\\rect\\img-bw.png")
+button_rect_bw_darkest = pygame.image.load("Images\\button\\rect\\img-bw.png")
+button_rect_bw_brighten.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_ADD)
+button_rect_bw_darken.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_SUB)
+button_rect_bw_darkest.fill((200, 200, 200), special_flags=pygame.BLEND_RGB_SUB)
 
 # BGM
 pygame.init()
@@ -332,17 +357,24 @@ def change_game_status(new_status):
         to_mm2_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Play",
                                operation=change_game_status, new_status=2,
                                pos=(position_one_button_x[0], position_one_button_y[0]),
-                               size=(button_size_x, button_size_y))
+                               size=(button_size_x, button_size_y), img_mode=True, img_disabled=button_rect_bw_darkest,
+                                    img_enabled=button_rect_bw, img_hover=button_rect_bw_brighten, img_pressed=button_rect_bw_darken,)
         all_button.append(to_mm2_button)
         to_setting_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(three_bpos_x[0],y_border),size=(small_bsize, small_bsize), text="SET",
-                                    operation=change_game_status, new_status=5)
+                                    operation=change_game_status, new_status=5, img_mode=True, img_disabled=button_square_bw_darkest,
+                                    img_enabled=button_square_bw, img_hover=button_square_bw_brighten, img_pressed=button_square_bw_darken,
+                                    )
         to_howtoplay_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(three_bpos_x[1],y_border),size=(small_bsize, small_bsize), text="HTP",
-                                    operation=change_game_status, new_status=4)
+                                    operation=change_game_status, new_status=4, img_mode=True, img_disabled=button_square_bw_darkest,
+                                    img_enabled=button_square_bw, img_hover=button_square_bw_brighten, img_pressed=button_square_bw_darken,
+                                    )
         exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(three_bpos_x[2],y_border),size=(small_bsize, small_bsize), text="GTFO",
-                                    operation=exit)
+                                    operation=exit, img_mode=True, img_disabled=button_square_bw_darkest,
+                                    img_enabled=button_square_bw, img_hover=button_square_bw_brighten, img_pressed=button_square_bw_darken,
+                                    )
         all_button.append(to_setting_button)
         all_button.append(to_howtoplay_button)
         all_button.append(exit_button)
@@ -387,20 +419,28 @@ def change_game_status(new_status):
         to_game_button = Button(window=WIN, button_font=DEFAULT_FONT, text="To game",
                                 operation=change_game_status, new_status=3,
                                 pos=(position_one_button_x[0], position_one_button_y[0]),
-                                size=(button_size_x, button_size_y))
+                                size=(button_size_x, button_size_y), img_mode=True, img_disabled=button_rect_bw,
+                                    img_enabled=button_rect, img_hover=button_rect_brighten, img_pressed=button_rect_darken,)
         all_button.append(to_game_button)
         return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(two_bpos_x[0], y_border),
                                     size= (small_bsize, small_bsize), text="back",
-                                    operation=change_game_status, new_status=1)
+                                    operation=change_game_status, new_status=1,
+                                    img_mode=True, img_disabled=button_square_bw,
+                                    img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken,
+                                    )
         all_button.append(return_to_mm1_button)
         enter_name_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(0.25*WIDTH,0.75*HEIGHT),size= (300,50), text="Enter name",
-                                        operation=get_user_name)
+                                        operation=get_user_name, img_mode=True, img_disabled=button_rect_bw,
+                                    img_enabled=button_rect, img_hover=button_rect_brighten, img_pressed=button_rect_darken,
+                                    )
         all_button.append(enter_name_button)
         exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(two_bpos_x[1], y_border),
                                     size=(small_bsize, small_bsize), text="GTFO",
-                                    operation=exit)
+                                    operation=exit, img_mode=True, img_disabled=button_square_bw,
+                                    img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken,
+                                    )
         all_button.append(exit_button)
 
     elif new_status == 3:
@@ -438,10 +478,14 @@ def change_game_status(new_status):
         _, one_bpos_x = calculate_button_position(2, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(one_bpos_x[0],y_border),size=(small_bsize, small_bsize), text="GTFO",
-                                    operation=exit)
+                                    operation=exit, img_mode=True, img_disabled=button_square_bw,
+                                    img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken,
+                                    )
         return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[1],y_border),
                                     size= (small_bsize, small_bsize), text="back",
-                                      operation=change_game_status, new_status=2)
+                                      operation=change_game_status, new_status=2, img_mode=True, img_disabled=button_square_bw,
+                                    img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken,
+                                    )
         all_button.append(return_to_mm1_button)
         all_button.append(exit_button)
         init_game()
@@ -451,29 +495,36 @@ def change_game_status(new_status):
         return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(one_bpos_x[0], y_border),
                                     size= (small_bsize, small_bsize), text="back",
-                                    operation=change_game_status, new_status=1)
+                                    operation=change_game_status, new_status=1, img_mode=True, img_disabled=button_square_bw,
+                                    img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken,
+                                    )
         all_button.append(return_to_mm1_button)
     elif new_status == 5:
         _, one_bpos_x = calculate_button_position(1, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                         pos=(one_bpos_x[0],y_border),
                                         size= (small_bsize, small_bsize), text="back",
-                                      operation=change_game_status, new_status=1)
+                                      operation=change_game_status, new_status=1, img_mode=True, img_disabled=button_square_bw,
+                                    img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
         all_button.append(return_to_mm1_button)
         res_buttons_size_x, res_buttons_pos_x = calculate_button_position(5, border_factor=0.8, axis=WIDTH)
         res_buttons_size_y, res_buttons_pos_y = calculate_button_position(1, border_factor=0.1, offset=-0.2*HEIGHT, axis=HEIGHT)
         res_1_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[0],res_buttons_pos_y[0]),
                                 size= (res_buttons_size_x,res_buttons_size_y), text=f"{RESOLUTION_LIST[0][0]}x{RESOLUTION_LIST[0][1]}",
-                                operation=set_resolution, new_res="0")
+                                operation=set_resolution, new_res="0", img_mode=True, img_disabled=button_rect_darken,
+                                img_enabled=button_rect, img_hover=button_rect_brighten, img_pressed=button_rect_darken)
         res_2_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[1],res_buttons_pos_y[0]),
                                 size= (res_buttons_size_x,res_buttons_size_y), text=f"{RESOLUTION_LIST[1][0]}x{RESOLUTION_LIST[1][1]}",
-                                operation=set_resolution, new_res="1")
+                                operation=set_resolution, new_res="1", img_mode=True, img_disabled=button_rect_darken,
+                                img_enabled=button_rect, img_hover=button_rect_brighten, img_pressed=button_rect_darken)
         res_3_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[2],res_buttons_pos_y[0]),
                                 size= (res_buttons_size_x,res_buttons_size_y), text=f"{RESOLUTION_LIST[2][0]}x{RESOLUTION_LIST[2][1]}",
-                                operation=set_resolution, new_res="2")
+                                operation=set_resolution, new_res="2", img_mode=True, img_disabled=button_rect_darken,
+                                img_enabled=button_rect, img_hover=button_rect_brighten, img_pressed=button_rect_darken)
         res_4_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[3],res_buttons_pos_y[0]),
                                 size= (res_buttons_size_x,res_buttons_size_y), text=f"{RESOLUTION_LIST[3][0]}x{RESOLUTION_LIST[3][1]}",
-                                operation=set_resolution, new_res="3")
+                                operation=set_resolution, new_res="3", img_mode=True, img_disabled=button_rect_darken,
+                                img_enabled=button_rect, img_hover=button_rect_brighten, img_pressed=button_rect_darken)
         all_button.append(res_1_button)
         all_button.append(res_2_button)
         all_button.append(res_3_button)
@@ -481,12 +532,14 @@ def change_game_status(new_status):
         if not game_full_screen:
             res_full_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[4],res_buttons_pos_y[0]),
                                     size= (res_buttons_size_x,res_buttons_size_y), text="Full Screen",
-                                    operation=set_resolution, new_res="full")
+                                    operation=set_resolution, new_res="full", img_mode=True, img_disabled=button_rect_darken,
+                                img_enabled=button_rect, img_hover=button_rect_brighten, img_pressed=button_rect_darken)
             all_button.append(res_full_button)
         else:
             res_window_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(res_buttons_pos_x[4],res_buttons_pos_y[0]),
                                     size= (res_buttons_size_x,res_buttons_size_y), text="windowed",
-                                    operation=set_resolution, new_res="unfull")
+                                    operation=set_resolution, new_res="unfull", img_mode=True, img_disabled=button_rect_darken,
+                                img_enabled=button_rect, img_hover=button_rect_brighten, img_pressed=button_rect_darken)
             all_button.append(res_window_button)
         popup_altering_text = "Disable" if popup_enable else "Enable"
         popup_altering_text_reversed = "Enabled" if popup_enable else "Disabled"
@@ -497,19 +550,23 @@ def change_game_status(new_status):
         popup_status_button = Button(window=WIN, button_font=DEFAULT_FONT, 
                                     pos=(res_buttons_pos_x[0]+text_width+GAME_BUTTON_INLINE_SPACING, res_buttons_pos_y[0]+0.15*HEIGHT),
                                     size=(res_buttons_size_x, res_buttons_size_y), text=popup_altering_text,
-                                    operation=change_popup_status)
+                                    operation=change_popup_status, img_mode=True, img_disabled=button_rect_darken,
+                                img_enabled=button_rect, img_hover=button_rect_brighten, img_pressed=button_rect_darken)
         BGM_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(res_buttons_pos_x[0]+text_width_BGM+GAME_BUTTON_INLINE_SPACING, res_buttons_pos_y[0]+0.3*HEIGHT),
                                     size=(res_buttons_size_x, res_buttons_size_y), text=BGM_altering_text,
-                                    operation=play_BGM)
+                                    operation=play_BGM, img_mode=True, img_disabled=button_rect_darken,
+                                img_enabled=button_rect, img_hover=button_rect_brighten, img_pressed=button_rect_darken)
         increase_volume_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(res_buttons_pos_x[0]+text_width_BGM+2*GAME_BUTTON_INLINE_SPACING+res_buttons_size_x, res_buttons_pos_y[0]+0.3*HEIGHT),
                                     size=(small_bsize, res_buttons_size_y), text="+",
-                                    operation=increase_volume)
+                                    operation=increase_volume, img_mode=True, img_disabled=button_square_bw,
+                                    img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
         decrease_volume_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(res_buttons_pos_x[0]+text_width_BGM+3*GAME_BUTTON_INLINE_SPACING+res_buttons_size_x+small_bsize, res_buttons_pos_y[0]+0.3*HEIGHT),
                                     size=(small_bsize, res_buttons_size_y), text="-",
-                                    operation=decrease_volume)
+                                    operation=decrease_volume, img_mode=True, img_disabled=button_square_bw,
+                                    img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
         all_button.append(popup_status_button)
         all_button.append(BGM_button)
         all_button.append(increase_volume_button)
@@ -714,10 +771,12 @@ def init_game():
             current_sum=game.sum
             exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(one_bpos_x[0], y_border),size=(small_bsize, small_bsize), text="GTFO",
-                                    operation=exit)
+                                    operation=exit, img_mode=True, img_disabled=button_square_bw,
+                                    img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
             return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[1], y_border),
                                     size= (small_bsize, small_bsize), text="back",
-                                    operation=change_game_status, new_status=2)
+                                    operation=change_game_status, new_status=2, img_mode=True, img_disabled=button_square_bw,
+                                    img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
             all_button.append(return_to_mm1_button)
             all_button.append(exit_button)
             create_game_button(game.numbers_array)
@@ -736,10 +795,12 @@ def init_game():
                     # print(y_border)
                     exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(one_bpos_x[0],y_border),size=(small_bsize, small_bsize), text="GTFO",
-                                    operation=exit)
+                                    operation=exit, img_mode=True, img_disabled=button_square_bw,
+                                    img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
                     return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[1],y_border),
                                     size=(small_bsize, small_bsize), text="back",
-                                    operation=change_game_status, new_status=2)
+                                    operation=change_game_status, new_status=2, img_mode=True, img_disabled=button_square_bw,
+                                    img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
                     all_button.append(return_to_mm1_button)
                     all_button.append(exit_button)
                     create_game_button(game.numbers_array)
@@ -818,10 +879,12 @@ def init_game():
             if not exit_and_gtfo_exist:
                 exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(one_bpos_x[0], y_border),size=(small_bsize, small_bsize), text="GTFO",
-                                    operation=exit)
+                                    operation=exit, img_mode=True, img_disabled=button_square_bw,
+                                    img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
                 return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[1], y_border),
                                     size= (small_bsize, small_bsize), text="back",
-                                    operation=change_game_status, new_status=2)
+                                    operation=change_game_status, new_status=2, img_mode=True, img_disabled=button_square_bw,
+                                    img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
                 all_button.append(return_to_mm1_button)
                 all_button.append(exit_button)
                 exit_and_gtfo_exist = True
@@ -902,7 +965,8 @@ def create_game_button(numbers):
     for i in range(len(numbers)):
         button = Button(WIN, DEFAULT_FONT, text=str(numbers[i]), operation=user_game_input,
                         pos=(position_x[i], position_y[0]), size=(button_size_x, button_size_y),
-                        button_input=str(numbers[i]), button_index=i+current_number_of_button)
+                        button_input=str(numbers[i]), button_index=i+current_number_of_button, img_mode=True, img_disabled=button_square_bw,
+                                    img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
         all_button.append(button)
 
     button_size_x, position_x = calculate_button_position(len(ALL_ALLOWS_MATH_OP), axis=WIDTH)
@@ -910,14 +974,17 @@ def create_game_button(numbers):
     for i in range(len(ALL_ALLOWS_MATH_OP)):
         button = Button(WIN, DEFAULT_FONT, text=ALL_ALLOWS_MATH_OP[i], operation=user_game_input,
                         pos=(position_x[i], position_y[1]), size=(button_size_x, button_size_y),
-                        button_input=ALL_ALLOWS_MATH_OP[i], button_index=i)
+                        button_input=ALL_ALLOWS_MATH_OP[i], button_index=i, img_mode=True, img_disabled=button_square_bw,
+                                    img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
         all_button.append(button)
 
     button_size_x, position_x = calculate_button_position(2, axis=WIDTH)
     reset_button = Button(WIN, DEFAULT_FONT, text="Reset", operation=reset_button_operation,
-                          pos=(position_x[0], position_y[2]), size=(button_size_x, button_size_y))
+                          pos=(position_x[0], position_y[2]), size=(button_size_x, button_size_y), img_mode=True, img_disabled=button_rect_bw,
+                                    img_enabled=button_rect, img_hover=button_rect_brighten, img_pressed=button_rect_darken,)
     submit_button = Button(WIN, DEFAULT_FONT, text="Submit", operation=submit_button_operation,
-                           pos=(position_x[1], position_y[2]), size=(button_size_x, button_size_y))
+                           pos=(position_x[1], position_y[2]), size=(button_size_x, button_size_y), img_mode=True, img_disabled=button_rect_bw,
+                                    img_enabled=button_rect, img_hover=button_rect_brighten, img_pressed=button_rect_darken,)
     all_button.append(reset_button)
     all_button.append(submit_button)
 
