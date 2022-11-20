@@ -30,6 +30,7 @@ TILE_POSITION_FACTOR = 0.75
 BUTTON_COLOR_ADDITIVE = (128, 128, 128)
 CLOUD_SIZE_FACTOR = 0.15
 FOREGROUND_SIZE_FACTOR = 0.9
+OPTIMUM_RES = (1920, 1080)
 # how many pictures are avail?
 
 def make_transparent(image, size, colorkey=BLACK):
@@ -134,10 +135,11 @@ pygame.mixer.music.set_volume(BGM_volume)
 
 # fonts
 pygame.font.init()
-DEFAULT_FONT = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), 40)
-SMALL_PIXEL_FONT = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), 20)
-MID_PIXEL_FONT = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), 40)
-BIG_PIXEL_FONT = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), 60)
+font_size = [20, 40, 60]
+SMALL_PIXEL_FONT = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), font_size[0])
+DEFAULT_FONT = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), font_size[1])
+# MID_PIXEL_FONT = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), 40)
+BIG_PIXEL_FONT = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), font_size[2])
 pygame.display.set_caption("IQ1")
 
 # Global Variable
@@ -377,6 +379,25 @@ def display_text(surface, text, pos, font, color):
         x = pos[0]
         y += word_height
 
+def fade_white():
+    fade_out_white_anime_obj = Animation(WIN, tile_size, (0, 0), frame=256, screen_size=(WIDTH, HEIGHT), pictures=fade_out_white, 
+                                    ident="fade_out_white", speed=(0, 0), rerun=False) 
+    top_level.append(fade_out_white_anime_obj)
+    fade_out_white_anime_obj.play()
+    fade_in_white_anime_obj = Animation(WIN, tile_size, (0, 0), frame=256, screen_size=(WIDTH, HEIGHT), pictures=fade_in_white, 
+                                    ident="fade_in_white", speed=(0, 0), rerun=False, hidden=True) 
+    fade_in_white_anime_obj.pause_animation()
+    top_level.append(fade_in_white_anime_obj)
+        
+    while not fade_out_white_anime_obj.get_finish():
+        if fade_out_white_anime_obj.get_current_frame() == fade_out_white_anime_obj.get_frame() -1:
+            fade_out_white_anime_obj.pause_animation()
+            fade_in_white_anime_obj.set_hidden(False)
+            fade_in_white_anime_obj.play()
+            remove_animation_by_ident("fade_out_white")
+            break
+        keep_the_game_running()
+
 def make_cloud(black_and_white=True):
     # load all 6 cloud
     # for each cloud random interval, position, size and speed
@@ -390,7 +411,7 @@ def make_cloud(black_and_white=True):
     for i in range(c_number):
         random_position = random.uniform(0, 0.25)
         random_size_speed = random.uniform(0.5, 0.8)
-        print("loaded " + os.path.join(c_path, f"img-{i}.png"))
+        # print("loaded " + os.path.join(c_path, f"img-{i}.png"))
         cloud_pic = load_assets("image", os.path.join(c_path, f"img-{i}.png"))
         cloud_pic = pygame.transform.scale(cloud_pic, (random_size_speed * cloud_pic.get_width() * 10, random_size_speed * cloud_pic.get_height() * 10)).convert_alpha()
         cloud_anime = Animation(WIN, (random_size_speed * cloud_pic.get_width() * 10, random_size_speed * cloud_pic.get_height() * 10), pos=(WIDTH, HEIGHT * random_position), frame=1, screen_size=(WIDTH, HEIGHT),
@@ -436,6 +457,14 @@ def change_game_status(new_status):
                                                 ident="tile", speed=(-1, 0), self_replicate=True, hidden=True))
         all_animation.append(Animation(WIN, tile_size, (0, TILE_POSITION_FACTOR * HEIGHT+tile_type[0].get_size()[1]), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_type[1]], 
                                                 ident="tile_cont", speed=(-1, 0), self_replicate=True, hidden=True))
+
+    if new_status == 1:
+        for i in range(2):
+            make_cloud()
+    if new_status == 2:
+        for i in range(2):
+            make_cloud(False)
+
     if not animation_exist_by_ident("char"):
         all_animation.append(character_anime)
 
@@ -444,31 +473,7 @@ def change_game_status(new_status):
             logo_anime = Animation(WIN, (0.3 * WIDTH, 0.3 * HEIGHT), (WIDTH//2-logo.get_size()[0]//2, HEIGHT//2-logo.get_size()[1]//2), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[logo], 
                                                 ident="logo", speed=(0, 0), self_replicate=False, position_function=(None, math.sin), hidden=True)
             all_animation.append(logo_anime)
-
-        if new_status == 1:
-            for i in range(2):
-                make_cloud()
-        if new_status == 2:
-            for i in range(2):
-                make_cloud(False)
-
-        fade_out_white_anime_obj = Animation(WIN, tile_size, (0, 0), frame=256, screen_size=(WIDTH, HEIGHT), pictures=fade_out_white, 
-                                    ident="fade_out_white", speed=(0, 0), rerun=False) 
-        top_level.append(fade_out_white_anime_obj)
-        fade_out_white_anime_obj.play()
-        fade_in_white_anime_obj = Animation(WIN, tile_size, (0, 0), frame=256, screen_size=(WIDTH, HEIGHT), pictures=fade_in_white, 
-                                    ident="fade_in_white", speed=(0, 0), rerun=False, hidden=True) 
-        fade_in_white_anime_obj.pause_animation()
-        top_level.append(fade_in_white_anime_obj)
         
-        while not fade_out_white_anime_obj.get_finish():
-            if fade_out_white_anime_obj.get_current_frame() == fade_out_white_anime_obj.get_frame() -1:
-                fade_out_white_anime_obj.pause_animation()
-                fade_in_white_anime_obj.set_hidden(False)
-                fade_in_white_anime_obj.play()
-                remove_animation_by_ident("fade_out_white")
-                break
-            keep_the_game_running()
 
     all_button = []
     # big button (play game)
@@ -479,6 +484,7 @@ def change_game_status(new_status):
     _, y_border = calculate_button_position(1, edge_start=True, left_or_top_edge=True)
     y_border = y_border[0]
     if new_status == 1:
+        fade_white()
 
         for anime in all_animation:
             anime.set_hidden(False)
@@ -501,7 +507,7 @@ def change_game_status(new_status):
                                     img_enabled=button_square_bw, img_hover=button_square_bw_brighten, img_pressed=button_square_bw_darken,
                                     )
         exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
-                                    pos=(three_bpos_x[2],y_border),size=(small_bsize, small_bsize), text="GTFO",
+                                    pos=(three_bpos_x[2],y_border),size=(small_bsize, small_bsize), text="EXIT",
                                     operation=exit, img_mode=True, img_disabled=button_square_bw_darkest,
                                     img_enabled=button_square_bw, img_hover=button_square_bw_brighten, img_pressed=button_square_bw_darken,
                                     )
@@ -511,6 +517,8 @@ def change_game_status(new_status):
 
         
     elif new_status == 2:
+
+        fade_white()
         
         for anime in all_animation:
             anime.set_hidden(False)
@@ -540,7 +548,7 @@ def change_game_status(new_status):
         all_button.append(enter_name_button)
         exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(two_bpos_x[1], y_border),
-                                    size=(small_bsize, small_bsize), text="GTFO",
+                                    size=(small_bsize, small_bsize), text="EXIT",
                                     operation=exit, img_mode=True, img_disabled=button_square_bw,
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken,
                                     )
@@ -575,7 +583,7 @@ def change_game_status(new_status):
         
         _, one_bpos_x = calculate_button_position(2, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
-                                    pos=(one_bpos_x[1],y_border),size=(small_bsize, small_bsize), text="GTFO",
+                                    pos=(one_bpos_x[1],y_border),size=(small_bsize, small_bsize), text="EXIT",
                                     operation=exit, img_mode=True, img_disabled=button_square_bw,
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken,
                                     )
@@ -886,7 +894,7 @@ def init_game():
             current_array=game.numbers_array
             current_sum=game.sum
             exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
-                                    pos=(one_bpos_x[0], y_border),size=(small_bsize, small_bsize), text="GTFO",
+                                    pos=(one_bpos_x[0], y_border),size=(small_bsize, small_bsize), text="EXIT",
                                     operation=exit, img_mode=True, img_disabled=button_square_bw,
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
             return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[1], y_border),
@@ -910,7 +918,7 @@ def init_game():
                     # print(one_bpos_x)
                     # print(y_border)
                     exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
-                                    pos=(one_bpos_x[0],y_border),size=(small_bsize, small_bsize), text="GTFO",
+                                    pos=(one_bpos_x[0],y_border),size=(small_bsize, small_bsize), text="EXIT",
                                     operation=exit, img_mode=True, img_disabled=button_square_bw,
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
                     return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[1],y_border),
@@ -945,6 +953,7 @@ def init_game():
                     break # I think break alone actually work
                 sum_font = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), 200).render(f"{game.sum}", 1, WHITE)
                 time_font = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), 120)
+                # print(sum_font.get_size())
 
                 time_text_color = WHITE
                 if math.ceil(60 - (time.time() - game.start_time)) <= 10:
@@ -962,7 +971,7 @@ def init_game():
                            (to_draw_string[1], (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT+to_draw_string[1].get_height()+0.003*HEIGHT)),
                            (to_draw_string[2], (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT+2*to_draw_string[1].get_height()+2*0.003*HEIGHT)),
                            (to_draw_string[3], (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT+2.5*to_draw_string[1].get_height()+3*0.003*HEIGHT)),
-                           (to_draw_string[4], (WIDTH // 2 - to_draw_string[4].get_width() // 2, (0.25 * HEIGHT - sum_font.get_height() // 2 + 0.7 * HEIGHT) // 2)),
+                           (to_draw_string[4], (WIDTH // 2 - to_draw_string[4].get_width() // 2, int(0.3875 * HEIGHT) + (sum_font.get_height() // 8))),
                            (to_draw_string[5], (WIDTH//2-sum_font.get_width()//2, 0.25 * HEIGHT - sum_font.get_height() // 2))]
                 keep_the_game_running(things_to_draw=to_draw)
 
@@ -1002,7 +1011,7 @@ def init_game():
             # clock.tick(FPS)
             if not exit_and_gtfo_exist:
                 exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
-                                    pos=(one_bpos_x[0], y_border),size=(small_bsize, small_bsize), text="GTFO",
+                                    pos=(one_bpos_x[0], y_border),size=(small_bsize, small_bsize), text="EXIT",
                                     operation=exit, img_mode=True, img_disabled=button_square_bw,
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
                 return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[1], y_border),
@@ -1115,12 +1124,19 @@ def create_game_button(numbers):
     all_button.append(submit_button)
 
 def set_resolution(new_res):
-    global WIDTH, HEIGHT, game_full_screen, settings, fo
+    global WIDTH, HEIGHT, game_full_screen, settings, fo, font_size, SMALL_PIXEL_FONT, DEFAULT_FONT, BIG_PIXEL_FONT
     temp_res = WIN.get_size()
+    old_res = WIN.get_size()
     
     if new_res == "0" or new_res == "1" or new_res == '2' or new_res == "3":
         new_res = int(new_res)
         temp_res = RESOLUTION_LIST[new_res][0], RESOLUTION_LIST[new_res][1]
+        ratio_font_size = temp_res[0]/old_res[0]
+        for i in range(len(font_size)):
+            font_size[i] = int(font_size[i] * ratio_font_size)
+        SMALL_PIXEL_FONT = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), font_size[0])
+        DEFAULT_FONT = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), font_size[1])
+        BIG_PIXEL_FONT = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), font_size[2])
     
     elif new_res == "full":
         game_full_screen = True
@@ -1174,6 +1190,10 @@ if __name__ == "__main__":
     game_full_screen = settings["game_full_screen"]
     popup_enable = settings["popup_enable"]
     music_on = settings["music_on"]
+    font_size = [int(i * (WIDTH/OPTIMUM_RES[0])) for i in font_size]
+    SMALL_PIXEL_FONT = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), font_size[0])
+    DEFAULT_FONT = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), font_size[1])
+    BIG_PIXEL_FONT = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), font_size[2])
     if music_on:
         pygame.mixer.music.play(-1)
     if game_full_screen:
