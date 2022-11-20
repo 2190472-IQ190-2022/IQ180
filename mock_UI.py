@@ -321,10 +321,10 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
 
         rect_surface = pygame.Surface((text_box_position[0][0], text_box_position[0][1]))
         to_be_drawn_internal.append((rect_surface, (text_box_position[1][0], text_box_position[1][1])))
-        rendered_user_name = BIG_PIXEL_FONT.render(user_name, 1, WHITE)
+        rendered_user_name = DEFAULT_FONT.render(user_name, 1, WHITE)
         if typing:
-            rendered_user_name = BIG_PIXEL_FONT.render((user_name + "|") if int(time.time()) % 2 == 0 else user_name, 1, WHITE)
-        to_be_drawn_internal.append((rendered_user_name, (WIDTH // 2 - rendered_user_name.get_width() // 2, text_box_position[1][1])))
+            rendered_user_name = DEFAULT_FONT.render((user_name + "|") if int(time.time()) % 2 == 0 else user_name, 1, WHITE)
+        to_be_drawn_internal.append((rendered_user_name, (WIDTH // 2 - rendered_user_name.get_width() // 2, text_box_position[1][1] + 0.15 * text_box_position[0][1])))
 
     elif current_menu_status == 3:
         # WIN.blit(background, background_pos)
@@ -554,8 +554,8 @@ def change_game_status(new_status):
         keep_the_game_running()
     
         _, two_bpos_x = calculate_button_position(2, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
-        button_size_x, position_one_button_x = calculate_button_position(2, border_factor=0.4, axis=WIDTH)
-        button_size_y, position_one_button_y = calculate_button_position(2, border_factor=0.2, axis=HEIGHT)
+        button_size_x, position_one_button_x = calculate_button_position(2, border_factor=0.33, axis=WIDTH)
+        button_size_y, position_one_button_y = calculate_button_position(2, border_factor=0.17, axis=HEIGHT)
         text_box_position = ((button_size_x * 2 + GAME_BUTTON_INLINE_SPACING, button_size_y), (position_one_button_x[0], position_one_button_y[0]))
         
         to_game_button = Button(window=WIN, button_font=DEFAULT_FONT, text="To game",
