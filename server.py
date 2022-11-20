@@ -30,8 +30,9 @@ def check_status(game_ID):
         return
     
     try: 
-            game_ID = int(game_ID)
+        game_ID = int(game_ID)
     except:
+        print("error, not a number input")
         all_popup_text.append(f"error, not a number input")
         return
     
@@ -53,11 +54,13 @@ def reset_game(game_ID):
         try: 
             game_ID = int(game_ID)
         except:
+            print("error, not a number input")
             all_popup_text.append(f"error, not a number input")
             return
         try:
             games[game_ID].reset()
         except:
+            print("error, index out of bound")
             all_popup_text.append(f"error, index out of bound")
             return
         all_popup_text.append(f"reset game # {game_ID}")
@@ -76,11 +79,14 @@ def export_games(game_ID):
         try: 
             game_ID = int(game_ID)
         except:
+            print("error, not a number input")
             all_popup_text.append(f"error, not a number input")
             return
+        # fo.export_game(games[game_ID].to_dict(),game_ID)
         try:
-            fo.export_game(games[game].to_dict(),game)
+            fo.export_game(games[game_ID].to_dict(),game_ID)
         except:
+            print("error, not a number input")
             all_popup_text.append(f"error, index out of bound")
             return
         all_popup_text.append(f"export game # {game_ID}")
@@ -132,6 +138,7 @@ def threaded_client(conn, player, gameId, games):
         del games[gameId]
         print("Closing Game", gameId)
     except:
+        print("Unknown error")
         pass
     idCount -= 1
     print(f"The number of players: {idCount}")
@@ -142,6 +149,7 @@ def UI():
     user_input = ""
     WIN = pygame.display.set_mode((width, height))
     pygame.font.init()
+    pygame.display.set_caption("IQ1_Server")
     server_font = pygame.font.SysFont('comicsans', 40)
     clock = pygame.time.Clock()
     
@@ -154,7 +162,7 @@ def UI():
                     text="reset", enabled_color=(255, 0, 0), operation=reset_game, game_ID=user_input)
     check_button = Button(WIN, button_font=server_font, pos=(0.60*width-0.5*button_size, 0.75*height-0.5*button_size), 
                     text="game status", enabled_color=(255, 0, 0), operation=check_status, game_ID=user_input)
-    export_game = Button(WIN, button_font=server_font, pos=(0.80*width-0.5*button_size, 0.75*height-0.5*button_size), 
+    export_button = Button(WIN, button_font=server_font, pos=(0.80*width-0.5*button_size, 0.75*height-0.5*button_size), 
                     text="export", enabled_color=(255, 0, 0), operation=export_games, game_ID=user_input)                     
     
     while running:
@@ -180,9 +188,10 @@ def UI():
         reset_all_button.update_button()
         reset_button.set_args(game_ID=user_input)
         reset_button.update_button()
+        export_button.set_args(game_ID=user_input)
         check_button.set_args(game_ID=user_input)
         check_button.update_button()
-        export_game.update_button()
+        export_button.update_button()
         for popup in all_popup_text:
             user_input = ""
             if extended:
