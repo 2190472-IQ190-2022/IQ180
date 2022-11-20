@@ -225,11 +225,6 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         text_print += "You must make an equation using all 5 numbers to get the assigned result with the restriction that they have 60 seconds, and only 1 chance. Who answered correctly will get 1 point. "
         text_print += "If both got the answer, it will give the score to the one with shorter time. Otherwise, no score."
         display_how_to_play(WIN, text_print, (0.1*WIDTH, 175), font, BLACK)
-        for tbd in to_be_drawn:
-            WIN.blit(tbd[0], tbd[1])
-        for tbd in to_be_drawn_internal:
-            WIN.blit(tbd[0], tbd[1])
-        return
     elif current_menu_status == 5:
         # WIN.blit(background, background_pos)
         # background_pos = (background_pos[0]-0.2, background_pos[1])
@@ -243,6 +238,17 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         to_be_drawn_internal.append(popup_status_text)
         to_be_drawn_internal.append(BGM_status_text)
         # to_be_drawn_internal.append(("you can change audio, game resolution here (hopefully)", (300, 550)))
+    elif current_menu_status == 6:
+        credit = DEFAULT_FONT.render("Credit", 1, BLACK)
+        font = pygame.font.SysFont('comicsans', 30)
+        WIN.blit(credit, (WIDTH/2-credit.get_width()/2, 75))
+        text_print = ["Krittapasa Boontaveekul 6338006721","Thiti Srikao 6338052521","Russ Choocharn 6338189921"]
+        text_print += ["Wuttikorn Nantawitaya 6338206921","Sivakorn Lerttripinyo 6338212621","Supakorn Senlamai 6338216121"]
+        offset_y = 0
+        for members in text_print:
+            member = DEFAULT_FONT.render(members, 1, BLACK)
+            display_credit(WIN, members, (WIDTH/2-member.get_width()/2, 175+offset_y), font, BLACK)
+            offset_y += 50
     else:
         text_print = "What"
     # this_text = DEFAULT_FONT.render(text_print, 1, BLACK)
@@ -270,6 +276,14 @@ def display_how_to_play(surface, text, pos, font, color):
         x = pos[0]
         y += word_height
 
+def display_credit(surface, text, pos, font, color):
+    x,y = pos
+    word_surface = font.render(text, True, color)
+    word_width, word_height = word_surface.get_size()
+    if x + word_width >= WIDTH:
+        y += word_height
+    surface.blit(word_surface, (x,y))
+    y += word_height
 
 def change_game_status(new_status):
     """This function is called when the menu button is pressed (changing user to each menu, mm1, mm2, game, htp, setting)"""
@@ -282,7 +296,7 @@ def change_game_status(new_status):
     all_button = []
     # big button (play game)
     button_size_x, position_one_button_x = calculate_button_position(1, border_factor=0.3, axis=WIDTH)
-    button_size_y, position_one_button_y = calculate_button_position(1, border_factor=0.1, offset=0.05*WIDTH, axis=HEIGHT)
+    button_size_y, position_one_button_y = calculate_button_position(2, border_factor=0.2, offset=0.05*WIDTH, axis=HEIGHT)
     # small button (exit, back, htp, setting)
     small_bsize, _ = calculate_button_position(1, border_factor=SMALL_BUTTON_BORDER_FACTOR, axis=WIDTH)
     _, y_border = calculate_button_position(1, edge_start=True, left_or_top_edge=True)
@@ -310,6 +324,11 @@ def change_game_status(new_status):
                                pos=(position_one_button_x[0], position_one_button_y[0]),
                                size=(button_size_x, button_size_y))
         all_button.append(to_mm2_button)
+        to_credit_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Credit",
+                               operation=change_game_status, new_status=6,
+                               pos=(position_one_button_x[0], position_one_button_y[1]),
+                               size=(button_size_x, button_size_y))
+        all_button.append(to_credit_button)
         to_setting_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(three_bpos_x[0],y_border),size=(small_bsize, small_bsize), text="SET",
                                     operation=change_game_status, new_status=5)
