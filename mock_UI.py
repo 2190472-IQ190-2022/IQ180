@@ -31,7 +31,7 @@ BUTTON_COLOR_ADDITIVE = (128, 128, 128)
 CLOUD_SIZE_FACTOR = 0.15
 FOREGROUND_SIZE_FACTOR = 0.9
 OPTIMUM_RES = (1920, 1080)
-# how many pictures are avail?
+# how many pictures are avail??
 
 def make_transparent(image, size, colorkey=BLACK):
     image = pygame.image.load(image)
