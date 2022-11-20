@@ -82,7 +82,9 @@ for alpha in range(0, 256, 8):
 fade_in = fade_out[::-1]
 fade_in_white = fade_out_white[::-1]
 
-logo = pygame.transform.scale(pygame.image.load(os.path.join("Images", "logo.jpeg")).convert(), (0.4 * HEIGHT, 0.4 * HEIGHT))
+logo = pygame.image.load(os.path.join("Images", "logo.png"))
+logo.set_colorkey(WHITE)
+logo = pygame.transform.scale(logo, (0.7 * HEIGHT, 0.7 * HEIGHT)).convert()
 character = pygame.image.load(os.path.join("Images", "character", "character-1.png")).convert()
 character_bw = pygame.image.load(os.path.join("Images", "character", "character-1-bw.png")).convert()
 
@@ -501,35 +503,36 @@ def change_game_status(new_status):
         for anime in all_animation:
             anime.set_hidden(False)
 
-        button_size_five_button, five_button_position  = calculate_button_position(5, border_factor=0.8, axis=WIDTH)
+        button_size_five_button, five_button_position = calculate_button_position(3, border_factor=0.8, axis=WIDTH)
             
-        _, three_bpos_x = calculate_button_position(3, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
+        _, three_bpos_x = calculate_button_position(2, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         to_mm2_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Play",
                                operation=change_game_status, new_status=2,
-                               pos=(five_button_position[2], ((1+TILE_POSITION_FACTOR)/2) * HEIGHT - button_size_y//2),
+                               pos=(five_button_position[1], ((1+TILE_POSITION_FACTOR)/2) * HEIGHT - button_size_y//2),
                                size=(button_size_five_button, button_size_y), img_mode=True, img_disabled=button_rect_bw_darkest,
                                     img_enabled=button_rect_bw, img_hover=button_rect_bw_brighten, img_pressed=button_rect_bw_darken,)
         all_button.append(to_mm2_button)
         to_credit_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Credit",
                                operation=change_game_status, new_status=6,
-                               pos=(five_button_position[1], ((1+TILE_POSITION_FACTOR)/2) * HEIGHT - button_size_y//2),
-                               size=(button_size_five_button, button_size_y))
+                               pos=(five_button_position[0], ((1+TILE_POSITION_FACTOR)/2) * HEIGHT - button_size_y//2),
+                               size=(button_size_five_button, button_size_y), img_mode=True, img_disabled=button_rect_bw_darkest,
+                                    img_enabled=button_rect_bw, img_hover=button_rect_bw_brighten, img_pressed=button_rect_bw_darken)
         all_button.append(to_credit_button)
         to_setting_button = Button(window=WIN, button_font=DEFAULT_FONT,
-                                    pos=(five_button_position [0],((1+TILE_POSITION_FACTOR)/2) * HEIGHT - button_size_y//2),
-                                    size=(button_size_five_button, button_size_y), text="SET",
+                                    pos=(three_bpos_x[0], y_border),
+                                    size=(small_bsize, small_bsize), text="SET",
                                     operation=change_game_status, new_status=5, img_mode=True, img_disabled=button_square_bw_darkest,
-                                    img_enabled=button_square_bw, img_hover=button_square_bw_brighten, img_pressed=button_square_bw_darken,
+                                    img_enabled=button_square_bw, img_hover=button_square_bw_brighten, img_pressed=button_square_bw_darken
                                     )
         to_howtoplay_button = Button(window=WIN, button_font=DEFAULT_FONT,
-                                    pos=(five_button_position[3],((1+TILE_POSITION_FACTOR)/2) * HEIGHT - button_size_y//2),
-                                    size=(button_size_five_button, button_size_y), text="HTP",
-                                    operation=change_game_status, new_status=4, img_mode=True, img_disabled=button_square_bw_darkest,
-                                    img_enabled=button_square_bw, img_hover=button_square_bw_brighten, img_pressed=button_square_bw_darken,
+                                    pos=(five_button_position[2],((1+TILE_POSITION_FACTOR)/2) * HEIGHT - button_size_y//2),
+                                    size=(button_size_five_button, button_size_y), text="How to play",
+                                    operation=change_game_status, new_status=4, img_mode=True, img_disabled=button_rect_bw_darkest,
+                                    img_enabled=button_rect_bw, img_hover=button_rect_bw_brighten, img_pressed=button_rect_bw_darken
                                     )
         exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
-                                    pos=(five_button_position[4],((1+TILE_POSITION_FACTOR)/2) * HEIGHT - button_size_y//2),
-                                    size=(button_size_five_button, button_size_y), text="EXIT",
+                                    pos=(three_bpos_x[1], y_border),
+                                    size=(small_bsize, small_bsize), text="EXIT",
                                     operation=exit, img_mode=True, img_disabled=button_square_bw_darkest,
                                     img_enabled=button_square_bw, img_hover=button_square_bw_brighten, img_pressed=button_square_bw_darken,
                                     )
