@@ -329,7 +329,7 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         #     pass
     elif current_menu_status == 4:
         how_to_play = DEFAULT_FONT.render("How to play", 1, BLACK)
-        font = pygame.font.SysFont('comicsans', 30)
+        font = pygame.font.Font(FONT_PATH, 30)
         WIN.blit(how_to_play, (WIDTH/2-how_to_play.get_width()/2, 75))
         text_print = "You will be given 5 numbers (1-9), a resulting answer, and 4 operators '+', '-', '*', '/'. "
         text_print += "You must make an equation using all 5 numbers to get the assigned result with the restriction that they have 60 seconds, and only 1 chance. Who answered correctly will get 1 point. "
@@ -350,13 +350,13 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         # to_be_drawn_internal.append(("you can change audio, game resolution here (hopefully)", (300, 550)))
     elif current_menu_status == 6:
         credit = DEFAULT_FONT.render("Credit", 1, BLACK)
-        font = pygame.font.SysFont('comicsans', 30)
+        font = pygame.font.Font(FONT_PATH, 30)
         WIN.blit(credit, (WIDTH/2-credit.get_width()/2, 75))
         text_print = ["Krittapasa Boontaveekul 6338006721","Thiti Srikao 6338052521","Russ Choocharn 6338189921"]
         text_print += ["Wuttikorn Nantawitaya 6338206921","Sivakorn Lerttripinyo 6338212621","Supakorn Senlamai 6338216121"]
         offset_y = 0
         for members in text_print:
-            member = DEFAULT_FONT.render(members, 1, BLACK)
+            member = font.render(members, 1, BLACK)
             display_credit(WIN, members, (WIDTH/2-member.get_width()/2, 175+offset_y), font, BLACK)
             offset_y += 50
     else:
@@ -386,6 +386,10 @@ def display_how_to_play(surface, text, pos, font, color):
         x = pos[0]
         y += word_height
 
+def display_credit(surface, text, pos, font, color):
+    word_surface = font.render(text, True, color)
+    surface.blit(word_surface, pos)
+
 def fade_white():
     fade_out_white_anime_obj = Animation(WIN, tile_size, (0, 0), frame=256, screen_size=(WIDTH, HEIGHT), pictures=fade_out_white, 
                                     ident="fade_out_white", speed=(0, 0), rerun=False) 
@@ -403,15 +407,6 @@ def fade_white():
             remove_animation_by_ident("fade_out_white")
             break
         keep_the_game_running()
-        
-def display_credit(surface, text, pos, font, color):
-    x,y = pos
-    word_surface = font.render(text, True, color)
-    word_width, word_height = word_surface.get_size()
-    if x + word_width >= WIDTH:
-        y += word_height
-    surface.blit(word_surface, (x,y))
-    y += word_height
 
 def make_cloud(black_and_white=True):
     # load all 6 cloud
@@ -628,7 +623,7 @@ def change_game_status(new_status):
         all_button.append(exit_button)
         init_game()
         return
-    elif new_status == 4:
+    elif new_status == 4 or new_status == 6:
         for anime in all_animation:
             anime.set_hidden(False)
         _, one_bpos_x = calculate_button_position(1, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
