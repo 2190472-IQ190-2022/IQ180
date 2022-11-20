@@ -30,8 +30,9 @@ def check_status(game_ID):
         return
     
     try: 
-            game_ID = int(game_ID)
+        game_ID = int(game_ID)
     except:
+        print("error, not a number input")
         all_popup_text.append(f"error, not a number input")
         return
     
@@ -53,11 +54,13 @@ def reset_game(game_ID):
         try: 
             game_ID = int(game_ID)
         except:
+            print("error, not a number input")
             all_popup_text.append(f"error, not a number input")
             return
         try:
             games[game_ID].reset()
         except:
+            print("error, index out of bound")
             all_popup_text.append(f"error, index out of bound")
             return
         all_popup_text.append(f"reset game # {game_ID}")
@@ -76,12 +79,14 @@ def export_games(game_ID):
         try: 
             game_ID = int(game_ID)
         except:
+            print("error, not a number input")
             all_popup_text.append(f"error, not a number input")
             return
         # fo.export_game(games[game_ID].to_dict(),game_ID)
         try:
             fo.export_game(games[game_ID].to_dict(),game_ID)
         except:
+            print("error, not a number input")
             all_popup_text.append(f"error, index out of bound")
             return
         all_popup_text.append(f"export game # {game_ID}")
@@ -133,6 +138,7 @@ def threaded_client(conn, player, gameId, games):
         del games[gameId]
         print("Closing Game", gameId)
     except:
+        print("Unknown error")
         pass
     idCount -= 1
     print(f"The number of players: {idCount}")
