@@ -509,8 +509,8 @@ def change_game_status(new_status):
         to_mm2_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Play",
                                operation=change_game_status, new_status=2,
                                pos=(five_button_position[1], ((1+TILE_POSITION_FACTOR)/2) * HEIGHT - button_size_y//2),
-                               size=(button_size_five_button, button_size_y), img_mode=True, img_disabled=button_rect_bw_darkest,
-                                    img_enabled=button_rect_bw, img_hover=button_rect_bw_brighten, img_pressed=button_rect_bw_darken,)
+                               size=(button_size_five_button, button_size_y), img_mode=True, img_disabled=button_rect_bw,
+                                    img_enabled=button_rect, img_hover=button_rect_brighten, img_pressed=button_rect_darken,)
         all_button.append(to_mm2_button)
         to_credit_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Credit",
                                operation=change_game_status, new_status=6,
