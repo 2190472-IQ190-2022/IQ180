@@ -49,6 +49,8 @@ RESOLUTION_LIST = pygame.display.list_modes()
 # tile and background
 image_path = os.path.join("Images", "background")
 foreground_path = os.path.join("Images", "foreground")
+cloud_bw_path = os.path.join("Images", "cloud", "black_and_white")
+cloud_path = os.path.join("Images", "cloud", "colored")
 image_number = len([entry for entry in os.listdir(image_path) if os.path.isfile(os.path.join(image_path, entry))])
 background = pygame.image.load(os.path.join("Images", "background", f"img-{random.randint(0, image_number-1)}.png")).convert()
 background_pos = (0, 0)
@@ -59,6 +61,8 @@ tile_colored = make_transparent(os.path.join("Images", "tile", "jungle_floor.png
 tile_cont_bw = make_transparent(os.path.join("Images", "tile", "jungle_floor_bw_cont.png"), tile_size)
 tile_cont_colored = make_transparent(os.path.join("Images", "tile", "jungle_floor_cont.png"), tile_size)
 foreground_number = len([entry for entry in os.listdir(foreground_path)])
+cloud_number = len([entry for entry in os.listdir(cloud_path) if os.path.isfile(os.path.join(cloud_path, entry))])
+cloud_number_bw = len([entry for entry in os.listdir(cloud_bw_path) if os.path.isfile(os.path.join(cloud_bw_path, entry))])
 
 fade_out = []
 fade_out_white = []
@@ -373,6 +377,27 @@ def display_text(surface, text, pos, font, color):
         x = pos[0]
         y += word_height
 
+def make_cloud(black_and_white=True):
+    # load all 6 cloud
+    # for each cloud random interval, position, size and speed
+
+    c_path = cloud_bw_path
+    c_number = cloud_number_bw
+    if not black_and_white:
+       c_path = cloud_path
+       c_number = cloud_number
+
+    for i in range(c_number):
+        random_position = random.uniform(0, 0.25)
+        random_size_speed = random.uniform(0.5, 0.8)
+        print("loaded " + os.path.join(c_path, f"img-{i}.png"))
+        cloud_pic = load_assets("image", os.path.join(c_path, f"img-{i}.png"))
+        cloud_pic = pygame.transform.scale(cloud_pic, (random_size_speed * cloud_pic.get_width() * 10, random_size_speed * cloud_pic.get_height() * 10)).convert_alpha()
+        cloud_anime = Animation(WIN, (random_size_speed * cloud_pic.get_width() * 10, random_size_speed * cloud_pic.get_height() * 10), pos=(WIDTH, HEIGHT * random_position), frame=1, screen_size=(WIDTH, HEIGHT),
+                                    ident="cloud", pictures=[cloud_pic], speed = ((-1+random_size_speed) / 500 * WIDTH, 0))
+
+        cloud_anime.pause_animation()
+        all_animation.append(cloud_anime)
 
 def change_game_status(new_status):
     """This function is called when the menu button is pressed (changing user to each menu, mm1, mm2, game, htp, setting)"""
@@ -389,6 +414,7 @@ def change_game_status(new_status):
     remove_animation_by_ident("space_background")
     remove_animation_by_ident("char")
     remove_animation_by_ident("foreground", True)
+    remove_animation_by_ident("cloud")
 
     if new_status == 2 or new_status == 3:
         character_frame = Animation.create_animation_from_sheet(character, (character.get_width()//8, character.get_height()//3),
@@ -419,6 +445,31 @@ def change_game_status(new_status):
                                                 ident="logo", speed=(0, 0), self_replicate=False, position_function=(None, math.sin), hidden=True)
             all_animation.append(logo_anime)
 
+        if new_status == 1:
+            for i in range(2):
+                make_cloud()
+        if new_status == 2:
+            for i in range(2):
+                make_cloud(False)
+
+        fade_out_white_anime_obj = Animation(WIN, tile_size, (0, 0), frame=256, screen_size=(WIDTH, HEIGHT), pictures=fade_out_white, 
+                                    ident="fade_out_white", speed=(0, 0), rerun=False) 
+        top_level.append(fade_out_white_anime_obj)
+        fade_out_white_anime_obj.play()
+        fade_in_white_anime_obj = Animation(WIN, tile_size, (0, 0), frame=256, screen_size=(WIDTH, HEIGHT), pictures=fade_in_white, 
+                                    ident="fade_in_white", speed=(0, 0), rerun=False, hidden=True) 
+        fade_in_white_anime_obj.pause_animation()
+        top_level.append(fade_in_white_anime_obj)
+        
+        while not fade_out_white_anime_obj.get_finish():
+            if fade_out_white_anime_obj.get_current_frame() == fade_out_white_anime_obj.get_frame() -1:
+                fade_out_white_anime_obj.pause_animation()
+                fade_in_white_anime_obj.set_hidden(False)
+                fade_in_white_anime_obj.play()
+                remove_animation_by_ident("fade_out_white")
+                break
+            keep_the_game_running()
+
     all_button = []
     # big button (play game)
     button_size_x, position_one_button_x = calculate_button_position(1, border_factor=0.3, axis=WIDTH)
@@ -428,13 +479,10 @@ def change_game_status(new_status):
     _, y_border = calculate_button_position(1, edge_start=True, left_or_top_edge=True)
     y_border = y_border[0]
     if new_status == 1:
-        # print("status 1")
-        
+
         for anime in all_animation:
             anime.set_hidden(False)
             
-        # print(all_animation)
-        # _, three_bpos_x = calculate_button_position(4, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         _, three_bpos_x = calculate_button_position(3, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         to_mm2_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Play",
                                operation=change_game_status, new_status=2,
@@ -460,31 +508,14 @@ def change_game_status(new_status):
         all_button.append(to_setting_button)
         all_button.append(to_howtoplay_button)
         all_button.append(exit_button)
+
+        
     elif new_status == 2:
         
-
-        fade_out_white_anime_obj = Animation(WIN, tile_size, (0, 0), frame=256, screen_size=(WIDTH, HEIGHT), pictures=fade_out_white, 
-                                    ident="fade_out_white", speed=(0, 0), rerun=False) 
-        top_level.append(fade_out_white_anime_obj)
-        fade_out_white_anime_obj.play()
-        fade_in_white_anime_obj = Animation(WIN, tile_size, (0, 0), frame=256, screen_size=(WIDTH, HEIGHT), pictures=fade_in_white, 
-                                    ident="fade_in_white", speed=(0, 0), rerun=False, hidden=True) 
-        fade_in_white_anime_obj.pause_animation()
-        top_level.append(fade_in_white_anime_obj)
-        
-        while not fade_out_white_anime_obj.get_finish():
-            # print(f"frame{fade_out_white_anime_obj.get_frame()}")
-            if fade_out_white_anime_obj.get_current_frame() == fade_out_white_anime_obj.get_frame() -1:
-                fade_out_white_anime_obj.pause_animation()
-                fade_in_white_anime_obj.set_hidden(False)
-                fade_in_white_anime_obj.play()
-                remove_animation_by_ident("fade_out_white")
-                break
-            keep_the_game_running()
         for anime in all_animation:
             anime.set_hidden(False)
 
-        # keep_the_game_running()
+        keep_the_game_running()
     
         _, two_bpos_x = calculate_button_position(2, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         
@@ -514,6 +545,7 @@ def change_game_status(new_status):
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken,
                                     )
         all_button.append(exit_button)
+        
 
     elif new_status == 3:
         if len(user_name) == 0:
@@ -655,17 +687,24 @@ def keep_the_game_running(things_to_draw=[]):
             exit()
 
     WIN.fill(WHITE)
+    if menu_status == 2:
+        WIN.fill((88,179,184))
     # draw_everything(menu_status, things_to_draw)
     all_asset_count = 0
 
     for anime in all_animation:
-        # print(f"render {anime.get_ident()} {anime.pos}")
+        if anime.get_ident() == "cloud":
+            # print(f"pos: {anime.get_pos()}, pause: {anime.pause}")
+            if random.randint(0, 8000) < 10:
+                anime.play()
+            if anime.get_pos()[0] + anime.get_size()[0] < 0:
+                anime.pause_animation()
+                anime.set_pos((WIDTH, anime.get_pos()[1]))
         if anime.get_finish():
             all_animation.remove(anime)
             continue
         anime.draw_animation()
         all_asset_count += 1
-
 
     # game_button_control()
     for button in all_button:

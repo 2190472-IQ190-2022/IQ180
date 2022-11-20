@@ -66,6 +66,9 @@ class Animation:
     def set_hidden(self, hidden):
         self.hidden = hidden
 
+    def set_pos(self, pos):
+        self.pos = pos
+
     def draw_animation(self):
         """check draw/not draw and blit the animation if allowed"""
         # print(f"pictures {self.pictures}")
