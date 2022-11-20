@@ -513,7 +513,8 @@ def change_game_status(new_status):
         to_credit_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Credit",
                                operation=change_game_status, new_status=6,
                                pos=(five_button_position[1], ((1+TILE_POSITION_FACTOR)/2) * HEIGHT - button_size_y//2),
-                               size=(button_size_five_button, button_size_y))
+                               size=(button_size_five_button, button_size_y), img_mode=True, img_disabled=button_rect_bw_darkest,
+                                    img_enabled=button_rect_bw, img_hover=button_rect_bw_brighten, img_pressed=button_rect_bw_darken,)
         all_button.append(to_credit_button)
         to_setting_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(five_button_position [0],((1+TILE_POSITION_FACTOR)/2) * HEIGHT - button_size_y//2),
