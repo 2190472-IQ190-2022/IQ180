@@ -156,7 +156,9 @@ player_submit = False
 user_name = ""
 popup_enable = True
 game_full_screen = True
+typing = False
 fo = file_operation()
+text_box_position = ((0, 0), (0, 0))
 
 class Loading_Thread(threading.Thread):
 
@@ -313,14 +315,16 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         # print(f"{WIDTH}, {HEIGHT}")
         # WIN.fill(WHITE)
         text_print = "Main menu 2"
-        rect = pygame.Rect(0.25*WIDTH+310,0.75*HEIGHT,0.3*WIDTH,50)
-        color = pygame.Color('lightskyblue1')
-        pygame.draw.rect(WIN,color,rect,2)
+        # rect = pygame.Rect(0.25*WIDTH+310,0.75*HEIGHT,0.3*WIDTH,50)
+        # color = pygame.Color('lightskyblue1')
+        # pygame.draw.rect(WIN,color,rect,2)
 
-        rect_surface = pygame.Surface((rect.w, rect.h))
-        to_be_drawn_internal.append((rect_surface, (0.25*WIDTH+310,0.75*HEIGHT)))
-        rendered_user_name = DEFAULT_FONT.render((user_name + "|") if int(time.time()) % 2 == 0 else user_name, 1, WHITE)
-        to_be_drawn_internal.append((rendered_user_name, (0.25*WIDTH+310,0.75*HEIGHT)))
+        rect_surface = pygame.Surface((text_box_position[0][0], text_box_position[0][1]))
+        to_be_drawn_internal.append((rect_surface, (text_box_position[1][0], text_box_position[1][1])))
+        rendered_user_name = BIG_PIXEL_FONT.render(user_name, 1, WHITE)
+        if typing:
+            rendered_user_name = BIG_PIXEL_FONT.render((user_name + "|") if int(time.time()) % 2 == 0 else user_name, 1, WHITE)
+        to_be_drawn_internal.append((rendered_user_name, (WIDTH // 2 - rendered_user_name.get_width() // 2, text_box_position[1][1])))
 
     elif current_menu_status == 3:
         # WIN.blit(background, background_pos)
@@ -434,7 +438,7 @@ def make_cloud(black_and_white=True):
 
 def change_game_status(new_status):
     """This function is called when the menu button is pressed (changing user to each menu, mm1, mm2, game, htp, setting)"""
-    global menu_status, all_button, user_name, settings, fo
+    global menu_status, all_button, user_name, settings, fo, text_box_position
 
     sprite_pos_y = TILE_POSITION_FACTOR * HEIGHT - SPRITE_SIZE_FACTOR * (character.get_size()[1] / 3) + (1/16 * tile_size[1]) + (1/6 * character.get_height())
     character_frame = None
@@ -491,7 +495,7 @@ def change_game_status(new_status):
 
     all_button = []
     # big button (play game)
-    button_size_x, position_one_button_x = calculate_button_position(1, border_factor=0.3, axis=WIDTH)
+    button_size_x, position_one_button_x = calculate_button_position(2, border_factor=0.3, axis=WIDTH)
     button_size_y, position_one_button_y = calculate_button_position(2, border_factor=0.2, offset=0.05*WIDTH, axis=HEIGHT)
     # small button (exit, back, htp, setting)
     small_bsize, _ = calculate_button_position(1, border_factor=SMALL_BUTTON_BORDER_FACTOR, axis=WIDTH)
@@ -539,7 +543,6 @@ def change_game_status(new_status):
         all_button.append(to_setting_button)
         all_button.append(to_howtoplay_button)
         all_button.append(exit_button)
-
         
     elif new_status == 2:
 
@@ -551,10 +554,13 @@ def change_game_status(new_status):
         keep_the_game_running()
     
         _, two_bpos_x = calculate_button_position(2, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
+        button_size_x, position_one_button_x = calculate_button_position(2, border_factor=0.4, axis=WIDTH)
+        button_size_y, position_one_button_y = calculate_button_position(2, border_factor=0.2, axis=HEIGHT)
+        text_box_position = ((button_size_x * 2 + GAME_BUTTON_INLINE_SPACING, button_size_y), (position_one_button_x[0], position_one_button_y[0]))
         
         to_game_button = Button(window=WIN, button_font=DEFAULT_FONT, text="To game",
                                 operation=change_game_status, new_status=3,
-                                pos=(position_one_button_x[0], position_one_button_y[0]),
+                                pos=(position_one_button_x[1], position_one_button_y[1]),
                                 size=(button_size_x, button_size_y), img_mode=True, img_disabled=button_rect_bw,
                                     img_enabled=button_rect, img_hover=button_rect_brighten, img_pressed=button_rect_darken,)
         all_button.append(to_game_button)
@@ -566,8 +572,9 @@ def change_game_status(new_status):
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken,
                                     )
         all_button.append(return_to_mm1_button)
-        enter_name_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(0.25*WIDTH,0.75*HEIGHT),size= (300,50), text="Enter name",
-                                        operation=get_user_name, img_mode=True, img_disabled=button_rect_bw,
+        enter_name_button = Button(window=WIN, button_font=DEFAULT_FONT,pos=(position_one_button_x[0], position_one_button_y[1]),
+                                    size= (button_size_x, button_size_y), text="Enter name",
+                                    operation=get_user_name, img_mode=True, img_disabled=button_rect_bw,
                                     img_enabled=button_rect, img_hover=button_rect_brighten, img_pressed=button_rect_darken,
                                     )
         all_button.append(enter_name_button)
@@ -578,7 +585,7 @@ def change_game_status(new_status):
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken,
                                     )
         all_button.append(exit_button)
-        
+
 
     elif new_status == 3:
         if len(user_name) == 0:
@@ -784,7 +791,7 @@ def keep_the_game_running(things_to_draw=[]):
     pygame.display.update()
     
 def get_user_name(): # get input from user and store in user_name
-    global user_name
+    global user_name, typing
     typing = True
     clock = pygame.time.Clock()
     while typing:
@@ -808,8 +815,6 @@ def get_user_name(): # get input from user and store in user_name
                         all_popup.append(Popup(WIN, text_object=[DEFAULT_FONT.render("Maximum name length is 20 characters", 1, BLACK)]))
                     else:
                         user_name += event.unicode
-        rendered_user_name = DEFAULT_FONT.render((user_name + "|") if int(time.time()) % 2 == 0 else user_name, 1, BLACK)
-        things_to_draw.append((rendered_user_name,(0.25*WIDTH+310,0.75*HEIGHT)))
             # draw_everything(menu_status, things_to_draw)
             # game_button_control()
             # pygame.display.update()
