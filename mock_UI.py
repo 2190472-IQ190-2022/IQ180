@@ -99,6 +99,7 @@ character_anime = Animation(WIN, (SPRITE_SIZE_FACTOR * (character.get_size()[0] 
 character_anime_bw = Animation(WIN, (SPRITE_SIZE_FACTOR * (character.get_size()[0] // 8), SPRITE_SIZE_FACTOR * (character.get_size()[1] // 3)), 
                             (0.15 * WIDTH, sprite_pos_y), 1, (WIDTH, HEIGHT), 
                             "char", character_frame_bw, run_every_frame=8)
+pet = pygame.image.load(os.path.join("Images", "pet", "img-0.png"))
 
 button_square = pygame.image.load(os.path.join("Images", "button", "square", "img-0.png")).convert()
 button_square_brighten = pygame.image.load(os.path.join("Images", "button", "square", "img-0.png")).convert()
@@ -436,6 +437,7 @@ def change_game_status(new_status):
     remove_animation_by_ident("char")
     remove_animation_by_ident("foreground", True)
     remove_animation_by_ident("cloud")
+    remove_animation_by_ident("pet")
 
     if new_status == 2 or new_status == 3:
         character_frame = Animation.create_animation_from_sheet(character, (character.get_width()//8, character.get_height()//3),
@@ -451,6 +453,7 @@ def change_game_status(new_status):
     character_anime = Animation(WIN, (SPRITE_SIZE_FACTOR * (character.get_size()[0] // 8), SPRITE_SIZE_FACTOR * (character.get_size()[1] // 3)), 
                             (0.12 * WIDTH, sprite_pos_y), 1, (WIDTH, HEIGHT), 
                             "char", character_frame, run_every_frame=8, hidden=True)
+
         
     if not animation_exist_by_ident("tile"):
         all_animation.append(Animation(WIN, tile_size, (0, TILE_POSITION_FACTOR * HEIGHT), frame=1, screen_size=(WIDTH, HEIGHT), pictures=[tile_type[0]], 
@@ -561,6 +564,11 @@ def change_game_status(new_status):
         settings['player_name'] = user_name
         fo.save_settings(settings)
         menu_status = new_status
+
+        pet_size = (0.5 * SPRITE_SIZE_FACTOR * (pet.get_size()[0] // 4), 0.5 * (SPRITE_SIZE_FACTOR * (pet.get_size()[1])))
+        pet_frame = Animation.create_animation_from_sheet(pet, (pet.get_height(), pet.get_height()), scale_size=pet_size, color=BLACK)
+        pet_anime = Animation(WIN, pet_size, (0.07 * WIDTH, sprite_pos_y), 1, (WIDTH, HEIGHT), "pet", pet_frame, position_function=(0, math.sin), run_every_frame=8, hidden=True)
+        all_animation.append(pet_anime)
         
         for anime in graphic_randomizer():
             anime.set_hidden(True)
