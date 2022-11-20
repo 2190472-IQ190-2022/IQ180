@@ -224,7 +224,7 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         text_print = "You will be given 5 numbers (1-9), a resulting answer, and 4 operators '+', '-', '*', '/'. "
         text_print += "You must make an equation using all 5 numbers to get the assigned result with the restriction that they have 60 seconds, and only 1 chance. Who answered correctly will get 1 point. "
         text_print += "If both got the answer, it will give the score to the one with shorter time. Otherwise, no score."
-        display_text(WIN, text_print, (0.1*WIDTH, 175), font, BLACK)
+        display_how_to_play(WIN, text_print, (0.1*WIDTH, 175), font, BLACK)
         for tbd in to_be_drawn:
             WIN.blit(tbd[0], tbd[1])
         for tbd in to_be_drawn_internal:
@@ -254,7 +254,7 @@ def draw_everything(current_menu_status, to_be_drawn=[]):
         # test = DEFAULT_FONT.render(tbd[0], 1, BLACK)
         WIN.blit(tbd[0], tbd[1])
 
-def display_text(surface, text, pos, font, color):
+def display_how_to_play(surface, text, pos, font, color):
     collection = [word.split(' ') for word in text.splitlines()]
     space = font.size(' ')[0]
     x,y = pos
