@@ -16,6 +16,7 @@ from file_operation import file_operation
 # Constant
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+RED = (255, 0, 0)
 WIDTH = 1280
 HEIGHT = 720
 FPS = 60
@@ -45,24 +46,18 @@ WIDTH, HEIGHT = SCREEN_SIZE
 ALL_ALLOWS_MATH_OP = "+-x÷()"
 RESOLUTION_LIST = pygame.display.list_modes()
 
-# background randomizer
-image_path = "Images\\background"
-# planet_path = "Images\\planet_100px"
-# blackhole_path = "Images\\blackhole_200px"
-# giant_path = "Images\\giant_300px"
-foreground_path = "Images\\foreground"
+# tile and background
+image_path = os.path.join("Images", "background")
+foreground_path = os.path.join("Images", "foreground")
 image_number = len([entry for entry in os.listdir(image_path) if os.path.isfile(os.path.join(image_path, entry))])
-background = pygame.image.load(f"Images\\background\\img-{random.randint(0, image_number-1)}.png").convert()
+background = pygame.image.load(os.path.join("Images", "background", f"img-{random.randint(0, image_number-1)}.png")).convert()
 background_pos = (0, 0)
-tile_bw = pygame.image.load("Images\\tile\\jungle_floor_bw.png")
+tile_bw = pygame.image.load(os.path.join("Images", "tile", "jungle_floor_bw.png"))
 tile_size = (tile_bw.get_size()[0] * 7, tile_bw.get_size()[1] * 7)
 tile_bw = pygame.transform.scale(tile_bw, tile_size)
-tile_colored = make_transparent("Images\\tile\\jungle_floor.png", tile_size)
-tile_cont_bw = make_transparent("Images\\tile\\jungle_floor_bw_cont.png", tile_size)
-tile_cont_colored = make_transparent("Images\\tile\\jungle_floor_cont.png", tile_size)
-# planer_number = len([entry for entry in os.listdir(planet_path) if os.path.isfile(os.path.join(planet_path, entry))])
-# blackhole_number = len([entry for entry in os.listdir(blackhole_path) if os.path.isfile(os.path.join(blackhole_path, entry))])
-# giant_number = len([entry for entry in os.listdir(giant_path) if os.path.isfile(os.path.join(giant_path, entry))])
+tile_colored = make_transparent(os.path.join("Images", "tile", "jungle_floor.png"), tile_size)
+tile_cont_bw = make_transparent(os.path.join("Images", "tile", "jungle_floor_bw_cont.png"), tile_size)
+tile_cont_colored = make_transparent(os.path.join("Images", "tile", "jungle_floor_cont.png"), tile_size)
 foreground_number = len([entry for entry in os.listdir(foreground_path)])
 
 fade_out = []
@@ -82,9 +77,9 @@ for alpha in range(0, 256, 8):
 fade_in = fade_out[::-1]
 fade_in_white = fade_out_white[::-1]
 
-logo = pygame.transform.scale(pygame.image.load("Images\\logo.jpeg").convert(), (0.4 * HEIGHT, 0.4 * HEIGHT))
-character = pygame.image.load("Images\\character\\character-1.png").convert()
-character_bw = pygame.image.load("Images\\character\\character-1-bw.png").convert()
+logo = pygame.transform.scale(pygame.image.load(os.path.join("Images", "logo.jpeg")).convert(), (0.4 * HEIGHT, 0.4 * HEIGHT))
+character = pygame.image.load(os.path.join("Images", "character", "character-1.png")).convert()
+character_bw = pygame.image.load(os.path.join("Images", "character", "character-1-bw.png")).convert()
 
 character_frame = Animation.create_animation_from_sheet(character, (character.get_width()//8, character.get_height()//3),
                                                         scale_size=(SPRITE_SIZE_FACTOR * (character.get_size()[0] // 8), 
@@ -100,34 +95,34 @@ character_anime_bw = Animation(WIN, (SPRITE_SIZE_FACTOR * (character.get_size()[
                             (0.15 * WIDTH, sprite_pos_y), 1, (WIDTH, HEIGHT), 
                             "char", character_frame_bw, run_every_frame=8)
 
-button_square = pygame.image.load("Images\\button\\square\\img-0.png").convert()
-button_square_brighten = pygame.image.load("Images\\button\\square\\img-0.png").convert()
-button_square_darken = pygame.image.load("Images\\button\\square\\img-0.png").convert()
+button_square = pygame.image.load(os.path.join("Images", "button", "square", "img-0.png")).convert()
+button_square_brighten = pygame.image.load(os.path.join("Images", "button", "square", "img-0.png")).convert()
+button_square_darken = pygame.image.load(os.path.join("Images", "button", "square", "img-0.png")).convert()
 button_square_brighten.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_ADD)
 button_square_darken.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_SUB)
-button_square_bw = pygame.image.load("Images\\button\\square\\img-bw.png").convert()
-button_square_bw_brighten = pygame.image.load("Images\\button\\square\\img-bw.png").convert()
-button_square_bw_darken = pygame.image.load("Images\\button\\square\\img-bw.png").convert()
-button_square_bw_darkest = pygame.image.load("Images\\button\\square\\img-bw.png").convert()
+button_square_bw = pygame.image.load(os.path.join("Images", "button", "square", "img-bw.png")).convert()
+button_square_bw_brighten = pygame.image.load(os.path.join("Images", "button", "square", "img-bw.png")).convert()
+button_square_bw_darken = pygame.image.load(os.path.join("Images", "button", "square", "img-bw.png")).convert()
+button_square_bw_darkest = pygame.image.load(os.path.join("Images", "button", "square", "img-bw.png")).convert()
 button_square_bw_brighten.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_ADD)
 button_square_bw_darken.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_SUB)
 button_square_bw_darkest.fill((200, 200, 200), special_flags=pygame.BLEND_RGB_SUB)
-button_rect = pygame.image.load("Images\\button\\rect\\img-0.png").convert()
-button_rect_brighten = pygame.image.load("Images\\button\\rect\\img-0.png").convert()
-button_rect_darken = pygame.image.load("Images\\button\\rect\\img-0.png").convert()
+button_rect = pygame.image.load(os.path.join("Images", "button", "rect", "img-0.png")).convert()
+button_rect_brighten = pygame.image.load(os.path.join("Images", "button", "rect", "img-0.png")).convert()
+button_rect_darken = pygame.image.load(os.path.join("Images", "button", "rect", "img-0.png")).convert()
 button_rect_brighten.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_ADD)
 button_rect_darken.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_SUB)
-button_rect_bw = pygame.image.load("Images\\button\\rect\\img-bw.png").convert()
-button_rect_bw_brighten = pygame.image.load("Images\\button\\rect\\img-bw.png").convert()
-button_rect_bw_darken = pygame.image.load("Images\\button\\rect\\img-bw.png").convert()
-button_rect_bw_darkest = pygame.image.load("Images\\button\\rect\\img-bw.png").convert()
+button_rect_bw = pygame.image.load(os.path.join("Images", "button", "rect", "img-bw.png")).convert()
+button_rect_bw_brighten = pygame.image.load(os.path.join("Images", "button", "rect", "img-bw.png")).convert()
+button_rect_bw_darken = pygame.image.load(os.path.join("Images", "button", "rect", "img-bw.png")).convert()
+button_rect_bw_darkest = pygame.image.load(os.path.join("Images", "button", "rect", "img-bw.png")).convert()
 button_rect_bw_brighten.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_ADD)
 button_rect_bw_darken.fill(BUTTON_COLOR_ADDITIVE, special_flags=pygame.BLEND_RGB_SUB)
 button_rect_bw_darkest.fill((200, 200, 200), special_flags=pygame.BLEND_RGB_SUB)
 
 # BGM
 pygame.init()
-pygame.mixer.music.load("Sound\BGM.wav")
+pygame.mixer.music.load(os.path.join("Sound", "BGM.wav"))
 music_on = True
 BGM_volume = 0.5
 pygame.mixer.music.play(-1)
@@ -135,10 +130,10 @@ pygame.mixer.music.set_volume(BGM_volume)
 
 # fonts
 pygame.font.init()
-DEFAULT_FONT = pygame.font.Font('Fonts\\pixel_font.ttf', 40)
-SMALL_PIXEL_FONT = pygame.font.Font('Fonts\\pixel_font.ttf', 20)
-MID_PIXEL_FONT = pygame.font.Font('Fonts\\pixel_font.ttf', 40)
-BIG_PIXEL_FONT = pygame.font.Font('Fonts\\pixel_font.ttf', 60)
+DEFAULT_FONT = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), 40)
+SMALL_PIXEL_FONT = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), 20)
+MID_PIXEL_FONT = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), 40)
+BIG_PIXEL_FONT = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), 60)
 pygame.display.set_caption("IQ1")
 
 # Global Variable
@@ -253,11 +248,11 @@ def graphic_randomizer():
     # print(foreground_number)
     foreground_index = random.randint(0, foreground_number-1)
     # foreground_index = 5
-    foreground_layer_number = len([entry for entry in os.listdir(foreground_path + f"\\set-{foreground_index}") if os.path.isfile(os.path.join(foreground_path + f"\\set-{foreground_index}", entry))])
+    foreground_layer_number = len([entry for entry in os.listdir(os.path.join(foreground_path, f"set-{foreground_index}")) if os.path.isfile(os.path.join(foreground_path, f"set-{foreground_index}", entry))])
     speed_foreground_layer = (-2, 0)
     for i in range(foreground_layer_number):
         keep_the_game_running()
-        loaded_image = load_assets("image", foreground_path + f"\\set-{foreground_index}\\img-{i}.png")
+        loaded_image = load_assets("image", os.path.join(foreground_path, f"set-{foreground_index}", f"img-{i}.png"))
         loaded_image.set_colorkey(BLACK)
         size_factor = 1
         if foreground_index == 2:
@@ -443,7 +438,7 @@ def change_game_status(new_status):
         _, three_bpos_x = calculate_button_position(3, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         to_mm2_button = Button(window=WIN, button_font=DEFAULT_FONT, text="Play",
                                operation=change_game_status, new_status=2,
-                               pos=(position_one_button_x[0], position_one_button_y[0]),
+                               pos=(position_one_button_x[0], ((1+TILE_POSITION_FACTOR)/2) * HEIGHT - button_size_y//2),
                                size=(button_size_x, button_size_y), img_mode=True, img_disabled=button_rect_bw_darkest,
                                     img_enabled=button_rect_bw, img_hover=button_rect_bw_brighten, img_pressed=button_rect_bw_darken,)
         all_button.append(to_mm2_button)
@@ -909,21 +904,26 @@ def init_game():
                 if math.ceil(60 - (time.time() - game.start_time)) < 0:
                     game_input = ""
                     break # I think break alone actually work
-                sum_font = pygame.font.Font('Fonts\\pixel_font.ttf', 200).render(f"{game.sum}", 1, WHITE)
-                time_font = pygame.font.Font('Fonts\\pixel_font.ttf', 120)
+                sum_font = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), 200).render(f"{game.sum}", 1, WHITE)
+                time_font = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), 120)
 
+                time_text_color = WHITE
+                if math.ceil(60 - (time.time() - game.start_time)) <= 10:
+                    time_text_color = RED
+
+                input_with_attitude = game_input if game_input != "" else "Please choose your input"
                 to_draw_string = [DEFAULT_FONT.render(f"{game.p1_name}: {game.p1_score}", 1, WHITE),
                                 DEFAULT_FONT.render(f"{game.p2_name}: {game.p2_score}", 1, WHITE),
                                 DEFAULT_FONT.render(f"Time left: ", 1, WHITE),
-                                time_font.render(f"{math.ceil(60 - (time.time() - game.start_time))}", 1, WHITE),
-                                DEFAULT_FONT.render(f"input: {game_input}", 1, WHITE),
+                                time_font.render(f"{math.ceil(60 - (time.time() - game.start_time))}", 1, time_text_color),
+                                DEFAULT_FONT.render(f"{input_with_attitude}", 1, WHITE),
                                 sum_font                            
                                 ]
                 to_draw = [(to_draw_string[0], (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT)),
                            (to_draw_string[1], (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT+to_draw_string[1].get_height()+0.003*HEIGHT)),
                            (to_draw_string[2], (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT+2*to_draw_string[1].get_height()+2*0.003*HEIGHT)),
                            (to_draw_string[3], (HUD_BORDER_FACTOR*WIDTH, HUD_BORDER_FACTOR*HEIGHT+2.5*to_draw_string[1].get_height()+3*0.003*HEIGHT)),
-                           (to_draw_string[4], (WIDTH * 0.3, (0.25 * HEIGHT - sum_font.get_height() // 2 + 0.7 * HEIGHT) // 2)),
+                           (to_draw_string[4], (WIDTH // 2 - to_draw_string[4].get_width() // 2, (0.25 * HEIGHT - sum_font.get_height() // 2 + 0.7 * HEIGHT) // 2)),
                            (to_draw_string[5], (WIDTH//2-sum_font.get_width()//2, 0.25 * HEIGHT - sum_font.get_height() // 2))]
                 keep_the_game_running(things_to_draw=to_draw)
 
@@ -1011,7 +1011,7 @@ def submit_button_operation():
 
 def show_sum(sum):
     """Show the expected value from the user's equation"""
-    sum_font = pygame.font.Font('Fonts\\pixel_font.ttf', 200)
+    sum_font = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), 200)
     button = Button(WIN, sum_font, text=str(sum), operation=None, pos=(WIDTH/2, 150), size=(0, 0),
                     disabled_color=(255, 255, 255), text_color=WHITE)
     all_button.append(button)
