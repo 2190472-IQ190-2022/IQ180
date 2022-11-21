@@ -64,6 +64,9 @@ tile_cont_colored = make_transparent(os.path.join("Images", "tile", "jungle_floo
 foreground_number = len([entry for entry in os.listdir(foreground_path)])
 cloud_number = len([entry for entry in os.listdir(cloud_path) if os.path.isfile(os.path.join(cloud_path, entry))])
 cloud_number_bw = len([entry for entry in os.listdir(cloud_bw_path) if os.path.isfile(os.path.join(cloud_bw_path, entry))])
+text_box_image = pygame.image.load(os.path.join("Images", "text_box.png"))
+some_random_text = ["I'm bored", "Let's play the game", "...", ["Now I'm a little", "M O T I V A T E D"],
+                    ["Fun fact: the game logo", "was initially a rick roll"]]
 
 fade_out = []
 fade_out_white = []
@@ -291,6 +294,16 @@ def graphic_randomizer():
     # for every x frame, has y chance start animation
     # return {type and animation obj}
     return asset_list
+
+def calculate_popup_with_text_box(texts=[]):
+    popup_welcome = Popup(WIN, 5, texts, img_mode=True, img=text_box_image)
+    old_size = popup_welcome.get_box_size()
+    new_size = (1.23 * old_size[0], 1.95 * old_size[1])
+    popup_welcome.set_box_size(new_size)
+    recalc_sprite_pos = TILE_POSITION_FACTOR * HEIGHT - SPRITE_SIZE_FACTOR * (character.get_size()[1] / 3) + (1/16 * tile_size[1]) + (1/6 * character.get_height())
+    popup_welcome.set_position((0.15 * WIDTH, recalc_sprite_pos - new_size[1]))
+    popup_welcome.set_text_offset((0, 0.1 * new_size[1]))
+    all_popup.append(popup_welcome)
 
 def draw_everything(current_menu_status, to_be_drawn=[]):
     """
@@ -566,7 +579,7 @@ def change_game_status(new_status):
         all_button.append(to_game_button)
         return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(two_bpos_x[0], y_border),
-                                    size= (small_bsize, small_bsize), text="back",
+                                    size= (small_bsize, small_bsize), text="Back",
                                     operation=change_game_status, new_status=1,
                                     img_mode=True, img_disabled=button_square_bw,
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken,
@@ -586,6 +599,8 @@ def change_game_status(new_status):
                                     )
         all_button.append(exit_button)
 
+        tutorial = [SMALL_PIXEL_FONT.render("Press \"enter name\"", 1, BLACK), SMALL_PIXEL_FONT.render("to start typing", 1, BLACK)]
+        calculate_popup_with_text_box(tutorial)
 
     elif new_status == 3:
         if len(user_name) == 0:
@@ -625,7 +640,7 @@ def change_game_status(new_status):
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken,
                                     )
         return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[0],y_border),
-                                    size= (small_bsize, small_bsize), text="back",
+                                    size= (small_bsize, small_bsize), text="Back",
                                       operation=change_game_status, new_status=2, img_mode=True, img_disabled=button_square_bw,
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken,
                                     )
@@ -639,7 +654,7 @@ def change_game_status(new_status):
         _, one_bpos_x = calculate_button_position(1, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                     pos=(one_bpos_x[0], y_border),
-                                    size= (small_bsize, small_bsize), text="back",
+                                    size= (small_bsize, small_bsize), text="Back",
                                     operation=change_game_status, new_status=1, img_mode=True, img_disabled=button_square_bw,
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken,
                                     )
@@ -650,7 +665,7 @@ def change_game_status(new_status):
         _, one_bpos_x = calculate_button_position(1, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
         return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT,
                                         pos=(one_bpos_x[0],y_border),
-                                        size= (small_bsize, small_bsize), text="back",
+                                        size= (small_bsize, small_bsize), text="Back",
                                       operation=change_game_status, new_status=1, img_mode=True, img_disabled=button_square_bw,
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
         all_button.append(return_to_mm1_button)
@@ -735,7 +750,7 @@ def keep_the_game_running(things_to_draw=[]):
     if menu_status == 2:
         WIN.fill((88,179,184))
     # draw_everything(menu_status, things_to_draw)
-    all_asset_count = 0
+    # all_asset_count = 0
 
     for anime in all_animation:
         if anime.get_ident() == "cloud":
@@ -749,12 +764,12 @@ def keep_the_game_running(things_to_draw=[]):
             all_animation.remove(anime)
             continue
         anime.draw_animation()
-        all_asset_count += 1
+        # all_asset_count += 1
 
     # game_button_control()
     for button in all_button:
         button.update_button()
-        all_asset_count += 1
+        # all_asset_count += 1
 
     # print(len(all_button))
 
@@ -769,10 +784,20 @@ def keep_the_game_running(things_to_draw=[]):
             continue
         if popup_enable:
             popup.draw()
-        all_asset_count += 1
+        # all_asset_count += 1
+
+    if int(time.time()) % 50 == 0 and len(all_popup) == 0 and len(top_level) == 0 and (menu_status == 1 or menu_status == 2):
+        rendered_ran_text = []
+        randome_index = random.randint(0, len(some_random_text)-1)
+        if isinstance(some_random_text[randome_index], list):
+            for i in some_random_text[randome_index]:
+                rendered_ran_text.append(SMALL_PIXEL_FONT.render(i, 1, BLACK))
+        else:
+            rendered_ran_text.append(SMALL_PIXEL_FONT.render(some_random_text[randome_index], 1, BLACK))
+        calculate_popup_with_text_box(rendered_ran_text)
 
     for tl in top_level: # top level is for the upper most layer only
-        all_asset_count += 1
+        # all_asset_count += 1
         if type(tl) == Animation:
             if tl.get_finish():
                 top_level.remove(tl)
@@ -863,6 +888,8 @@ def init_game():
     _, y_border = calculate_button_position(1, edge_start=True, left_or_top_edge=True)
     _, one_bpos_x = calculate_button_position(2, size=small_bsize, edge_start=True,left_or_top_edge=False, axis=WIDTH)
     y_border = y_border[0]
+    welcome_message_char = [SMALL_PIXEL_FONT.render(f"Welcome, {user_name}", 1, BLACK), SMALL_PIXEL_FONT.render("Hope we get along", 1, BLACK)]
+    welcomed = False
 
     disc_message_1 = BIG_PIXEL_FONT.render("Disconnected", 1, BLACK)
     disc_message_2 = SMALL_PIXEL_FONT.render("Reason: Unable to establish connection to server", 1, BLACK)
@@ -891,8 +918,8 @@ def init_game():
     current_array=[]
     current_sum=0
 
-
     while True:
+        
         if menu_status != 3:
             net.client.close()
             return
@@ -910,6 +937,9 @@ def init_game():
             break
 
         if game.ready == False:
+            if not welcomed and len(top_level) == 0:
+                calculate_popup_with_text_box(welcome_message_char)
+                welcomed = True
             waiting_time_rendered = DEFAULT_FONT.render(f"Waiting time: {waiting_time}", 1, WHITE)
             keep_the_game_running([(waiting_time_rendered, ((WIDTH - waiting_time_rendered.get_width()) / 2, (HEIGHT - waiting_time_rendered.get_height()) / 2))])
             #print("Waiting for another player")
@@ -938,11 +968,11 @@ def init_game():
             current_array=game.numbers_array
             current_sum=game.sum
             exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
-                                    pos=(one_bpos_x[0], y_border),size=(small_bsize, small_bsize), text="EXIT",
+                                    pos=(one_bpos_x[1], y_border),size=(small_bsize, small_bsize), text="EXIT",
                                     operation=exit, img_mode=True, img_disabled=button_square_bw,
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
-            return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[1], y_border),
-                                    size= (small_bsize, small_bsize), text="back",
+            return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[0], y_border),
+                                    size= (small_bsize, small_bsize), text="Back",
                                     operation=change_game_status, new_status=2, img_mode=True, img_disabled=button_square_bw,
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
             all_button.append(return_to_mm1_button)
@@ -962,11 +992,11 @@ def init_game():
                     # print(one_bpos_x)
                     # print(y_border)
                     exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
-                                    pos=(one_bpos_x[0],y_border),size=(small_bsize, small_bsize), text="EXIT",
+                                    pos=(one_bpos_x[1],y_border),size=(small_bsize, small_bsize), text="EXIT",
                                     operation=exit, img_mode=True, img_disabled=button_square_bw,
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
-                    return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[1],y_border),
-                                    size=(small_bsize, small_bsize), text="back",
+                    return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[0],y_border),
+                                    size=(small_bsize, small_bsize), text="Back",
                                     operation=change_game_status, new_status=2, img_mode=True, img_disabled=button_square_bw,
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
                     all_button.append(return_to_mm1_button)
@@ -1053,13 +1083,16 @@ def init_game():
         else:
             # all_button = []
             # clock.tick(FPS)
+            if not welcomed and len(top_level) == 0:
+                calculate_popup_with_text_box(welcome_message_char)
+                welcomed = True
             if not exit_and_gtfo_exist:
                 exit_button = Button(window=WIN, button_font=DEFAULT_FONT,
-                                    pos=(one_bpos_x[0], y_border),size=(small_bsize, small_bsize), text="EXIT",
+                                    pos=(one_bpos_x[1], y_border),size=(small_bsize, small_bsize), text="EXIT",
                                     operation=exit, img_mode=True, img_disabled=button_square_bw,
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
-                return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[1], y_border),
-                                    size= (small_bsize, small_bsize), text="back",
+                return_to_mm1_button = Button(window=WIN, button_font=DEFAULT_FONT, pos=(one_bpos_x[0], y_border),
+                                    size= (small_bsize, small_bsize), text="Back",
                                     operation=change_game_status, new_status=2, img_mode=True, img_disabled=button_square_bw,
                                     img_enabled=button_square, img_hover=button_square_brighten, img_pressed=button_square_darken)
                 all_button.append(return_to_mm1_button)

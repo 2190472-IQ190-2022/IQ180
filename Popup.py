@@ -23,12 +23,15 @@ class Popup:
         self.finish = False
         self.clicked = False
         self.show_text = show_text
+        self.text_position_offset = (0, 0)
+        self.color_key = (0, 0, 0)
         self.img = None
         if img is None:
             self.img_mode = False
         else:
             self.img_mode = img_mode
-            self.img = pygame.transform.scale(img, self.box_size)
+            # self.img = pygame.transform.scale(img, self.box_size).convert()
+            self.img = img.convert()
         self.allow_click_end = allow_click_end
 
     def extend(self, duration):
@@ -36,6 +39,29 @@ class Popup:
 
     def extend_time(self):
         self.start_time = time.time()
+
+    def get_box_size(self):
+        return self.box_size
+
+    def get_position(self):
+        return self.box_pos
+
+    def set_box_size(self, size):
+        self.box_size = size
+        try:
+            self.img.set_colorkey(self.color_key)
+            self.img = pygame.transform.scale(self.img, self.box_size).convert()
+        except:
+            pass
+        self.box_pos = self.calculate_pop_up_position()
+        self.text_position = self.calculate_text_position()
+
+    def set_position(self, pos):
+        self.box_pos = pos
+        self.text_position = self.calculate_text_position()
+
+    def set_text_offset(self, offset):
+        self.text_position_offset = offset
     
     def calculate_pop_up_box_size(self):
         size_y = self.two_line_padding
@@ -77,7 +103,7 @@ class Popup:
 
             if self.show_text:
                 for i in range(len(self.text_object)):
-                    self.window.blit(self.text_object[i], self.text_position[i])
+                    self.window.blit(self.text_object[i], (self.text_position[i][0] + self.text_position_offset[0], self.text_position[i][1] + self.text_position_offset[1]))
         else:
             self.finish = True
 
