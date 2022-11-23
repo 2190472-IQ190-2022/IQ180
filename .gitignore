@@ -128,3 +128,20 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# other files
+generator.py
+
+#Test files
+testfile.py
+test.py
+result.json
+test.txt
+
+# folder with file for testing
+Test_Images
+
+
+#game local files
+settings.json
+/Exported_Games
