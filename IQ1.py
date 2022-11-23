@@ -57,7 +57,7 @@ background = pygame.image.load(os.path.join("Images", "background", f"img-{rando
 background_pos = (0, 0)
 tile_bw = pygame.image.load(os.path.join("Images", "tile", "jungle_floor_bw.png"))
 tile_size = (tile_bw.get_size()[0] * 7, tile_bw.get_size()[1] * 7)
-tile_bw = pygame.transform.scale(tile_bw, tile_size)
+tile_bw = pygame.transform.scale(tile_bw, tile_size).convert_alpha()
 tile_colored = make_transparent(os.path.join("Images", "tile", "jungle_floor.png"), tile_size)
 tile_cont_bw = make_transparent(os.path.join("Images", "tile", "jungle_floor_bw_cont.png"), tile_size)
 tile_cont_colored = make_transparent(os.path.join("Images", "tile", "jungle_floor_cont.png"), tile_size)
@@ -104,7 +104,7 @@ character_anime = Animation(WIN, (SPRITE_SIZE_FACTOR * (character.get_size()[0] 
 character_anime_bw = Animation(WIN, (SPRITE_SIZE_FACTOR * (character.get_size()[0] // 8), SPRITE_SIZE_FACTOR * (character.get_size()[1] // 3)), 
                             (0.15 * WIDTH, sprite_pos_y), 1, (WIDTH, HEIGHT), 
                             "char", character_frame_bw, run_every_frame=8)
-pet = pygame.image.load(os.path.join("Images", "pet", "img-0.png"))
+pet = pygame.image.load(os.path.join("Images", "pet", "img-0.png")).convert_alpha()
 
 button_square = pygame.image.load(os.path.join("Images", "button", "square", "img-0.png")).convert()
 button_square_brighten = pygame.image.load(os.path.join("Images", "button", "square", "img-0.png")).convert()
@@ -451,7 +451,7 @@ def make_cloud(black_and_white=True):
 
 def change_game_status(new_status):
     """This function is called when the menu button is pressed (changing user to each menu, mm1, mm2, game, htp, setting)"""
-    global menu_status, all_button, user_name, settings, fo, text_box_position
+    global menu_status, all_button, user_name, settings, fo, text_box_position, all_popup
 
     sprite_pos_y = TILE_POSITION_FACTOR * HEIGHT - SPRITE_SIZE_FACTOR * (character.get_size()[1] / 3) + (1/16 * tile_size[1]) + (1/6 * character.get_height())
     character_frame = None
@@ -600,6 +600,7 @@ def change_game_status(new_status):
         all_button.append(exit_button)
 
         tutorial = [SMALL_PIXEL_FONT.render("Press \"enter name\"", 1, BLACK), SMALL_PIXEL_FONT.render("to start typing", 1, BLACK)]
+        all_popup = []
         calculate_popup_with_text_box(tutorial)
 
     elif new_status == 3:
@@ -786,7 +787,7 @@ def keep_the_game_running(things_to_draw=[]):
             popup.draw()
         # all_asset_count += 1
 
-    if int(time.time()) % 50 == 0 and len(all_popup) == 0 and len(top_level) == 0 and (menu_status == 1 or menu_status == 2):
+    if int(time.time()) % 5 == 0 and len(all_popup) == 0 and len(top_level) == 0 and (menu_status == 1 or menu_status == 2):
         rendered_ran_text = []
         randome_index = random.randint(0, len(some_random_text)-1)
         if isinstance(some_random_text[randome_index], list):
@@ -937,7 +938,7 @@ def init_game():
             break
 
         if game.ready == False:
-            if not welcomed and len(top_level) == 0:
+            if not welcomed and len(top_level) == 0 and len(all_popup)== 0:
                 calculate_popup_with_text_box(welcome_message_char)
                 welcomed = True
             waiting_time_rendered = DEFAULT_FONT.render(f"Waiting time: {waiting_time}", 1, WHITE)
@@ -1083,7 +1084,7 @@ def init_game():
         else:
             # all_button = []
             # clock.tick(FPS)
-            if not welcomed and len(top_level) == 0:
+            if not welcomed and len(top_level) == 0 and len(all_popup) == 0:
                 calculate_popup_with_text_box(welcome_message_char)
                 welcomed = True
             if not exit_and_gtfo_exist:
