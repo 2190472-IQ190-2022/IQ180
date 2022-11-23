@@ -6,7 +6,7 @@ class Network:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.hostname=socket.gethostname()   
-        self.server = socket.gethostbyname(self.hostname)
+        self.server = "172.20.10.2"
         self.port = 5555
         self.addr = (self.server, self.port)
         self.player = self.connect() # player 1 or 2
