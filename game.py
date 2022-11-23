@@ -30,7 +30,7 @@ class Game:
 
     def set_name(self, player, name):
         #Spacebar is not allowed for the sake simplicity (In the process of checking empty username)
-        name.replace(" ","")
+        name = name.replace(" ","")
         #Name "Player1" is not allowed for player 2, likewise "Player2" is not allowed for player 1
         if str(player) == '1' and name == "Player2":
             name=""

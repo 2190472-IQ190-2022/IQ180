@@ -955,7 +955,6 @@ def init_game():
                 change_game_status(new_status=2)
                 break
         if str(net.player) == str(game.turn):
-            start_waiting_time = time.time()
             player_submit = False
             exit_and_gtfo_exist = False
             game_input = ""
@@ -1022,6 +1021,7 @@ def init_game():
                 
                 if str(net.player) != str(game.turn):
                     loop_status=1
+                    start_waiting_time = time.time()
                     break
                 if math.floor(60 - (time.time() - game.start_time)) < 0:
                     game_input = ""
