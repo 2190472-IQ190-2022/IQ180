@@ -41,7 +41,7 @@ def check_status(game_ID):
         all_popup_text.append(
             f"""{game.p1_name}: {game.p1_score}-{game.p2_score}: {game.p2_name}
                 {game.equation} = {game.sum}
-                Player {game.turn}'s turn: {math.ceil(60 - (time() - game.start_time))}""")
+                Player {game.turn}'s turn: {math.floor(60 - (time() - game.start_time))}""")
         extended = True
     else:
         all_popup_text.append(f"error, index out of bound")
@@ -111,12 +111,12 @@ def threaded_client(conn, player, gameId, games):
                     if rcv_game.ready:
                         if rcv_game.turn == 2: # turn is already updated before sending to server
                             print("PASS 1")
-                            rcv_game.p1_game_time = math.ceil(60 - (time() - rcv_game.start_time))
+                            rcv_game.p1_game_time = math.floor(60 - (time() - rcv_game.start_time))
                             rcv_game.start_time = time()
                             # rcv_game.turn = 2
                         elif rcv_game.turn == 1: # turn is already updated before sending to server
                             print("PASS 2")
-                            rcv_game.p2_game_time = math.ceil(60 - (time() - rcv_game.start_time))
+                            rcv_game.p2_game_time = math.floor(60 - (time() - rcv_game.start_time))
                             rcv_game.start_time = time()
                             # rcv_game.turn = 1
                     games[gameId] = rcv_game

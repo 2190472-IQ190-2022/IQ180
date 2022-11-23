@@ -926,7 +926,7 @@ def init_game():
             return
         clock = pygame.time.Clock()
         clock.tick(FPS)
-        waiting_time = math.ceil(time.time() - start_waiting_time)
+        waiting_time = math.floor(time.time() - start_waiting_time)
         try:
             net.client.send(pickle.dumps(dummy))
             game = net.recv() # add try except here to prevent server crash
@@ -1023,7 +1023,7 @@ def init_game():
                 if str(net.player) != str(game.turn):
                     loop_status=1
                     break
-                if math.ceil(60 - (time.time() - game.start_time)) < 0:
+                if math.floor(60 - (time.time() - game.start_time)) < 0:
                     game_input = ""
                     break # I think break alone actually work
                 sum_font = pygame.font.Font(os.path.join('Fonts', 'pixel_font.ttf'), 200).render(f"{game.sum}", 1, WHITE)
@@ -1031,14 +1031,14 @@ def init_game():
                 # print(sum_font.get_size())
 
                 time_text_color = WHITE
-                if math.ceil(60 - (time.time() - game.start_time)) <= 10:
+                if math.floor(60 - (time.time() - game.start_time)) <= 10:
                     time_text_color = RED
 
                 input_with_attitude = game_input if game_input != "" else "Please choose your input"
                 to_draw_string = [DEFAULT_FONT.render(f"{game.p1_name}: {game.p1_score}", 1, WHITE),
                                 DEFAULT_FONT.render(f"{game.p2_name}: {game.p2_score}", 1, WHITE),
                                 DEFAULT_FONT.render(f"Time left: ", 1, WHITE),
-                                time_font.render(f"{math.ceil(60 - (time.time() - game.start_time))}", 1, time_text_color),
+                                time_font.render(f"{math.floor(60 - (time.time() - game.start_time))}", 1, time_text_color),
                                 DEFAULT_FONT.render(f"{input_with_attitude}", 1, WHITE),
                                 sum_font                            
                                 ]
@@ -1099,7 +1099,7 @@ def init_game():
                 all_button.append(return_to_mm1_button)
                 all_button.append(exit_button)
                 exit_and_gtfo_exist = True
-            waiting_time = math.ceil(time.time() - start_waiting_time)
+            waiting_time = math.floor(time.time() - start_waiting_time)
             waiting_time_rendered = DEFAULT_FONT.render(f"Waiting time: {waiting_time}", 1, WHITE)
             keep_the_game_running([(waiting_time_rendered, ((WIDTH - waiting_time_rendered.get_width()) / 2, (HEIGHT - waiting_time_rendered.get_height()) / 2))])
     game_state = []
