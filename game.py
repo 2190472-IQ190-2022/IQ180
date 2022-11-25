@@ -99,7 +99,7 @@ class Game:
         if numbers!=5:
             return False
         try:
-            return eval(string_equation) == self.sum
+            return int(eval(string_equation)) == int(self.sum)
         except:
             return False
 
